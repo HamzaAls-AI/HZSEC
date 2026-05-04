@@ -1,0 +1,11 @@
+name = "hzsec-waitlist"
+main = "src/worker.js"
+compatibility_date = "2025-01-01"
+
+[vars]
+ALLOWED_ORIGIN = "https://hzsec.io"
+FROM_ADDRESS = "HZSec <hello@hzsec.io>"
+TO_ADDRESS = "hamzaalhussaini44@gmail.com"
+
+# Set the secret (NOT here) with:
+#   npx wrangler secret put RESEND_API_KEY

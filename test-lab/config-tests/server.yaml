@@ -1,0 +1,9 @@
+server:
+  host: 127.0.0.1
+  port: 8080
+
+cors:
+  allow_origins: https://your-allowed-origin.com
+
+security:
+  admin: true

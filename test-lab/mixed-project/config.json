@@ -1,0 +1,5 @@
+{
+  "debug": true,
+  "admin": true,
+  "api": "http://backend.example.com"
+}

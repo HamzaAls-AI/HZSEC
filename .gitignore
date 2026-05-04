@@ -1,0 +1,44 @@
+# Dependencies
+node_modules/
+.npm/
+.yarn/
+
+# Builds
+dist/
+build/
+out/
+.next/
+coverage/
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+
+# Backups / screenshots
+backup-before-phase1/
+backup-before-phase2/
+backup-before-phase3/
+backup-before-phase4/
+backup-before-phase5/
+*Screen Shot*
+*Screenshot*
+*.png
+*.jpg
+*.jpeg
+
+# macOS / editor
+.DS_Store
+.vscode/
+.idea/

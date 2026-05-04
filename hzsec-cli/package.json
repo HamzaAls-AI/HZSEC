@@ -1,0 +1,49 @@
+{
+  "name": "hzsec-cli",
+  "version": "1.0.0",
+  "description": "Local-first security scanner. Finds secrets, misconfigs, and unsafe code patterns. Runs in CI. Free, MIT-licensed, no telemetry.",
+  "license": "MIT",
+  "homepage": "https://hzsec.io",
+  "repository": {
+    "type": "git",
+    "url":  "https://github.com/REPLACE/hzsec-cli.git"
+  },
+  "bugs": {
+    "url": "https://github.com/REPLACE/hzsec-cli/issues"
+  },
+  "author": "HZSec",
+  "keywords": [
+    "security",
+    "scanner",
+    "secrets",
+    "sast",
+    "static-analysis",
+    "linter",
+    "ci",
+    "sarif",
+    "code-scanning",
+    "devsecops"
+  ],
+  "main": "lib/index.js",
+  "bin": {
+    "hzsec": "bin/hzsec.js"
+  },
+  "files": [
+    "bin/",
+    "lib/",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "start": "node bin/hzsec.js",
+    "test":  "node test/smoke.js"
+  },
+  "dependencies": {
+    "chalk":     "^5.3.0",
+    "commander": "^12.1.0",
+    "ora":       "^8.1.0"
+  }
+}

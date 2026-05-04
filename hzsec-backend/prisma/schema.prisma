@@ -1,0 +1,125 @@
+// HZSec backend — database schema
+// Provider: Postgres (Railway-managed)
+// ORM: Prisma 5.x
+//
+// Run:
+//   npx prisma migrate dev --name init     # create migration + apply locally
+//   npx prisma migrate deploy              # apply on production (Railway)
+//   npx prisma generate                    # regenerate the @prisma/client
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Users ────────────────────────────────────────────────────────────────────
+// Clerk owns identity. We mirror just enough to attach licenses + usage.
+// `clerk_id` is the source-of-truth foreign key from Clerk's user table.
+
+model User {
+  id         String   @id @default(cuid())
+  clerkId    String   @unique @map("clerk_id")
+  email      String
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  licenses   License[]
+  usage      Usage[]
+  audit      AuditEvent[]
+
+  @@map("users")
+}
+
+// ─── Licenses ─────────────────────────────────────────────────────────────────
+// One row per active subscription. `license_key` is the only credential the
+// desktop app sends — keep it short, copyable, and case-insensitive on lookup.
+// Format: HZSEC-XXXX-XXXX-XXXX-XXXX (24 chars + 4 dashes).
+
+enum LicenseStatus {
+  active
+  trialing
+  canceled
+  past_due
+}
+
+enum LicenseTier {
+  free
+  pro
+  team
+}
+
+model License {
+  id                    String        @id @default(cuid())
+  userId                String        @map("user_id")
+  licenseKey            String        @unique @map("license_key")
+  status                LicenseStatus
+  tier                  LicenseTier
+  stripeCustomerId      String?       @map("stripe_customer_id")
+  stripeSubscriptionId  String?       @unique @map("stripe_subscription_id")
+  trialEndsAt           DateTime?     @map("trial_ends_at")
+  currentPeriodEnd      DateTime?     @map("current_period_end")
+  createdAt             DateTime      @default(now()) @map("created_at")
+  updatedAt             DateTime      @updatedAt        @map("updated_at")
+
+  user                  User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([stripeCustomerId])
+  @@map("licenses")
+}
+
+// ─── Usage ────────────────────────────────────────────────────────────────────
+// Per-user, per-month roll-up. The proxy increments these counters atomically
+// on every Anthropic call. `month` is "YYYY-MM" (UTC) so a single index covers
+// "current period" lookups.
+
+model Usage {
+  id                String   @id @default(cuid())
+  userId            String   @map("user_id")
+  month             String                                   // "2026-04"
+  assistantMessages Int      @default(0) @map("assistant_messages")
+  tokensIn          Int      @default(0) @map("tokens_in")
+  tokensOut         Int      @default(0) @map("tokens_out")
+  lastUsedAt        DateTime @default(now()) @map("last_used_at")
+
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, month])
+  @@index([userId])
+  @@map("usage")
+}
+
+// ─── Audit ────────────────────────────────────────────────────────────────────
+// Append-only event log. Used by the dashboard "devices" view and for support.
+// `payload` is intentionally schema-less JSON — keep it small and structured.
+
+model AuditEvent {
+  id         String   @id @default(cuid())
+  userId     String   @map("user_id")
+  type       String                                          // e.g. "license.validate", "stripe.subscription.updated"
+  payload    Json
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@map("audit_events")
+}
+
+// ─── Webhook idempotency ──────────────────────────────────────────────────────
+// Stripe will retry events on any non-2xx (and sometimes on 2xx if our reply
+// was slow). We record every processed event ID so a replay is a no-op.
+// Cleanup: prune older than 90 days via a cron (out of scope for v1).
+
+model WebhookEvent {
+  id           String   @id                                  // Stripe's evt_... ID
+  type         String
+  receivedAt   DateTime @default(now()) @map("received_at")
+  processedAt  DateTime?                  @map("processed_at")
+
+  @@index([type, receivedAt])
+  @@map("webhook_events")
+}

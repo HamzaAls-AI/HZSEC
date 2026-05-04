@@ -1,0 +1,2038 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy"
+    content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline';" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HZSec</title>
+  <style>
+    /* ══ THEME VARIABLES ══════════════════════════════════════════════════════ */
+    :root[data-theme="dark"] {
+      --bg:        #060d16;
+      --bg1:       #0b1624;
+      --bg2:       #0f1e30;
+      --bg3:       #162540;
+      --border:    rgba(99,179,237,0.10);
+      --border-hi: rgba(99,179,237,0.25);
+      --text:      #c8dff5;
+      --text2:     #7ba3c8;
+      --muted:     #4a6785;
+      --accent:    #38bdf8;
+      --accent2:   #0ea5e9;
+      --green:     #34d399;
+      --yellow:    #fbbf24;
+      --red:       #f87171;
+      --orange:    #fb923c;
+      --shadow:    0 2px 12px rgba(0,0,0,0.4);
+    }
+
+    :root[data-theme="light"] {
+      --bg:        #f0f4f8;
+      --bg1:       #ffffff;
+      --bg2:       #f7f9fc;
+      --bg3:       #edf2f7;
+      --border:    rgba(0,0,0,0.08);
+      --border-hi: rgba(0,0,0,0.18);
+      --text:      #1a2332;
+      --text2:     #4a5568;
+      --muted:     #94a3b8;
+      --accent:    #0284c7;
+      --accent2:   #0369a1;
+      --green:     #059669;
+      --yellow:    #d97706;
+      --red:       #dc2626;
+      --orange:    #ea580c;
+      --shadow:    0 2px 12px rgba(0,0,0,0.08);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      height: 100vh;
+      overflow: hidden;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    /* ══ SHELL ════════════════════════════════════════════════════════════════ */
+    .shell { display: grid; grid-template-columns: 240px 1fr; height: 100vh; }
+
+    /* ══ SIDEBAR ══════════════════════════════════════════════════════════════ */
+    .sidebar {
+      background: var(--bg1);
+      border-right: 1px solid var(--border);
+      display: flex; flex-direction: column;
+      overflow-y: auto; overflow-x: hidden;
+    }
+
+    .sidebar-top { padding: 18px 16px 14px; border-bottom: 1px solid var(--border); }
+
+    .brand { display: flex; align-items: center; gap: 10px; }
+    .brand-dot { display: none; }
+    .brand-sub { font-size: 10px; color: var(--muted); margin-top: 1px; font-family: 'Space Mono', monospace; letter-spacing: 0.05em; }
+
+    .sb-sec { padding: 10px 14px; border-bottom: 1px solid var(--border); }
+    .sb-lbl { font-size: 10px; font-family: 'Space Mono', monospace; letter-spacing: 0.12em; color: var(--muted); text-transform: uppercase; margin-bottom: 7px; }
+
+    .target-display { background: var(--bg2); border: 1px solid var(--border); border-radius: 6px; padding: 7px 10px; font-family: 'Space Mono', monospace; font-size: 11px; word-break: break-all; min-height: 34px; display: flex; align-items: center; color: var(--muted); }
+    .target-display.has { color: var(--text); }
+
+    .nav-tabs { display: flex; flex-direction: column; gap: 2px; padding: 6px 8px; }
+    .nav-tab { display: flex; align-items: center; gap: 9px; padding: 8px 10px; border-radius: 6px; cursor: pointer; border: 1px solid transparent; font-size: 13px; color: var(--muted); background: none; width: 100%; text-align: left; transition: all 0.15s; }
+    .nav-tab:hover { background: var(--bg2); color: var(--text); }
+    .nav-tab.active { background: var(--bg3); border-color: var(--border-hi); color: var(--accent); }
+    .nav-tab svg { flex-shrink: 0; }
+    .nav-badge { margin-left: auto; background: var(--red); color: white; font-size: 10px; font-family: 'Space Mono', monospace; padding: 1px 5px; border-radius: 10px; min-width: 18px; text-align: center; }
+
+    /* Buttons */
+    .btn { display: flex; align-items: center; justify-content: center; gap: 6px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg2); color: var(--text); font-size: 12px; padding: 8px 12px; cursor: pointer; width: 100%; transition: all 0.15s; font-weight: 500; }
+    .btn:hover { border-color: var(--border-hi); background: var(--bg3); }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn-primary { background: var(--accent2); border-color: var(--accent2); color: #fff; font-weight: 600; }
+    .btn-primary:hover { background: var(--accent); border-color: var(--accent); }
+    .btn-danger { background: rgba(220,38,38,0.08); border-color: rgba(220,38,38,0.25); color: var(--red); }
+    .btn-danger:hover { background: rgba(220,38,38,0.15); }
+    .btn-success { background: rgba(5,150,105,0.08); border-color: rgba(5,150,105,0.25); color: var(--green); }
+    .btn-success:hover { background: rgba(5,150,105,0.15); }
+    .btn-stack { display: flex; flex-direction: column; gap: 6px; }
+
+    select, textarea, input[type="text"], input[type="password"] { background: var(--bg2); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-size: 13px; padding: 7px 10px; width: 100%; outline: none; transition: border-color 0.15s; }
+    select:focus, textarea:focus, input:focus { border-color: var(--border-hi); }
+    textarea { resize: vertical; font-family: 'Space Mono', monospace; }
+
+    .monitor-pill { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-family: 'Space Mono', monospace; background: var(--bg2); border: 1px solid var(--border); color: var(--muted); }
+    .monitor-pill.active { background: rgba(5,150,105,0.08); border-color: rgba(5,150,105,0.3); color: var(--green); }
+    .monitor-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+    .monitor-pill.active .monitor-dot { animation: pulse 1.4s ease-in-out infinite; }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(.8)} }
+
+    .api-form { background: var(--bg2); border: 1px solid rgba(217,119,6,0.2); border-radius: 8px; padding: 10px 12px; display: flex; flex-direction: column; gap: 7px; }
+    .api-label { font-size: 10px; font-family: 'Space Mono', monospace; color: var(--yellow); letter-spacing: 0.08em; text-transform: uppercase; }
+    .api-row { display: flex; gap: 6px; }
+    .api-row input { flex: 1; font-family: 'Space Mono', monospace; font-size: 11px; }
+    .api-save { padding: 7px 12px; background: rgba(217,119,6,0.08); border: 1px solid rgba(217,119,6,0.25); border-radius: 6px; color: var(--yellow); font-size: 12px; cursor: pointer; white-space: nowrap; transition: all 0.15s; }
+    .api-save:hover { background: rgba(217,119,6,0.16); }
+    .api-status { font-size: 11px; font-family: 'Space Mono', monospace; }
+    .api-status.set { color: var(--green); }
+    .api-status.unset { color: var(--muted); }
+
+    /* ══ MAIN ═════════════════════════════════════════════════════════════════ */
+    .main { display: flex; flex-direction: column; overflow: hidden; height: 100vh; }
+
+    .topbar { display: flex; align-items: center; border-bottom: 1px solid var(--border); background: var(--bg1); padding: 0 20px; height: 48px; flex-shrink: 0; }
+    .topbar-tabs { display: flex; }
+    .topbar-tab { padding: 0 18px; height: 48px; display: flex; align-items: center; font-size: 13px; font-weight: 500; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; border-top: 2px solid transparent; transition: all 0.15s; }
+    .topbar-tab:hover { color: var(--text); }
+    .topbar-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+    .topbar-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+    .banner-text { font-size: 12px; color: var(--muted); font-family: 'Space Mono', monospace; max-width: 320px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .score-chip { font-family: 'Space Mono', monospace; font-size: 12px; padding: 3px 10px; border-radius: 20px; border: 1px solid var(--border); background: var(--bg2); }
+
+    /* Theme toggle */
+    .theme-toggle { display: flex; align-items: center; gap: 6px; padding: 4px 10px; border: 1px solid var(--border); border-radius: 20px; cursor: pointer; background: var(--bg2); font-size: 12px; color: var(--muted); transition: all 0.15s; }
+    .theme-toggle:hover { border-color: var(--border-hi); color: var(--text); }
+
+    /* ══ PANELS ═══════════════════════════════════════════════════════════════ */
+    .panel { display: none; flex: 1; overflow: hidden; }
+    .panel.active { display: flex; flex-direction: column; }
+
+    /* ══ SCAN PANEL ═══════════════════════════════════════════════════════════ */
+    .scan-panel { overflow-y: auto; padding: 18px; gap: 14px; flex-direction: column; }
+
+    /* ── Security Posture Bar ── */
+    .posture-bar-section { background: var(--bg1); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; }
+
+    /* Scan-panel empty state — replaces the posture/findings UI until a
+       scan has run. Toggled by `scanPanel.has-scan` on the parent. */
+    .scan-empty { padding: 24px 0; }
+    .scan-empty-card {
+      max-width: 640px; margin: 30px auto;
+      border: 2px dashed var(--border-hi, var(--border));
+      border-radius: 14px;
+      background: var(--bg1);
+      padding: 56px 32px 48px;
+      text-align: center;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .scan-empty-card.dragover { border-color: var(--accent2); background: var(--bg2); }
+    .scan-empty-icon { color: var(--muted); margin-bottom: 18px; }
+    .scan-empty-card.dragover .scan-empty-icon { color: var(--accent2); }
+    .scan-empty-title { font-size: 18px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+    .scan-empty-desc  { font-size: 13px; color: var(--muted); line-height: 1.6; margin-bottom: 22px; }
+    .scan-empty-actions { display: flex; justify-content: center; gap: 10px; margin-bottom: 14px; }
+    .scan-empty-actions .btn { width: auto; padding: 9px 22px; }
+    .scan-empty-hint { font-size: 11px; color: var(--muted); font-family: 'Space Mono', monospace; opacity: 0.7; }
+    /* Once a scan has run, hide the empty state + show everything else. */
+    #scanPanel.has-scan .scan-empty { display: none; }
+    #scanPanel:not(.has-scan) .posture-bar-section,
+    #scanPanel:not(.has-scan) .scan-controls,
+    #scanPanel:not(.has-scan) .findings-list,
+    #scanPanel:not(.has-scan) .findings-section,
+    #scanPanel:not(.has-scan) .summary-section,
+    #scanPanel:not(.has-scan) #snippetViewer,
+    #scanPanel:not(.has-scan) #scoreHistorySection { display: none; }
+
+    .posture-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+    .posture-header-left { display: flex; align-items: center; gap: 12px; }
+    .posture-title { font-size: 11px; font-family: 'Space Mono', monospace; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+    .posture-toggle { font-size: 11px; color: var(--accent); cursor: pointer; font-family: 'Space Mono', monospace; border: none; background: none; padding: 0; }
+    .posture-toggle:hover { opacity: 0.7; }
+
+    /* Bar view */
+    .posture-bar-view { display: flex; flex-direction: column; gap: 10px; }
+
+    .posture-track {
+      position: relative; height: 28px; border-radius: 14px; overflow: hidden;
+      background: linear-gradient(90deg, var(--red) 0%, var(--orange) 25%, var(--yellow) 50%, #86efac 75%, var(--green) 100%);
+    }
+
+    .posture-track-overlay {
+      position: absolute; inset: 0;
+      background: var(--bg);
+      opacity: 0.55;
+    }
+
+    .posture-marker {
+      position: absolute; top: 50%; transform: translate(-50%, -50%);
+      width: 22px; height: 22px; border-radius: 50%;
+      background: var(--bg1);
+      border: 3px solid white;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.35);
+      transition: left 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .posture-score-label {
+      font-family: 'Space Mono', monospace; font-size: 22px; font-weight: 700; color: var(--accent);
+    }
+
+    .posture-tags { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+
+    .posture-tag { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 500; border: 1px solid var(--border); background: var(--bg2); }
+    .posture-tag.threat-HIGH { border-color: rgba(220,38,38,0.3); color: var(--red); background: rgba(220,38,38,0.06); }
+    .posture-tag.threat-MEDIUM { border-color: rgba(217,119,6,0.3); color: var(--yellow); background: rgba(217,119,6,0.06); }
+    .posture-tag.threat-LOW { border-color: rgba(5,150,105,0.3); color: var(--green); background: rgba(5,150,105,0.06); }
+    .posture-tag-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+
+    .posture-track-labels { display: flex; justify-content: space-between; font-size: 10px; color: var(--muted); font-family: 'Space Mono', monospace; margin-top: 3px; }
+
+    /* Radial view */
+    .posture-radial-view { display: flex; align-items: center; gap: 24px; }
+
+    .radial-ring-wrapper { position: relative; flex-shrink: 0; }
+    .radial-svg { transform: rotate(-90deg); }
+    .radial-track { fill: none; stroke: var(--bg3); stroke-width: 10; }
+    .radial-fill { fill: none; stroke-width: 10; stroke-linecap: round; transition: stroke-dashoffset 0.8s cubic-bezier(0.34,1.2,0.64,1); }
+    .radial-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    .radial-score { font-family: 'Space Mono', monospace; font-size: 26px; font-weight: 700; color: var(--accent); line-height: 1; }
+    .radial-sublabel { font-size: 10px; color: var(--muted); font-family: 'Space Mono', monospace; margin-top: 2px; }
+
+    .radial-tags { display: flex; flex-direction: column; gap: 8px; }
+    .radial-tag-row { display: flex; align-items: center; gap: 10px; }
+    .radial-tag-label { font-size: 11px; color: var(--muted); width: 80px; }
+    .radial-tag-value { font-family: 'Space Mono', monospace; font-size: 13px; font-weight: 700; }
+
+    /* ── Two col layout ── */
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+
+    .card { background: var(--bg1); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; }
+    .card-title { font-size: 10px; font-family: 'Space Mono', monospace; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; }
+    .card-title-action { font-size: 11px; color: var(--accent); cursor: pointer; background: none; border: none; padding: 0; font-family: 'Space Mono', monospace; }
+    .card-title-action:hover { opacity: 0.7; }
+    .empty-state { color: var(--muted); font-size: 13px; padding: 10px 0; }
+
+    /* Risk bars */
+    .risk-grid { display: flex; flex-direction: column; gap: 7px; }
+    .risk-row { display: flex; align-items: center; gap: 8px; }
+    .risk-lbl { font-size: 11px; color: var(--muted); width: 56px; flex-shrink: 0; }
+    .risk-track { flex: 1; height: 5px; background: var(--bg3); border-radius: 3px; overflow: hidden; }
+    .risk-fill { height: 100%; border-radius: 3px; transition: width 0.5s ease; }
+    .risk-fill.CRITICAL { background: var(--red); }
+    .risk-fill.HIGH { background: var(--orange); }
+    .risk-fill.MEDIUM { background: var(--yellow); }
+    .risk-fill.LOW { background: var(--green); }
+    .risk-cnt { font-family: 'Space Mono', monospace; font-size: 11px; width: 20px; text-align: right; }
+
+    /* History chart */
+    .history-chart { display: flex; align-items: flex-end; gap: 3px; height: 52px; margin-top: 6px; }
+    .history-bar { flex: 1; border-radius: 3px 3px 0 0; min-width: 6px; cursor: pointer; opacity: 0.8; transition: opacity 0.15s; }
+    .history-bar:hover { opacity: 1; }
+    .history-meta { font-size: 10px; color: var(--muted); margin-top: 5px; font-family: 'Space Mono', monospace; display: flex; justify-content: space-between; }
+
+    /* Environment table */
+    .env-grid { display: flex; flex-direction: column; gap: 0; }
+    .env-row { display: flex; align-items: flex-start; padding: 6px 0; border-bottom: 1px solid var(--border); }
+    .env-row:last-child { border-bottom: none; }
+    .env-key { font-size: 11px; color: var(--muted); width: 110px; flex-shrink: 0; padding-top: 1px; }
+    .env-val { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--text); flex: 1; word-break: break-all; }
+    .env-val.good { color: var(--green); }
+    .env-val.warn { color: var(--yellow); }
+    .env-val.bad { color: var(--red); }
+    .env-badge { display: inline-flex; align-items: center; gap: 4px; padding: 1px 6px; border-radius: 4px; font-size: 10px; }
+    .env-badge.git { background: rgba(56,189,248,0.1); color: var(--accent); border: 1px solid rgba(56,189,248,0.2); }
+    .env-badge.dirty { background: rgba(217,119,6,0.1); color: var(--yellow); border: 1px solid rgba(217,119,6,0.2); }
+
+    /* Findings */
+    .findings-list { display: flex; flex-direction: column; gap: 7px; }
+    .finding-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 6px; padding: 11px 13px; transition: border-color 0.15s; }
+    .finding-card:hover { border-color: var(--border-hi); }
+    .finding-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 4px; }
+    .finding-title { font-size: 13px; font-weight: 600; }
+    .finding-meta { font-size: 11px; color: var(--muted); font-family: 'Space Mono', monospace; margin-bottom: 5px; }
+    .finding-why { font-size: 12px; opacity: 0.8; margin-bottom: 3px; }
+    .finding-fix { font-size: 12px; color: var(--green); }
+    .finding-actions { display: flex; gap: 5px; margin-top: 7px; flex-wrap: wrap; }
+
+    .pill { display: inline-flex; align-items: center; padding: 2px 7px; border-radius: 4px; font-size: 10px; font-family: 'Space Mono', monospace; font-weight: 700; flex-shrink: 0; }
+    .pill.CRITICAL { background: rgba(220,38,38,0.12); color: var(--red); }
+    .pill.HIGH { background: rgba(234,88,12,0.12); color: var(--orange); }
+    .pill.MEDIUM { background: rgba(217,119,6,0.12); color: var(--yellow); }
+    .pill.LOW { background: rgba(5,150,105,0.12); color: var(--green); }
+
+    .abtn { display: inline-flex; align-items: center; gap: 4px; padding: 4px 9px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--text); font-size: 11px; cursor: pointer; transition: all 0.15s; }
+    .abtn:hover { border-color: var(--border-hi); background: var(--bg3); }
+    .abtn.blue { border-color: rgba(2,132,199,0.3); color: var(--accent); }
+    .abtn.green { border-color: rgba(5,150,105,0.3); color: var(--green); }
+    .abtn.purple { border-color: rgba(124,58,237,0.3); color: #7c3aed; }
+
+    .snippet-viewer { background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 11px 13px; font-family: 'Space Mono', monospace; font-size: 12px; max-height: 200px; overflow: auto; }
+    .snip-line { display: block; }
+    .snip-line.hl { background: rgba(220,38,38,0.1); color: var(--red); }
+
+    .priority-card { background: var(--bg2); border: 1px solid rgba(220,38,38,0.2); border-radius: 6px; padding: 11px 13px; }
+
+    .activity-item { padding: 5px 0; border-bottom: 1px solid var(--border); font-size: 12px; }
+    .activity-item:last-child { border-bottom: none; }
+    .activity-type { font-family: 'Space Mono', monospace; color: var(--accent); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; }
+    .activity-time { color: var(--muted); font-size: 10px; margin-top: 1px; }
+
+    /* ══ ASSISTANT PANEL ══════════════════════════════════════════════════════ */
+    .assistant-panel { display: none; flex-direction: row; height: 100%; overflow: hidden; }
+    .assistant-panel.active { display: flex; }
+    .chat-area { flex: 1; display: flex; flex-direction: column; overflow: hidden; border-right: 1px solid var(--border); }
+    .chat-header { padding: 12px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+    .chat-header-title { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; }
+    .chat-messages { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+    .msg { display: flex; gap: 9px; animation: fadeUp 0.2s ease; }
+    .msg.user { flex-direction: row-reverse; }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(5px)} to{opacity:1;transform:translateY(0)} }
+    .msg-av { width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; font-family: 'Space Mono', monospace; }
+    .msg-av.ai { background: rgba(2,132,199,0.12); border: 1px solid rgba(2,132,199,0.25); color: var(--accent); }
+    .msg-av.user { background: rgba(5,150,105,0.1); border: 1px solid rgba(5,150,105,0.2); color: var(--green); }
+    .msg-bubble { max-width: 76%; background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 10px 13px; font-size: 13px; line-height: 1.65; }
+    .msg.user .msg-bubble { background: rgba(2,132,199,0.05); border-color: rgba(2,132,199,0.15); }
+    .msg-bubble pre { background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 8px 10px; font-family: 'Space Mono', monospace; font-size: 11px; overflow-x: auto; margin: 6px 0; white-space: pre-wrap; }
+    .msg-bubble code { font-family: 'Space Mono', monospace; font-size: 11px; background: var(--bg3); padding: 1px 4px; border-radius: 3px; }
+    .msg-bubble strong { color: var(--accent); }
+    .msg-bubble h2, .msg-bubble h3 { font-size: 13px; margin: 7px 0 4px; }
+    .msg-bubble ul, .msg-bubble ol { padding-left: 14px; margin: 5px 0; }
+    .msg-time { font-size: 10px; color: var(--muted); margin-top: 3px; font-family: 'Space Mono', monospace; }
+    .msg.user .msg-time { text-align: right; }
+    .fix-plan-card { background: var(--bg); border: 1px solid rgba(5,150,105,0.25); border-radius: 6px; padding: 10px 12px; margin-top: 8px; }
+    .fix-plan-title { font-size: 11px; font-family: 'Space Mono', monospace; color: var(--green); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 7px; }
+    .fix-plan-items { display: flex; flex-direction: column; gap: 4px; margin-bottom: 8px; }
+    .fix-plan-item { background: var(--bg2); border: 1px solid var(--border); border-radius: 6px; padding: 6px 9px; font-size: 12px; }
+    .fix-plan-item-file { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--muted); margin-bottom: 2px; }
+    .fix-plan-actions { display: flex; gap: 7px; }
+    .typing { display: flex; gap: 4px; align-items: center; padding: 4px 0; }
+    .typing-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--muted); animation: bounce 1.2s ease-in-out infinite; }
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes bounce { 0%,100%{transform:translateY(0);opacity:.5} 50%{transform:translateY(-4px);opacity:1} }
+    .chat-input-area { padding: 12px 16px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 7px; flex-shrink: 0; }
+    .ctx-bar { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+    .ctx-chip { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; background: var(--bg2); border: 1px solid var(--border); border-radius: 4px; font-size: 11px; color: var(--muted); cursor: pointer; transition: all 0.15s; }
+    .ctx-chip.on { border-color: rgba(2,132,199,0.35); color: var(--accent); background: rgba(2,132,199,0.05); }
+    .input-row { display: flex; gap: 7px; align-items: flex-end; }
+    .chat-input { flex: 1; min-height: 40px; max-height: 110px; resize: none; padding: 9px 11px; font-size: 13px; border-radius: 6px; }
+    .send-btn { width: 40px; height: 40px; border-radius: 6px; background: var(--accent2); border: none; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background 0.15s; }
+    .send-btn:hover { background: var(--accent); }
+    .send-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .ctx-sidebar { width: 260px; flex-shrink: 0; display: flex; flex-direction: column; overflow: hidden; }
+    .ctx-hdr { padding: 12px 14px; border-bottom: 1px solid var(--border); font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+    .ctx-body { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+    .ctx-sec-label { font-size: 10px; font-family: 'Space Mono', monospace; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 5px; }
+    .ctx-finding { background: var(--bg2); border: 1px solid var(--border); border-radius: 6px; padding: 8px 10px; cursor: pointer; transition: border-color 0.15s; }
+    .ctx-finding:hover { border-color: var(--border-hi); }
+    .ctx-finding.selected { border-color: rgba(2,132,199,0.4); background: rgba(2,132,199,0.04); }
+    .ctx-finding-title { font-size: 12px; font-weight: 500; }
+    .ctx-finding-meta { font-size: 10px; color: var(--muted); font-family: 'Space Mono', monospace; margin-top: 2px; }
+
+    /* ══ MONITOR PANEL ════════════════════════════════════════════════════════ */
+    .monitor-panel { display: none; flex-direction: row; height: 100%; overflow: hidden; }
+    .monitor-panel.active { display: flex; }
+    .monitor-feed { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+    .monitor-hdr { padding: 12px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+    .monitor-hdr-left { display: flex; align-items: center; gap: 9px; }
+    .monitor-hdr-title { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; }
+    .monitor-events { flex: 1; overflow-y: auto; padding: 12px 16px; display: flex; flex-direction: column; gap: 7px; }
+    .monitor-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 9px; color: var(--muted); }
+    .monitor-empty-icon { font-size: 32px; opacity: 0.3; }
+    .monitor-empty p { font-size: 13px; text-align: center; max-width: 240px; }
+    .event-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 11px 13px; animation: slideIn 0.2s ease; }
+    @keyframes slideIn { from{opacity:0;transform:translateX(-7px)} to{opacity:1;transform:translateX(0)} }
+    .event-card.alert { border-color: rgba(220,38,38,0.3); background: rgba(220,38,38,0.03); }
+    .event-card.resolved { border-color: rgba(5,150,105,0.25); background: rgba(5,150,105,0.03); }
+    .event-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+    .event-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 10px; font-family: 'Space Mono', monospace; letter-spacing: 0.08em; text-transform: uppercase; padding: 2px 7px; border-radius: 4px; }
+    .event-badge.alert { background: rgba(220,38,38,0.1); color: var(--red); }
+    .event-badge.resolve { background: rgba(5,150,105,0.1); color: var(--green); }
+    .event-badge.info { background: var(--bg3); color: var(--muted); }
+    .event-badge.ai { background: rgba(2,132,199,0.1); color: var(--accent); }
+    .event-time { font-size: 10px; color: var(--muted); font-family: 'Space Mono', monospace; }
+    .event-file { font-family: 'Space Mono', monospace; font-size: 12px; margin-bottom: 6px; }
+    .event-findings { display: flex; flex-direction: column; gap: 4px; margin-top: 6px; }
+    .event-finding-row { display: flex; align-items: center; gap: 7px; font-size: 12px; padding: 4px 8px; background: var(--bg); border-radius: 6px; border: 1px solid var(--border); }
+    .event-ai-label { font-size: 10px; font-family: 'Space Mono', monospace; color: var(--accent); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 4px; }
+    .event-ai-msg { font-size: 13px; line-height: 1.6; margin-bottom: 7px; }
+    .event-fix-block { margin-top: 7px; background: var(--bg); border: 1px solid rgba(5,150,105,0.2); border-radius: 6px; padding: 8px 10px; }
+    .event-fix-label { font-size: 10px; font-family: 'Space Mono', monospace; color: var(--green); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 4px; }
+    .event-fix-text { font-size: 12px; line-height: 1.6; }
+    .monitor-stats { width: 240px; flex-shrink: 0; border-left: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; }
+    .mstats-hdr { padding: 12px 14px; border-bottom: 1px solid var(--border); font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+    .mstats-body { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 12px; }
+    .mstat { background: var(--bg2); border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; }
+    .mstat-label { font-size: 10px; color: var(--muted); font-family: 'Space Mono', monospace; letter-spacing: 0.08em; text-transform: uppercase; }
+    .mstat-value { font-size: 22px; font-family: 'Space Mono', monospace; font-weight: 700; color: var(--accent); margin-top: 3px; }
+    .mstat-value.red { color: var(--red); }
+    .mstat-value.green { color: var(--green); }
+    .recent-alerts { display: flex; flex-direction: column; gap: 4px; }
+    .recent-alert-row { font-size: 11px; padding: 5px 7px; background: var(--bg2); border: 1px solid rgba(220,38,38,0.2); border-radius: 6px; }
+    .recent-alert-file { font-family: 'Space Mono', monospace; color: var(--text); }
+    .recent-alert-time { color: var(--muted); margin-top: 1px; }
+
+    /* ══ AUDIT PANEL ══════════════════════════════════════════════════════════ */
+    .audit-panel { overflow-y: auto; padding: 18px; gap: 12px; flex-direction: column; }
+    .audit-stats-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; }
+    .audit-stat { background: var(--bg1); border: 1px solid var(--border); border-radius: 10px; padding: 13px 15px; }
+    .audit-stat-label { font-size: 10px; color: var(--muted); font-family: 'Space Mono', monospace; letter-spacing: 0.08em; text-transform: uppercase; }
+    .audit-stat-value { font-size: 22px; font-family: 'Space Mono', monospace; font-weight: 700; color: var(--accent); margin-top: 3px; }
+    .audit-toolbar { display: flex; align-items: center; justify-content: space-between; background: var(--bg1); border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; flex-shrink: 0; flex-wrap: wrap; gap: 8px; }
+    .audit-toolbar-left { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .audit-toolbar-title { font-family: 'Space Mono', monospace; font-size: 12px; color: var(--text); letter-spacing: 0.06em; }
+    .audit-count { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--muted); }
+    .audit-filter-row { display: flex; gap: 5px; flex-wrap: wrap; }
+    .filter-chip { padding: 3px 9px; border-radius: 4px; font-size: 11px; font-family: 'Space Mono', monospace; border: 1px solid var(--border); background: var(--bg2); color: var(--muted); cursor: pointer; transition: all 0.15s; }
+    .filter-chip.on { border-color: rgba(2,132,199,0.4); color: var(--accent); background: rgba(2,132,199,0.06); }
+    .audit-entries { display: flex; flex-direction: column; gap: 4px; }
+    .audit-entry { display: grid; grid-template-columns: 130px 150px 1fr 160px; align-items: center; gap: 10px; padding: 8px 12px; background: var(--bg1); border: 1px solid var(--border); border-radius: 6px; font-size: 12px; transition: border-color 0.12s; border-left-width: 3px; }
+    .audit-entry:hover { border-color: var(--border-hi); }
+    .audit-entry.action-scan { border-left-color: var(--accent); }
+    .audit-entry.action-fix { border-left-color: var(--green); }
+    .audit-entry.action-agent-fix { border-left-color: #7c3aed; }
+    .audit-entry.action-monitor { border-left-color: var(--yellow); }
+    .audit-entry.action-alert { border-left-color: var(--red); }
+    .audit-entry.action-key { border-left-color: var(--orange); }
+    .audit-entry.action-other { border-left-color: var(--muted); }
+    .audit-ts { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--muted); }
+    .audit-action-badge { display: inline-flex; align-items: center; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-family: 'Space Mono', monospace; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; background: var(--bg3); color: var(--text); white-space: nowrap; }
+    .audit-detail { color: var(--text); opacity: 0.8; font-size: 12px; }
+    .audit-target { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .audit-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 50px 0; gap: 9px; color: var(--muted); }
+    .audit-empty-icon { font-size: 30px; opacity: 0.3; }
+
+    /* ══ SETTINGS PANEL ═══════════════════════════════════════════════════════ */
+    .settings-panel { overflow-y: auto; padding: 18px; gap: 14px; flex-direction: column; }
+
+    .settings-section { background: var(--bg1); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; display: flex; flex-direction: column; gap: 14px; }
+    .settings-section-title { font-size: 12px; font-weight: 600; color: var(--text); border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+
+    .setting-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .setting-label { font-size: 13px; color: var(--text); }
+    .setting-desc { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+    /* Toggle switch */
+    .toggle { position: relative; width: 40px; height: 22px; flex-shrink: 0; }
+    .toggle input { opacity: 0; width: 0; height: 0; }
+    .toggle-slider { position: absolute; inset: 0; background: var(--bg3); border-radius: 22px; cursor: pointer; transition: background 0.2s; border: 1px solid var(--border); }
+    .toggle-slider::before { content: ''; position: absolute; left: 3px; top: 2px; width: 16px; height: 16px; border-radius: 50%; background: var(--muted); transition: transform 0.2s, background 0.2s; }
+    .toggle input:checked + .toggle-slider { background: var(--accent2); border-color: var(--accent2); }
+    .toggle input:checked + .toggle-slider::before { transform: translateX(18px); background: white; }
+
+    .setting-select { width: 180px; font-size: 12px; }
+
+    .settings-info { background: var(--bg2); border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; font-size: 12px; color: var(--muted); line-height: 1.6; }
+
+    /* ══ DIFF MODAL ═══════════════════════════════════════════════════════════ */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 1000; animation: fadein 0.15s ease; }
+    .modal-overlay.hidden { display: none; }
+    @keyframes fadein { from{opacity:0} to{opacity:1} }
+    .diff-modal { background: var(--bg1); border: 1px solid var(--border-hi); border-radius: 10px; width: 740px; max-width: 95vw; max-height: 84vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: var(--shadow); }
+    .diff-hdr { padding: 14px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+    .diff-hdr-title { font-size: 14px; font-weight: 600; }
+    .diff-hdr-sub { font-size: 12px; color: var(--muted); margin-top: 1px; }
+    .diff-close { background: none; border: none; color: var(--muted); font-size: 20px; cursor: pointer; line-height: 1; }
+    .diff-close:hover { color: var(--text); }
+    .diff-body { flex: 1; overflow-y: auto; padding: 14px 18px; display: flex; flex-direction: column; gap: 10px; }
+    .diff-message { background: var(--bg2); border: 1px solid var(--border); border-radius: 6px; padding: 10px 13px; font-size: 13px; line-height: 1.6; }
+    .diff-item { background: var(--bg2); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+    .diff-item-hdr { padding: 7px 11px; background: var(--bg3); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+    .diff-item-file { font-family: 'Space Mono', monospace; font-size: 11px; }
+    .diff-item-line { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--muted); }
+    .diff-line { display: flex; gap: 10px; padding: 5px 11px; font-family: 'Space Mono', monospace; font-size: 12px; }
+    .diff-line.removed { background: rgba(220,38,38,0.07); color: var(--red); }
+    .diff-line.added { background: rgba(5,150,105,0.07); color: var(--green); }
+    .diff-line-sign { width: 12px; flex-shrink: 0; }
+    .diff-reason { padding: 7px 11px; font-size: 12px; color: var(--muted); border-top: 1px solid var(--border); }
+    .diff-footer { padding: 12px 18px; border-top: 1px solid var(--border); display: flex; gap: 8px; justify-content: flex-end; flex-shrink: 0; }
+
+    /* ══ ONBOARDING ═══════════════════════════════════════════════════════════ */
+    .onboarding-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.88); display: flex; align-items: center; justify-content: center; z-index: 2000; }
+    .onboarding-overlay.hidden { display: none; }
+    .onboarding-card { position: relative; background: var(--bg1); border: 1px solid var(--border-hi); border-radius: 12px; width: 600px; max-width: 95vw; padding: 36px; box-shadow: var(--shadow); }
+
+    /* Persistent top-right skip — stays visible across all slides */
+    .ob-skip-corner { position: absolute; top: 14px; right: 14px; font-size: 12px; color: var(--muted); cursor: pointer; background: transparent; border: none; padding: 6px 10px; border-radius: 5px; }
+    .ob-skip-corner:hover { color: var(--text); background: var(--bg2); }
+
+    /* Progress dots — clickable for slides already reached */
+    .ob-steps { display: flex; gap: 6px; margin-bottom: 28px; }
+    .ob-step { flex: 1; height: 4px; border-radius: 2px; background: var(--bg3); transition: background 0.2s, opacity 0.2s; border: none; padding: 0; cursor: not-allowed; opacity: 0.7; }
+    .ob-step.done    { background: var(--accent); cursor: pointer; opacity: 1; }
+    .ob-step.active  { background: var(--accent2); cursor: pointer; opacity: 1; }
+    .ob-step.done:hover, .ob-step.active:hover { filter: brightness(1.2); }
+
+    /* Slide content */
+    .ob-pane { min-height: 280px; }
+    .ob-eyebrow { font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
+    .ob-icon { font-size: 38px; margin-bottom: 14px; }
+    .ob-title { font-size: 22px; font-weight: 600; margin-bottom: 10px; line-height: 1.3; }
+    .ob-desc { font-size: 13px; color: var(--muted); line-height: 1.7; margin-bottom: 24px; }
+    .ob-action-area { display: flex; flex-direction: column; gap: 9px; margin-bottom: 24px; }
+    .ob-target-display { background: var(--bg2); border: 1px solid var(--border); border-radius: 6px; padding: 9px 12px; font-family: 'Space Mono', monospace; font-size: 11px; color: var(--muted); min-height: 36px; display: flex; align-items: center; }
+    .ob-target-display.has { color: var(--green); border-color: rgba(5,150,105,0.3); }
+
+    /* Feature blocks — used in multiple slides */
+    .ob-feature { display: flex; align-items: flex-start; gap: 11px; padding: 11px; background: var(--bg2); border: 1px solid var(--border); border-radius: 6px; }
+    .ob-feature-row { flex-direction: row; align-items: center; }
+    .ob-feature-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+    .ob-feature-title { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+    .ob-feature-desc { font-size: 12px; color: var(--muted); line-height: 1.55; }
+
+    /* Slide 1 — three-column "how it works" grid */
+    .ob-grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 24px; }
+    .ob-feature-col { background: var(--bg2); border: 1px solid var(--border); border-radius: 6px; padding: 14px 12px; text-align: left; }
+    .ob-feature-col .ob-feature-icon { display: block; font-size: 22px; margin-bottom: 8px; }
+
+    /* Slide 3 — scan progress + count */
+    .ob-scan-status { font-size: 12px; color: var(--muted); font-family: 'Space Mono', monospace; text-align: center; min-height: 16px; }
+    .ob-scan-count { display: flex; align-items: baseline; justify-content: center; gap: 6px; margin-top: 6px; }
+    .ob-scan-count #obScanCountNum { font-size: 36px; font-weight: 700; color: var(--accent); font-family: 'Space Mono', monospace; }
+    .ob-scan-count-label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+
+    /* Slide 4 — assistant drawer mockup */
+    .ob-mockup { margin: 8px 0 24px; }
+    .ob-mockup-shell { position: relative; height: 160px; background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+    .ob-mockup-app { position: absolute; inset: 0; padding: 14px; font-size: 11px; color: var(--muted); font-family: 'Space Mono', monospace; }
+    .ob-mockup-drawer { position: absolute; top: 0; right: 0; bottom: 0; width: 60%; background: var(--bg1); border-left: 1px solid var(--border); padding: 12px; display: flex; flex-direction: column; gap: 6px; }
+    .ob-mockup-drawer-hdr { display: flex; justify-content: space-between; align-items: center; font-size: 11px; font-weight: 600; padding-bottom: 8px; border-bottom: 1px solid var(--border); margin-bottom: 4px; }
+    .ob-kbd-mini { font-family: 'Space Mono', monospace; font-size: 10px; padding: 2px 5px; background: var(--bg3); border-radius: 3px; color: var(--muted); }
+    .ob-mockup-msg { font-size: 11px; line-height: 1.5; padding: 6px 8px; border-radius: 6px; max-width: 90%; }
+    .ob-mockup-msg.user { align-self: flex-end; background: var(--accent2); color: white; }
+    .ob-mockup-msg.ai   { align-self: flex-start; background: var(--bg2); color: var(--text); }
+
+    /* Slide 6 — account options */
+    .ob-acct-state { margin-bottom: 24px; }
+    .ob-acct-options { display: flex; flex-direction: column; gap: 10px; }
+    .ob-acct-opt { position: relative; background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 14px; text-align: left; cursor: pointer; transition: border-color 0.15s, background 0.15s; width: 100%; font-family: inherit; color: inherit; }
+    .ob-acct-opt:hover { border-color: var(--accent); }
+    .ob-acct-opt.recommended { border-color: rgba(56,189,248,0.4); background: linear-gradient(180deg, rgba(56,189,248,0.06), var(--bg2)); }
+    .ob-acct-opt.advanced { cursor: default; }
+    .ob-acct-opt-badge { position: absolute; top: 12px; right: 14px; font-size: 10px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); }
+    .ob-acct-opt-title { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+    .ob-acct-opt-desc  { font-size: 12px; color: var(--muted); line-height: 1.5; }
+
+    /* Bottom nav row */
+    .ob-nav { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .ob-nav-end { justify-content: flex-end; }
+    .ob-back { font-size: 12px; color: var(--muted); cursor: pointer; background: none; border: none; padding: 6px 10px; border-radius: 5px; }
+    .ob-back:hover { color: var(--text); background: var(--bg2); }
+    /* legacy alias kept so any leftover .ob-skip references render fine */
+    .ob-skip { font-size: 12px; color: var(--muted); cursor: pointer; background: none; border: none; padding: 0; }
+    .ob-skip:hover { color: var(--text); }
+
+    /* Animation — applied each time a slide becomes visible */
+    @keyframes obFadeUp { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+    .ob-pane.ob-anim { animation: obFadeUp 150ms ease-out; }
+
+    /* kbd shortcut chips inline in copy */
+    .ob-pane kbd { display: inline-block; padding: 1px 6px; border: 1px solid var(--border); border-radius: 4px; background: var(--bg2); font-family: 'Space Mono', monospace; font-size: 11px; color: var(--text); }
+
+    .ob-api-note { font-size: 12px; color: var(--muted); background: var(--bg2); border: 1px solid var(--border); border-radius: 6px; padding: 9px 11px; line-height: 1.6; }
+
+    /* ── Compliance strip ── */
+    .compliance-strip {
+      background: var(--bg1);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-shrink: 0;
+    }
+
+    .compliance-strip-label {
+      font-size: 10px;
+      font-family: 'Space Mono', monospace;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      flex-shrink: 0;
+    }
+
+    .compliance-strip-items {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex: 1;
+    }
+
+    .compliance-strip-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1px;
+    }
+
+    .compliance-strip-name {
+      font-size: 10px;
+      color: var(--muted);
+      font-family: 'Space Mono', monospace;
+    }
+
+    .compliance-strip-val {
+      font-size: 15px;
+      font-family: 'Space Mono', monospace;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .compliance-strip-divider {
+      width: 1px;
+      height: 28px;
+      background: var(--border);
+      flex-shrink: 0;
+    }
+
+    .compliance-strip-btn {
+      margin-left: auto;
+      font-size: 11px;
+      color: var(--accent);
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: 'Space Mono', monospace;
+      white-space: nowrap;
+      padding: 0;
+      flex-shrink: 0;
+    }
+
+    .compliance-strip-btn:hover { opacity: 0.7; }
+
+    /* ── Context sidebar tabs ── */
+    .ctx-hdr-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .ctx-tab {
+      flex: 1;
+      padding: 9px 6px;
+      font-size: 11px;
+      font-family: 'Space Mono', monospace;
+      color: var(--muted);
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      cursor: pointer;
+      transition: all 0.15s;
+      text-align: center;
+    }
+
+    .ctx-tab:hover { color: var(--text); }
+    .ctx-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+    /* ── Breach card in sidebar ── */
+    .ctx-breach-card {
+      background: var(--bg2);
+      border: 1px solid rgba(220,38,38,0.18);
+      border-radius: 6px;
+      padding: 9px 11px;
+      cursor: pointer;
+      transition: border-color 0.15s;
+      margin-bottom: 6px;
+    }
+
+    .ctx-breach-card:hover { border-color: rgba(220,38,38,0.35); }
+    .ctx-breach-title { font-size: 11px; font-weight: 600; color: var(--red); margin-bottom: 4px; }
+    .ctx-breach-consequence { font-size: 11px; color: var(--muted); line-height: 1.4; }
+    .ctx-breach-tag { font-size: 10px; font-family: 'Space Mono', monospace; color: var(--orange); margin-top: 4px; }
+
+    /* ── Compliance item in sidebar ── */
+    .ctx-compliance-item {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 8px 10px;
+      margin-bottom: 5px;
+      cursor: pointer;
+      transition: border-color 0.15s;
+    }
+
+    .ctx-compliance-item:hover { border-color: var(--border-hi); }
+    .ctx-compliance-item.fail { border-left: 3px solid var(--red); }
+    .ctx-compliance-item.pass { border-left: 3px solid var(--green); }
+    .ctx-compliance-fw { font-size: 10px; font-family: 'Space Mono', monospace; color: var(--accent); margin-bottom: 2px; }
+    .ctx-compliance-name { font-size: 12px; color: var(--text); }
+    .ctx-compliance-status { font-size: 11px; margin-top: 3px; }
+
+    /* ── KB status in settings ── */
+    .kb-status-row {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .kb-status-text { font-size: 12px; color: var(--muted); font-family: 'Space Mono', monospace; }
+    .kb-status-text.active { color: var(--green); }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--bg3); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+
+    /* ════════════════════════════════════════════════════════════════════
+       PHASE 1: ASSISTANT DRAWER + BREACH LIBRARY
+       ════════════════════════════════════════════════════════════════════ */
+
+    /* ── Assistant drawer (right edge, 3 states: closed/docked/full) ── */
+    .asst-drawer {
+      position: fixed;
+      top: 0; right: 0;
+      height: 100vh;
+      width: 420px;
+      background: var(--bg1);
+      border-left: 1px solid var(--border);
+      box-shadow: -8px 0 24px rgba(0,0,0,0.18);
+      display: flex;
+      flex-direction: column;
+      z-index: 50;
+      transform: translateX(100%);
+      transition: transform 0.22s ease, width 0.22s ease;
+    }
+    .asst-drawer.open { transform: translateX(0); }
+    .asst-drawer.full { width: 100vw; transform: translateX(0); }
+    body.asst-docked .shell { padding-right: 420px; transition: padding-right 0.22s ease; }
+    body.asst-full   .shell { display: none; }
+
+    .asst-drawer-hdr {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .asst-drawer-hdr-left {
+      display: flex; align-items: center; gap: 9px;
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .asst-drawer-hdr-left::before {
+      content: '';
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 8px var(--accent);
+    }
+    .asst-drawer-hdr-actions { display: flex; gap: 4px; }
+    .asst-icon-btn {
+      width: 28px; height: 28px;
+      display: inline-flex; align-items: center; justify-content: center;
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 6px;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .asst-icon-btn:hover {
+      background: var(--bg2);
+      border-color: var(--border);
+      color: var(--text);
+    }
+    .asst-icon-btn svg { width: 14px; height: 14px; }
+
+    .asst-drawer-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      min-height: 0;
+    }
+    .asst-drawer.full .asst-drawer-body { flex-direction: row; }
+
+    .asst-chat {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      min-height: 0;
+      position: relative;
+    }
+    .asst-drawer.full .asst-chat { border-right: 1px solid var(--border); }
+
+    .asst-ctx-side {
+      width: 280px;
+      flex-shrink: 0;
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .asst-drawer.full .asst-ctx-side { display: flex; }
+
+    .asst-ctx-strip {
+      display: flex;
+      border-top: 1px solid var(--border);
+      background: var(--bg);
+      flex-shrink: 0;
+    }
+    .asst-drawer.full .asst-ctx-strip { display: none; }
+
+    .asst-ctx-strip-tab {
+      flex: 1;
+      padding: 9px 10px;
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      background: transparent;
+      border: none;
+      border-right: 1px solid var(--border);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .asst-ctx-strip-tab:last-child { border-right: none; }
+    .asst-ctx-strip-tab:hover { background: var(--bg2); color: var(--text); }
+    .asst-ctx-strip-tab.active {
+      color: var(--accent);
+      background: var(--bg2);
+      box-shadow: inset 0 2px 0 var(--accent);
+    }
+
+    .asst-ctx-overlay {
+      display: none;
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      max-height: 50%;
+      background: var(--bg1);
+      border-top: 1px solid var(--border);
+      box-shadow: 0 -4px 16px rgba(0,0,0,0.2);
+      flex-direction: column;
+      overflow: hidden;
+      z-index: 2;
+    }
+    .asst-ctx-overlay.open { display: flex; }
+    .asst-ctx-overlay-hdr {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 14px;
+      border-bottom: 1px solid var(--border);
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .asst-ctx-overlay-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px 12px;
+    }
+
+    .asst-launcher {
+      position: fixed;
+      bottom: 22px; right: 22px;
+      width: 52px; height: 52px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border: none;
+      color: #ffffff;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(56,189,248,0.35), 0 2px 6px rgba(0,0,0,0.2);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 49;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .asst-launcher:hover {
+      transform: translateY(-2px) scale(1.04);
+      box-shadow: 0 10px 28px rgba(56,189,248,0.5), 0 2px 6px rgba(0,0,0,0.2);
+    }
+    .asst-launcher svg { width: 22px; height: 22px; }
+    body.asst-docked .asst-launcher,
+    body.asst-full   .asst-launcher { display: none; }
+
+    /* Tooltip on the floating launcher — pure CSS, only on hover */
+    .asst-launcher[data-tooltip]::before {
+      content: attr(data-tooltip);
+      position: absolute;
+      bottom: calc(100% + 10px);
+      right: 0;
+      padding: 6px 10px;
+      background: var(--bg1, #0f172a);
+      color: var(--text, #e2e8f0);
+      border: 1px solid var(--border, rgba(56,189,248,0.18));
+      border-radius: 6px;
+      font-size: 12px;
+      font-family: 'Space Mono', monospace;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 120ms ease, transform 120ms ease;
+      transform: translateY(4px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      z-index: 1000;
+    }
+    .asst-launcher[data-tooltip]:hover::before {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (max-width: 1100px) {
+      body.asst-docked .shell { padding-right: 0; }
+      .asst-drawer:not(.full) {
+        width: 92vw;
+        max-width: 420px;
+        box-shadow: -12px 0 32px rgba(0,0,0,0.45);
+      }
+    }
+
+    /* Tool call trace shown under assistant messages */
+    .tool-trace {
+      margin-top: 8px;
+      padding-top: 7px;
+      border-top: 1px dashed var(--border);
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+    }
+
+    /* ── Breach Library panel ── */
+    .library-panel {
+      overflow-y: auto;
+      padding: 18px;
+      gap: 14px;
+      flex-direction: column;
+    }
+    .library-hero {
+      background: linear-gradient(135deg, rgba(56,189,248,0.06), rgba(14,165,233,0.02));
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .library-hero h2 { margin: 0; font-size: 18px; font-weight: 600; color: var(--text); }
+    .library-hero p { margin: 0; color: var(--muted); font-size: 13px; }
+
+    .library-toolbar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .library-search {
+      flex: 1;
+      min-width: 240px;
+      padding: 9px 14px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .library-search:focus { border-color: var(--accent); }
+    .library-search::placeholder { color: var(--muted); }
+    .library-filters { display: flex; gap: 6px; flex-wrap: wrap; }
+    .library-filter {
+      padding: 6px 12px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      font-size: 12px;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .library-filter:hover { color: var(--text); border-color: var(--border-hi); }
+    .library-filter.active {
+      background: rgba(56,189,248,0.08);
+      border-color: rgba(56,189,248,0.4);
+      color: var(--accent);
+    }
+    .library-count {
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .library-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 12px;
+    }
+    .library-card {
+      background: var(--bg1);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px 18px 14px 21px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      cursor: pointer;
+      transition: all 0.15s;
+      position: relative;
+      overflow: hidden;
+    }
+    .library-card:hover {
+      border-color: var(--border-hi);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 14px rgba(0,0,0,0.18);
+    }
+    .library-card-sev-bar {
+      position: absolute;
+      top: 0; left: 0; bottom: 0;
+      width: 3px;
+      background: var(--muted);
+    }
+    .library-card[data-sev="CRITICAL"] .library-card-sev-bar { background: var(--red); }
+    .library-card[data-sev="HIGH"]     .library-card-sev-bar { background: var(--orange); }
+    .library-card[data-sev="MEDIUM"]   .library-card-sev-bar { background: var(--yellow); }
+    .library-card[data-sev="LOW"]      .library-card-sev-bar { background: var(--accent); }
+    .library-card-hdr {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .library-card-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.35;
+    }
+    .library-card-sev {
+      flex-shrink: 0;
+      font-family: 'Space Mono', monospace;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      padding: 3px 7px;
+      border-radius: 3px;
+      text-transform: uppercase;
+    }
+    .library-card[data-sev="CRITICAL"] .library-card-sev { background: rgba(248,113,113,0.12); color: var(--red); }
+    .library-card[data-sev="HIGH"]     .library-card-sev { background: rgba(251,146,60,0.12); color: var(--orange); }
+    .library-card[data-sev="MEDIUM"]   .library-card-sev { background: rgba(251,191,36,0.12); color: var(--yellow); }
+    .library-card[data-sev="LOW"]      .library-card-sev { background: rgba(56,189,248,0.12); color: var(--accent); }
+    .library-card-summary {
+      font-size: 12.5px;
+      line-height: 1.5;
+      color: var(--text2);
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .library-card-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: auto; }
+    .library-tag {
+      font-family: 'Space Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 2px 7px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      color: var(--muted);
+    }
+    .library-card-consequence {
+      font-size: 11.5px;
+      color: var(--muted);
+      font-style: italic;
+      border-top: 1px solid var(--border);
+      padding-top: 8px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .library-empty {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    /* ── Breach detail modal ── */
+    .breach-modal-backdrop {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.55);
+      z-index: 100;
+      display: none;
+      align-items: center; justify-content: center;
+      padding: 20px;
+      -webkit-backdrop-filter: blur(3px);
+      backdrop-filter: blur(3px);
+    }
+    .breach-modal-backdrop.open { display: flex; }
+    .breach-modal {
+      background: var(--bg1);
+      border: 1px solid var(--border-hi);
+      border-radius: 12px;
+      width: 100%;
+      max-width: 680px;
+      max-height: 86vh;
+      overflow-y: auto;
+      box-shadow: 0 16px 48px rgba(0,0,0,0.5);
+      animation: bmIn 0.18s ease;
+    }
+    @keyframes bmIn {
+      from { opacity: 0; transform: translateY(8px) scale(0.985); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .breach-modal-hdr {
+      padding: 18px 22px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+      position: sticky; top: 0;
+      background: var(--bg1);
+      z-index: 1;
+    }
+    .breach-modal-hdr-text { flex: 1; }
+    .breach-modal-hdr h3 { margin: 0 0 6px 0; font-size: 18px; color: var(--text); }
+    .breach-modal-body {
+      padding: 18px 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .breach-modal-section h4 {
+      margin: 0 0 6px 0;
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+    .breach-modal-section p { margin: 0; font-size: 13.5px; line-height: 1.55; color: var(--text); }
+    .breach-modal-section.consequence {
+      background: rgba(248,113,113,0.05);
+      border: 1px solid rgba(248,113,113,0.2);
+      border-radius: 8px;
+      padding: 12px 14px;
+    }
+    .breach-modal-section.lesson {
+      background: rgba(56,189,248,0.05);
+      border: 1px solid rgba(56,189,248,0.2);
+      border-radius: 8px;
+      padding: 12px 14px;
+    }
+
+    /* ── Inline expandable breach card on findings ── */
+    .finding-breach-toggle {
+      margin-top: 8px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: none;
+      border: none;
+      color: var(--accent);
+      font-size: 11.5px;
+      font-weight: 500;
+      cursor: pointer;
+      padding: 0;
+      font-family: inherit;
+      transition: opacity 0.15s;
+    }
+    .finding-breach-toggle:hover { opacity: 0.8; }
+    .finding-breach-toggle .arrow { transition: transform 0.18s; display: inline-block; }
+    .finding-breach-toggle.expanded .arrow { transform: rotate(90deg); }
+    .finding-breach-card {
+      margin-top: 10px;
+      padding: 12px 14px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--red);
+      border-radius: 6px;
+      display: none;
+      flex-direction: column;
+      gap: 8px;
+      font-size: 12.5px;
+      line-height: 1.5;
+    }
+    .finding-breach-card.open { display: flex; }
+    .finding-breach-card-title { font-weight: 600; color: var(--text); font-size: 13px; }
+    .finding-breach-card-row { display: flex; gap: 8px; align-items: flex-start; }
+    .finding-breach-card-label {
+      flex-shrink: 0;
+      width: 90px;
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding-top: 2px;
+    }
+    .finding-breach-card-value { flex: 1; color: var(--text2); font-size: 12px; }
+
+  </style>
+</head>
+<body>
+
+<!-- ══ ONBOARDING ══ -->
+<!--
+  ── Onboarding (Phase 3) ──────────────────────────────────────────────────
+  8 slides + persistent top-right Skip + clickable progress dots + back/next.
+  Animation hooks: each pane fades + slides up via the .ob-anim class which
+  the renderer toggles when changing slides. Re-entry from Settings re-shows
+  the overlay starting on slide 0.
+-->
+<div id="onboardingOverlay" class="onboarding-overlay hidden">
+  <div class="onboarding-card">
+
+    <button class="ob-skip-corner" id="obSkipCornerBtn" title="Skip tour">Skip tour</button>
+
+    <div class="ob-steps" id="obSteps">
+      <button class="ob-step active" id="obStep0" data-step="0" aria-label="Slide 1"></button>
+      <button class="ob-step"        id="obStep1" data-step="1" aria-label="Slide 2"></button>
+      <button class="ob-step"        id="obStep2" data-step="2" aria-label="Slide 3"></button>
+      <button class="ob-step"        id="obStep3" data-step="3" aria-label="Slide 4"></button>
+      <button class="ob-step"        id="obStep4" data-step="4" aria-label="Slide 5"></button>
+      <button class="ob-step"        id="obStep5" data-step="5" aria-label="Slide 6"></button>
+      <button class="ob-step"        id="obStep6" data-step="6" aria-label="Slide 7"></button>
+      <button class="ob-step"        id="obStep7" data-step="7" aria-label="Slide 8"></button>
+    </div>
+
+    <!-- ── Slide 0 — Welcome ── -->
+    <div id="obPane0" class="ob-pane ob-anim">
+      <div class="ob-icon">
+        <svg width="64" height="76" viewBox="0 0 48 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M4 4 L44 4 L44 32 Q44 48 24 54 Q4 48 4 32 Z"
+                fill="none" stroke="#38bdf8" stroke-width="3" stroke-linejoin="round"/>
+          <line x1="10" y1="16" x2="10" y2="36" stroke="#38bdf8" stroke-width="3" stroke-linecap="round"/>
+          <line x1="10" y1="26" x2="20" y2="26" stroke="#38bdf8" stroke-width="3" stroke-linecap="round"/>
+          <line x1="20" y1="16" x2="20" y2="36" stroke="#38bdf8" stroke-width="3" stroke-linecap="round"/>
+          <line x1="25" y1="16" x2="38" y2="16" stroke="#38bdf8" stroke-width="2.5" stroke-linecap="round"/>
+          <line x1="38" y1="16" x2="25" y2="32" stroke="#38bdf8" stroke-width="2.5" stroke-linecap="round"/>
+          <line x1="25" y1="32" x2="38" y2="32" stroke="#38bdf8" stroke-width="2.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="ob-title">HZSec finds security issues in your code — and fixes them.</div>
+      <div class="ob-desc">A local-first security platform for developers. Scan, monitor, ask the assistant, ship safer code.</div>
+      <div class="ob-nav ob-nav-end">
+        <button class="btn btn-primary" id="obNext0">Get started →</button>
+      </div>
+    </div>
+
+    <!-- ── Slide 1 — How HZSec works ── -->
+    <div id="obPane1" class="ob-pane ob-anim" style="display:none">
+      <div class="ob-eyebrow">How it works</div>
+      <div class="ob-title">Three things, one app.</div>
+      <div class="ob-desc">No agents, no cloud upload, no waiting. HZSec runs entirely on your machine.</div>
+      <div class="ob-grid3">
+        <div class="ob-feature-col">
+          <div class="ob-feature-icon">🔍</div>
+          <div class="ob-feature-title">Scan your code</div>
+          <div class="ob-feature-desc">40+ detectors for secrets, misconfigs, and unsafe patterns.</div>
+        </div>
+        <div class="ob-feature-col">
+          <div class="ob-feature-icon">💬</div>
+          <div class="ob-feature-title">AI explains every finding</div>
+          <div class="ob-feature-desc">Why it matters, real breach precedent, and how to fix it.</div>
+        </div>
+        <div class="ob-feature-col">
+          <div class="ob-feature-icon">🛠</div>
+          <div class="ob-feature-title">Auto-fix when safe</div>
+          <div class="ob-feature-desc">Backed-up, reviewable diffs — never silent overwrites.</div>
+        </div>
+      </div>
+      <div class="ob-nav">
+        <button class="ob-back" data-back-to="0">← Back</button>
+        <button class="btn btn-primary" id="obNext1">Continue →</button>
+      </div>
+    </div>
+
+    <!-- ── Slide 2 — Pick your scan target ── -->
+    <div id="obPane2" class="ob-pane ob-anim" style="display:none">
+      <div class="ob-eyebrow">Setup · 1 of 2</div>
+      <div class="ob-title">Pick your scan target.</div>
+      <div class="ob-desc">Point HZSec at a folder or a single file. You can change this anytime.</div>
+      <div class="ob-action-area">
+        <div class="ob-target-display" id="obTargetDisplay">No target selected yet</div>
+        <div style="display:flex;gap:8px">
+          <button class="btn" id="obSelectFolder" style="flex:1">📁 Select folder</button>
+          <button class="btn" id="obSelectFile"   style="flex:1">📄 Select file</button>
+        </div>
+      </div>
+      <div class="ob-nav">
+        <button class="ob-back" data-back-to="1">← Back</button>
+        <button class="btn btn-primary" id="obNext2" disabled>Continue →</button>
+      </div>
+    </div>
+
+    <!-- ── Slide 3 — Run a quick scan ── -->
+    <div id="obPane3" class="ob-pane ob-anim" style="display:none">
+      <div class="ob-eyebrow">Setup · 2 of 2</div>
+      <div class="ob-title">Run a quick scan.</div>
+      <div class="ob-desc">Covers code patterns, configs, exposed secrets, and hardening gaps. Usually under 10 seconds.</div>
+      <div class="ob-action-area">
+        <button class="btn btn-primary" id="obRunScan" style="padding:11px">Run scan now</button>
+        <div id="obScanStatus" class="ob-scan-status">Click the button to start.</div>
+        <div id="obScanCount" class="ob-scan-count" style="display:none">
+          <span id="obScanCountNum">0</span><span class="ob-scan-count-label">findings</span>
+        </div>
+      </div>
+      <div class="ob-nav">
+        <button class="ob-back" data-back-to="2">← Back</button>
+        <button class="btn btn-primary" id="obNext3" disabled>See results →</button>
+      </div>
+    </div>
+
+    <!-- ── Slide 4 — Meet the assistant ── -->
+    <div id="obPane4" class="ob-pane ob-anim" style="display:none">
+      <div class="ob-eyebrow">The assistant</div>
+      <div class="ob-title">Ask anything. It has read your code.</div>
+      <div class="ob-desc">The assistant lives in a side drawer. Press <kbd>⌘J</kbd> (or <kbd>Ctrl+J</kbd>) anytime to open it. It can read files, grep, and explain findings — sandboxed to whatever you scanned.</div>
+      <div class="ob-mockup">
+        <div class="ob-mockup-shell">
+          <div class="ob-mockup-app">app · scan center</div>
+          <div class="ob-mockup-drawer">
+            <div class="ob-mockup-drawer-hdr">HZSec Assistant <span class="ob-kbd-mini">⌘J</span></div>
+            <div class="ob-mockup-msg user">why is this finding critical?</div>
+            <div class="ob-mockup-msg ai">⚙ read_file(auth.js) · grep(API_KEY)<br/>This is a hardcoded credential at line 42…</div>
+          </div>
+        </div>
+      </div>
+      <div class="ob-nav">
+        <button class="ob-back" data-back-to="3">← Back</button>
+        <button class="btn btn-primary" id="obNext4">Continue →</button>
+      </div>
+    </div>
+
+    <!-- ── Slide 5 — Live monitoring (optional) ── -->
+    <div id="obPane5" class="ob-pane ob-anim" style="display:none">
+      <div class="ob-eyebrow">Optional</div>
+      <div class="ob-title">Live monitoring.</div>
+      <div class="ob-desc">HZSec can watch your files and alert on new issues as you save. Quiet during work, loud about real issues. You can turn it on later from the sidebar.</div>
+      <div class="ob-action-area">
+        <div class="ob-feature ob-feature-row">
+          <div class="ob-feature-icon">👁</div>
+          <div>
+            <div class="ob-feature-title">Live Monitor</div>
+            <div class="ob-feature-desc">Scoped detectors, debounced. Nothing leaves your machine.</div>
+          </div>
+        </div>
+      </div>
+      <div class="ob-nav">
+        <button class="ob-back" data-back-to="4">← Back</button>
+        <button class="btn btn-primary" id="obNext5">Continue →</button>
+      </div>
+    </div>
+
+    <!-- ── Slide 6 — Sign in or use your own key ── -->
+    <div id="obPane6" class="ob-pane ob-anim" style="display:none">
+      <div class="ob-eyebrow">AI access</div>
+      <div class="ob-title">Sign in, or use your own Anthropic key.</div>
+      <div class="ob-desc">The assistant needs access to a Claude model. Pick the path that fits.</div>
+
+      <!-- "Already signed in" branch — shown when license is present -->
+      <div id="obAcctSignedIn" class="ob-acct-state" style="display:none">
+        <div class="ob-feature ob-feature-row" style="border-color:rgba(56,189,248,0.4)">
+          <div class="ob-feature-icon">✓</div>
+          <div>
+            <div class="ob-feature-title">Signed in to HZSec</div>
+            <div class="ob-feature-desc">License: <code id="obAcctLicense" style="font-family:'Space Mono',monospace;font-size:11px"></code></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- "Choose path" branch — shown when no license set -->
+      <div id="obAcctChoose" class="ob-acct-state">
+        <div class="ob-acct-options">
+          <button class="ob-acct-opt recommended" id="obAcctSignInBtn">
+            <div class="ob-acct-opt-badge">Recommended</div>
+            <div class="ob-acct-opt-title">Sign in to HZSec</div>
+            <div class="ob-acct-opt-desc">No API key to manage. 1,000 messages/mo on Pro. 7-day trial.</div>
+          </button>
+          <div class="ob-acct-opt advanced">
+            <div class="ob-acct-opt-title">Use your own Anthropic key</div>
+            <div class="ob-acct-opt-desc">Advanced. You handle billing with Anthropic directly.</div>
+            <div class="api-row" style="margin-top:8px">
+              <input type="password" id="obApiKey" placeholder="sk-ant-..." />
+              <button class="api-save" id="obSaveKey">Save</button>
+            </div>
+            <div id="obKeyStatus" class="api-status unset" style="margin-top:6px">Not configured</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ob-nav">
+        <button class="ob-back" data-back-to="5">← Back</button>
+        <button class="btn btn-primary" id="obNext6">Continue →</button>
+      </div>
+    </div>
+
+    <!-- ── Slide 7 — You're set ── -->
+    <div id="obPane7" class="ob-pane ob-anim" style="display:none">
+      <div class="ob-icon">🎉</div>
+      <div class="ob-title">You're set.</div>
+      <div class="ob-desc">Press <kbd>⌘J</kbd> anytime to open the assistant. The Breach Library and Live Monitor are in the sidebar. Welcome to HZSec.</div>
+      <div class="ob-nav ob-nav-end">
+        <button class="ob-back" data-back-to="6">← Back</button>
+        <button class="btn btn-primary" id="obFinish" style="padding:11px 28px">Start using HZSec →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ DIFF MODAL ══ -->
+<div id="diffModal" class="modal-overlay hidden">
+  <div class="diff-modal">
+    <div class="diff-hdr">
+      <div><div class="diff-hdr-title">Review Proposed Fixes</div><div class="diff-hdr-sub" id="diffSubtitle">Review each change before applying</div></div>
+      <button class="diff-close" id="diffClose">×</button>
+    </div>
+    <div class="diff-body">
+      <div id="diffMessage" class="diff-message"></div>
+      <div id="diffItems"></div>
+    </div>
+    <div class="diff-footer">
+      <button class="btn" style="width:auto;padding:8px 18px" id="diffReject">Reject all</button>
+      <button class="btn btn-success" style="width:auto;padding:8px 18px" id="diffApprove">Apply all fixes</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ UPDATE AVAILABLE MODAL ══ -->
+<div id="updateModal" class="modal-overlay hidden">
+  <div class="diff-modal" style="max-width:480px">
+    <div class="diff-hdr">
+      <div>
+        <div class="diff-hdr-title">Update available</div>
+        <div class="diff-hdr-sub">HZSec <span id="updateVersion">vNEXT</span> downloaded — install to apply.</div>
+      </div>
+      <button class="diff-close" id="updateClose">×</button>
+    </div>
+    <div class="diff-body">
+      <div id="updateNotes" class="diff-message" style="line-height:1.6">
+        Restart the app to install. Your scan history, license, and settings are preserved.
+      </div>
+    </div>
+    <div class="diff-footer">
+      <button class="btn"            style="width:auto;padding:8px 18px" id="updateLater">Later</button>
+      <button class="btn btn-primary" style="width:auto;padding:8px 18px" id="updateInstall">Restart &amp; install</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ CHANGELOG MODAL ══ -->
+<div id="changelogModal" class="modal-overlay hidden">
+  <div class="diff-modal" style="max-width:520px">
+    <div class="diff-hdr">
+      <div>
+        <div class="diff-hdr-title">What's new in HZSec <span id="changelogVersion"></span></div>
+        <div class="diff-hdr-sub" id="changelogDate"></div>
+      </div>
+      <button class="diff-close" id="changelogClose">×</button>
+    </div>
+    <div class="diff-body" id="changelogBody"></div>
+    <div class="diff-footer">
+      <button class="btn btn-primary" style="width:auto;padding:8px 18px" id="changelogDismiss">Got it</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ APP SHELL ══ -->
+<div class="shell">
+
+  <aside class="sidebar">
+    <div class="sidebar-top">
+      <div class="brand">
+        <svg width="22" height="26" viewBox="0 0 48 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M4 4 L44 4 L44 32 Q44 48 24 54 Q4 48 4 32 Z"
+                fill="none" stroke="#38bdf8" stroke-width="3" stroke-linejoin="round"/>
+          <line x1="10" y1="16" x2="10" y2="36" stroke="#38bdf8" stroke-width="3" stroke-linecap="round"/>
+          <line x1="10" y1="26" x2="20" y2="26" stroke="#38bdf8" stroke-width="3" stroke-linecap="round"/>
+          <line x1="20" y1="16" x2="20" y2="36" stroke="#38bdf8" stroke-width="3" stroke-linecap="round"/>
+          <line x1="25" y1="16" x2="38" y2="16" stroke="#38bdf8" stroke-width="2.5" stroke-linecap="round"/>
+          <line x1="38" y1="16" x2="25" y2="32" stroke="#38bdf8" stroke-width="2.5" stroke-linecap="round"/>
+          <line x1="25" y1="32" x2="38" y2="32" stroke="#38bdf8" stroke-width="2.5" stroke-linecap="round"/>
+        </svg>
+        <div>
+          <div style="display:flex;align-items:baseline;gap:3px;line-height:1">
+            <span style="color:#ffffff;font-family:'Space Mono',monospace;font-size:14px;font-weight:700;letter-spacing:0.06em">HZ</span><span style="color:#38bdf8;font-family:'Space Mono',monospace;font-size:14px;font-weight:700;letter-spacing:0.06em">Sec</span>
+          </div>
+          <div class="brand-sub">Security Platform</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sb-sec">
+      <div class="sb-lbl">Target</div>
+      <div id="targetDisplay" class="target-display">Nothing selected</div>
+      <div class="btn-stack" style="margin-top:7px">
+        <button id="scanFolderBtn" class="btn">📁 Select Folder</button>
+        <button id="scanFileBtn" class="btn">📄 Select File</button>
+      </div>
+    </div>
+
+    <div class="nav-tabs">
+      <button class="nav-tab active" data-panel="scan"><svg width="15" height="15" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>Scan Center</button>
+      <button class="nav-tab" data-panel="assistant"><svg width="15" height="15" viewBox="0 0 20 20" fill="currentColor"><path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z"/><path d="M15 7v2a4 4 0 01-4 4H9.828l-1.766 1.767c.28.149.599.233.938.233h2l3 3v-3h2a2 2 0 002-2V9a2 2 0 00-2-2h-1z"/></svg>Assistant</button>
+      <button class="nav-tab" data-panel="library"><svg width="15" height="15" viewBox="0 0 20 20" fill="currentColor"><path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z"/></svg>Breach Library</button>
+      <button class="nav-tab" data-panel="monitor"><svg width="15" height="15" viewBox="0 0 20 20" fill="currentColor"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/><path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/></svg>Live Monitor<span id="monitorBadge" class="nav-badge" style="display:none">0</span></button>
+      <button class="nav-tab" data-panel="audit"><svg width="15" height="15" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h4a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/></svg>Audit Log</button>
+      <button class="nav-tab" data-panel="settings"><svg width="15" height="15" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/></svg>Settings</button>
+    </div>
+
+    <div class="sb-sec" id="scanOptions">
+      <div class="sb-lbl">Scan Mode</div>
+      <select id="scanMode">
+        <option value="quick">Quick scan</option>
+        <option value="full" selected>Full scan</option>
+        <option value="config">Config audit</option>
+        <option value="secret">Secret scan</option>
+        <option value="web">Web / front-end</option>
+        <option value="hardening">System hardening</option>
+        <option value="custom">Custom policy</option>
+      </select>
+      <div style="margin-top:7px"><textarea id="customPolicy" rows="3" placeholder="forbid: eval(&#10;forbid: innerHTML"></textarea></div>
+      <div class="btn-stack" style="margin-top:7px">
+        <button id="runScanBtn" class="btn btn-primary">Run Scan</button>
+        <button id="exportBtn" class="btn">Export Report</button>
+      </div>
+    </div>
+
+    <div class="sb-sec">
+      <div class="sb-lbl">Monitor</div>
+      <div id="monitorPill" class="monitor-pill"><div class="monitor-dot"></div><span id="monitorStatusText">Inactive</span></div>
+      <div class="btn-stack" style="margin-top:7px">
+        <button id="startMonitorBtn" class="btn btn-success">Start Monitor</button>
+        <button id="stopMonitorBtn" class="btn btn-danger">Stop Monitor</button>
+      </div>
+    </div>
+
+    <div class="sb-sec">
+      <div class="api-form">
+        <div class="api-label">Anthropic API Key</div>
+        <div class="api-row"><input type="password" id="apiKeyInput" placeholder="sk-ant-..." /><button class="api-save" id="apiKeySaveBtn">Save</button></div>
+        <div id="apiKeyStatus" class="api-status unset">Not configured</div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-tabs">
+        <div class="topbar-tab active" data-panel="scan">Scan Center</div>
+        <div class="topbar-tab" data-panel="assistant">Assistant</div>
+        <div class="topbar-tab" data-panel="library">Breach Library</div>
+        <div class="topbar-tab" data-panel="monitor">Live Monitor</div>
+        <div class="topbar-tab" data-panel="audit">Audit Log</div>
+        <div class="topbar-tab" data-panel="settings">Settings</div>
+      </div>
+      <div class="topbar-right">
+        <button class="theme-toggle" id="themeToggle">☀️ Light</button>
+        <div id="scoreChip" class="score-chip" style="display:none">Score: <strong id="scoreVal">--</strong></div>
+        <div id="bannerMsg" class="banner-text">Ready.</div>
+      </div>
+    </div>
+
+    <!-- ══ SCAN PANEL ══ -->
+    <div id="scanPanel" class="panel scan-panel active">
+
+      <!--
+        Empty-state drop zone — shown when no scan has run yet. The renderer
+        toggles `scanPanel.classList.add('has-scan')` once a scan completes,
+        which hides this block and reveals the regular scan UI below.
+      -->
+      <div id="scanEmpty" class="scan-empty">
+        <div class="scan-empty-card" id="scanEmptyDrop">
+          <div class="scan-empty-icon">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <polyline points="17 8 12 3 7 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <line x1="12" y1="3" x2="12" y2="15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="scan-empty-title">Drop a folder here, or click to browse.</div>
+          <div class="scan-empty-desc">Pick the project you want to scan. HZSec will read it locally — nothing leaves your machine.</div>
+          <div class="scan-empty-actions">
+            <button class="btn btn-primary" id="scanEmptyFolderBtn">📁 Select folder</button>
+            <button class="btn"             id="scanEmptyFileBtn">📄 Select file</button>
+          </div>
+          <div class="scan-empty-hint">Tip: drag-and-drop works too.</div>
+        </div>
+      </div>
+
+      <!-- Security Posture (bar or radial) -->
+      <div class="posture-bar-section">
+        <div class="posture-header">
+          <div class="posture-header-left">
+            <span class="posture-title">Security Posture</span>
+          </div>
+          <button class="posture-toggle" id="postureToggle">Switch to radial view</button>
+        </div>
+
+        <!-- Bar view -->
+        <div id="postureBarView" class="posture-bar-view">
+          <div style="display:flex;align-items:center;gap:16px">
+            <span id="postureScoreLabel" class="posture-score-label">--</span>
+            <div style="flex:1">
+              <div class="posture-track">
+                <div class="posture-track-overlay"></div>
+                <div id="postureMarker" class="posture-marker" style="left:50%"></div>
+              </div>
+              <div class="posture-track-labels"><span>Critical</span><span>High Risk</span><span>Moderate</span><span>Good</span><span>Secure</span></div>
+            </div>
+          </div>
+          <div id="postureTags" class="posture-tags">
+            <span style="font-size:12px;color:var(--muted)">Run a scan to see posture.</span>
+          </div>
+        </div>
+
+        <!-- Radial view -->
+        <div id="postureRadialView" class="posture-radial-view" style="display:none">
+          <div class="radial-ring-wrapper">
+            <svg class="radial-svg" width="110" height="110" viewBox="0 0 110 110">
+              <circle class="radial-track" cx="55" cy="55" r="44"/>
+              <circle id="radialFill" class="radial-fill" cx="55" cy="55" r="44" stroke="var(--accent)" stroke-dasharray="276.46" stroke-dashoffset="276.46"/>
+            </svg>
+            <div class="radial-center">
+              <div id="radialScore" class="radial-score">--</div>
+              <div class="radial-sublabel">/ 100</div>
+            </div>
+          </div>
+          <div id="radialTags" class="radial-tags">
+            <div class="radial-tag-row"><span class="radial-tag-label">Threat</span><span id="radialThreat" class="radial-tag-value" style="color:var(--muted)">--</span></div>
+            <div class="radial-tag-row"><span class="radial-tag-label">Findings</span><span id="radialFindings" class="radial-tag-value" style="color:var(--muted)">--</span></div>
+            <div class="radial-tag-row"><span class="radial-tag-label">Critical</span><span id="radialCritical" class="radial-tag-value" style="color:var(--muted)">--</span></div>
+            <div class="radial-tag-row"><span class="radial-tag-label">Mode</span><span id="radialMode" class="radial-tag-value" style="color:var(--muted)">--</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Compact compliance inline strip -->
+      <div id="complianceStrip" class="compliance-strip" style="display:none">
+        <div class="compliance-strip-label">Compliance</div>
+        <div class="compliance-strip-items">
+          <div class="compliance-strip-item">
+            <span class="compliance-strip-name">Overall</span>
+            <span id="complianceOverall" class="compliance-strip-val">--</span>
+          </div>
+          <div class="compliance-strip-divider"></div>
+          <div class="compliance-strip-item">
+            <span class="compliance-strip-name">OWASP</span>
+            <span id="complianceOwasp" class="compliance-strip-val">--</span>
+          </div>
+          <div class="compliance-strip-divider"></div>
+          <div class="compliance-strip-item">
+            <span class="compliance-strip-name">CIS</span>
+            <span id="complianceCis" class="compliance-strip-val">--</span>
+          </div>
+          <div class="compliance-strip-divider"></div>
+          <div class="compliance-strip-item">
+            <span class="compliance-strip-name">SOC 2</span>
+            <span id="complianceSoc2" class="compliance-strip-val">--</span>
+          </div>
+          <button class="compliance-strip-btn" id="complianceDetailBtn">View details in assistant →</button>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <div class="card-title">Top Priority Issue</div>
+          <div id="priorityPanel" class="empty-state">Run a scan to see the top issue.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Risk Distribution</div>
+          <div class="risk-grid">
+            <div class="risk-row"><span class="risk-lbl">Critical</span><div class="risk-track"><div id="barC" class="risk-fill CRITICAL" style="width:0%"></div></div><span id="riskC" class="risk-cnt">0</span></div>
+            <div class="risk-row"><span class="risk-lbl">High</span><div class="risk-track"><div id="barH" class="risk-fill HIGH" style="width:0%"></div></div><span id="riskH" class="risk-cnt">0</span></div>
+            <div class="risk-row"><span class="risk-lbl">Medium</span><div class="risk-track"><div id="barM" class="risk-fill MEDIUM" style="width:0%"></div></div><span id="riskM" class="risk-cnt">0</span></div>
+            <div class="risk-row"><span class="risk-lbl">Low</span><div class="risk-track"><div id="barL" class="risk-fill LOW" style="width:0%"></div></div><span id="riskL" class="risk-cnt">0</span></div>
+          </div>
+          <div id="risingCat" style="margin-top:7px;font-size:11px;color:var(--muted)">No category rising</div>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <div class="card-title">
+            Environment
+          </div>
+          <div id="environmentBox" class="empty-state">No scan data yet.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">
+            Score History
+            <button class="card-title-action" id="clearHistoryBtn" style="display:none">↺ Reset</button>
+          </div>
+          <div id="scoreHistoryEmpty" class="empty-state">Run scans to see trend.</div>
+          <div id="historyChart" class="history-chart" style="display:none"></div>
+          <div id="historyMeta" class="history-meta" style="display:none"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Findings</div>
+        <div id="findingsList" class="findings-list"><div class="empty-state">No findings yet.</div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Code Snippet</div>
+        <div id="snippetViewer" class="snippet-viewer" style="color:var(--muted)">Select "View snippet" on a finding.</div>
+      </div>
+    </div>
+
+    <!-- ══ ASSISTANT DRAWER (right-side, 3 states) — replaces old Assistant panel ══ -->
+    <!-- moved outside the panel system, see end of body -->
+
+    <!-- ══ BREACH LIBRARY PANEL ══ -->
+    <div id="libraryPanel" class="panel library-panel">
+      <div class="library-hero">
+        <h2>Breach Library</h2>
+        <p>Real-world security incidents — searchable archive of cases relevant to the issues HZSec finds.</p>
+      </div>
+      <div class="library-toolbar">
+        <input type="text" id="librarySearch" class="library-search" placeholder="Search breaches by name, technology, or impact..." />
+        <div class="library-filters" id="libraryFilters">
+          <button class="library-filter active" data-filter="all">All</button>
+          <button class="library-filter" data-filter="CRITICAL">Critical</button>
+          <button class="library-filter" data-filter="HIGH">High</button>
+          <button class="library-filter" data-filter="secret">Secrets</button>
+          <button class="library-filter" data-filter="misconfiguration">Misconfig</button>
+          <button class="library-filter" data-filter="api-key">API Keys</button>
+        </div>
+      </div>
+      <div class="library-count" id="libraryCount">Loading...</div>
+      <div class="library-grid" id="libraryGrid"></div>
+    </div>
+
+    <!-- ══ MONITOR PANEL ══ -->
+    <div id="monitorPanel" class="panel monitor-panel">
+      <div class="monitor-feed">
+        <div class="monitor-hdr">
+          <div class="monitor-hdr-left"><span class="monitor-hdr-title">Live Event Feed</span><div id="monitorHdrPill" class="monitor-pill"><div class="monitor-dot"></div><span id="monitorHdrStatus">Inactive</span></div></div>
+          <button class="abtn" id="clearFeedBtn">Clear feed</button>
+        </div>
+        <div id="monitorEvents" class="monitor-events">
+          <div class="monitor-empty"><div class="monitor-empty-icon">◎</div><p>Start the monitor to watch your target — files and folders both supported.</p></div>
+        </div>
+      </div>
+      <div class="monitor-stats">
+        <div class="mstats-hdr">Session Stats</div>
+        <div class="mstats-body">
+          <div class="mstat"><div class="mstat-label">Files Changed</div><div id="mstatFiles" class="mstat-value">0</div></div>
+          <div class="mstat"><div class="mstat-label">New Issues</div><div id="mstatIssues" class="mstat-value red">0</div></div>
+          <div class="mstat"><div class="mstat-label">Resolved</div><div id="mstatResolved" class="mstat-value green">0</div></div>
+          <div><div class="ctx-sec-label" style="margin-bottom:5px">Recent Alerts</div><div id="recentAlerts" class="recent-alerts"><div style="font-size:12px;color:var(--muted)">No alerts yet.</div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ AUDIT PANEL ══ -->
+    <div id="auditPanel" class="panel audit-panel">
+      <div class="audit-stats-row">
+        <div class="audit-stat"><div class="audit-stat-label">Total Events</div><div id="auditTotal" class="audit-stat-value">0</div></div>
+        <div class="audit-stat"><div class="audit-stat-label">Scans Run</div><div id="auditScans" class="audit-stat-value">0</div></div>
+        <div class="audit-stat"><div class="audit-stat-label">Fixes Applied</div><div id="auditFixes" class="audit-stat-value">0</div></div>
+        <div class="audit-stat"><div class="audit-stat-label">Monitor Alerts</div><div id="auditAlerts" class="audit-stat-value">0</div></div>
+      </div>
+      <div class="audit-toolbar">
+        <div class="audit-toolbar-left">
+          <span class="audit-toolbar-title">AUDIT LOG</span>
+          <span id="auditCount" class="audit-count">0 entries</span>
+          <div class="audit-filter-row">
+            <span class="filter-chip on" data-filter="all">All</span>
+            <span class="filter-chip" data-filter="scan">Scans</span>
+            <span class="filter-chip" data-filter="fix">Fixes</span>
+            <span class="filter-chip" data-filter="monitor">Monitor</span>
+            <span class="filter-chip" data-filter="key">API Key</span>
+          </div>
+        </div>
+        <div style="display:flex;gap:7px">
+          <button class="abtn" id="refreshAuditBtn">Refresh</button>
+          <button class="abtn" id="exportAuditBtn">Export</button>
+          <button class="abtn" style="color:var(--red);border-color:rgba(220,38,38,0.3)" id="clearAuditBtn">Clear</button>
+        </div>
+      </div>
+      <div id="auditEntries" class="audit-entries"><div class="audit-empty"><div class="audit-empty-icon">📋</div><span>No audit events yet.</span></div></div>
+    </div>
+
+    <!-- ══ SETTINGS PANEL ══ -->
+    <div id="settingsPanel" class="panel settings-panel">
+
+      <!-- ── Account / HZSec license ─────────────────────────────────────── -->
+      <div class="settings-section">
+        <div class="settings-section-title">Account</div>
+        <div class="setting-row">
+          <div>
+            <div class="setting-label">HZSec account</div>
+            <div class="setting-desc" id="acctStatusDesc">Sign in to use the managed AI assistant — no API key required. Or paste a license key below.</div>
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-primary" id="acctSignInBtn" style="width:auto;padding:7px 16px">Sign in</button>
+            <button class="btn btn-danger"  id="acctSignOutBtn" style="width:auto;padding:7px 16px;display:none">Sign out</button>
+          </div>
+        </div>
+        <div class="setting-row" id="acctLicenseRow" style="display:none">
+          <div>
+            <div class="setting-label">License key</div>
+            <div class="setting-desc"><code id="acctLicenseValue" style="font-family:var(--mono);font-size:12px"></code> · <span id="acctTier"></span> · <span id="acctStatus"></span></div>
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="btn" id="acctRevalidateBtn" style="width:auto;padding:7px 16px">Re-check</button>
+          </div>
+        </div>
+        <div class="setting-row" id="acctUsageRow" style="display:none">
+          <div>
+            <div class="setting-label">Monthly usage</div>
+            <div class="setting-desc"><span id="acctUsageUsed">0</span> / <span id="acctUsageCap">0</span> assistant messages this month</div>
+          </div>
+        </div>
+        <div class="setting-row">
+          <div>
+            <div class="setting-label">Or paste a license key</div>
+            <div class="setting-desc">Format: HZSEC-XXXX-XXXX-XXXX-XXXX. Get one from your dashboard at hzsec.io.</div>
+          </div>
+          <div class="api-row" style="margin-left:16px">
+            <input type="text" id="acctLicenseInput" placeholder="HZSEC-XXXX-XXXX-XXXX-XXXX" style="font-family:var(--mono);text-transform:uppercase" />
+            <button class="api-save" id="acctLicenseSaveBtn">Save</button>
+          </div>
+        </div>
+        <div id="acctMessage" class="settings-info" style="display:none"></div>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-section-title">Appearance</div>
+        <div class="setting-row">
+          <div><div class="setting-label">Theme</div><div class="setting-desc">Switch between dark and light mode</div></div>
+          <select id="themeSelect" class="setting-select">
+            <option value="dark">Dark</option>
+            <option value="light">Light</option>
+          </select>
+        </div>
+        <div class="setting-row">
+          <div><div class="setting-label">Security Posture View</div><div class="setting-desc">Choose how the posture score is displayed</div></div>
+          <select id="postureViewSelect" class="setting-select">
+            <option value="bar">Posture bar</option>
+            <option value="radial">Radial ring</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-section-title">Scanning</div>
+        <div class="setting-row">
+          <div><div class="setting-label">High sensitivity mode</div><div class="setting-desc">Catch more potential issues — may increase false positives</div></div>
+          <label class="toggle"><input type="checkbox" id="highSensitivityToggle"><div class="toggle-slider"></div></label>
+        </div>
+        <div class="setting-row">
+          <div><div class="setting-label">Auto-scan on target select</div><div class="setting-desc">Run a scan immediately when you pick a target</div></div>
+          <label class="toggle"><input type="checkbox" id="autoScanToggle"><div class="toggle-slider"></div></label>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-section-title">Backups</div>
+        <div class="setting-row">
+          <div><div class="setting-label">Backup location</div><div class="setting-desc">Versioned backups are stored in ~/.hzsec/backups/ — never in your project folder</div></div>
+        </div>
+        <div class="settings-info">Up to 10 versions are kept per file. Older versions are automatically pruned. No .bak files are created in your project.</div>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-section-title">Security Intelligence Database</div>
+        <div class="setting-row">
+          <div><div class="setting-label">CVE & breach database</div><div class="setting-desc">Pulls from CISA KEV catalog and NVD. Used to ground assistant answers in real incidents.</div></div>
+        </div>
+        <div class="kb-status-row">
+          <span id="kbStatusPill" class="kb-status-text">Checking...</span>
+          <button class="abtn" id="syncKbBtn">↻ Sync CVE feeds</button>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-section-title">Score History</div>
+        <div class="setting-row">
+          <div><div class="setting-label">Clear score history</div><div class="setting-desc">Removes all saved scan history and resets the chart</div></div>
+          <button class="btn btn-danger" style="width:auto;padding:7px 16px" id="clearHistorySettingsBtn">Reset history</button>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-section-title">Help &amp; tour</div>
+        <div class="setting-row">
+          <div><div class="setting-label">Show welcome tour</div><div class="setting-desc">Re-open the 8-slide intro covering scanning, the assistant, and the account flow.</div></div>
+          <button class="btn" style="width:auto;padding:7px 16px" id="restartTourBtn">Show tour</button>
+        </div>
+        <div class="setting-row">
+          <div><div class="setting-label">What's new</div><div class="setting-desc">Re-open the changelog popup for this version.</div></div>
+          <button class="btn" style="width:auto;padding:7px 16px" id="showChangelogBtn">View changelog</button>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-section-title">About</div>
+        <div class="settings-info">
+          HZSec v1.0 · Encryption: AES-256-GCM + PBKDF2-SHA512 (310,000 iterations)<br>
+          Backups: ~/.hzsec/backups/ · Audit log: ~/.hzsec/audit.log · History: ~/.hzsec/scan-history.json
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<script src="./renderer.js"></script>
+
+<!-- ════════════════════════════════════════════════════════════════════════
+     ASSISTANT DRAWER — overlays the right side of the app at all times
+     ════════════════════════════════════════════════════════════════════════ -->
+<aside id="asstDrawer" class="asst-drawer" aria-hidden="true" role="complementary">
+  <header class="asst-drawer-hdr">
+    <div class="asst-drawer-hdr-left">
+      <span>HZSec Assistant</span>
+    </div>
+    <div class="asst-drawer-hdr-actions">
+      <button class="asst-icon-btn" id="asstFullBtn" title="Toggle fullscreen (Cmd/Ctrl+Shift+J)">
+        <svg id="asstFullIcon" viewBox="0 0 20 20" fill="currentColor"><path d="M3 4a1 1 0 011-1h4a1 1 0 010 2H6.414l2.293 2.293a1 1 0 01-1.414 1.414L5 6.414V8a1 1 0 11-2 0V4zm10-1a1 1 0 100 2h1.586l-2.293 2.293a1 1 0 001.414 1.414L16 6.414V8a1 1 0 102 0V4a1 1 0 00-1-1h-4zM4 12a1 1 0 011 1v1.586l2.293-2.293a1 1 0 011.414 1.414L6.414 16H8a1 1 0 110 2H4a1 1 0 01-1-1v-4a1 1 0 011-1zm14 1a1 1 0 10-2 0v1.586l-2.293-2.293a1 1 0 00-1.414 1.414L13.586 16H12a1 1 0 100 2h4a1 1 0 001-1v-4z"/></svg>
+      </button>
+      <button class="asst-icon-btn" id="asstCloseBtn" title="Close (Cmd/Ctrl+J)">
+        <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <div class="asst-drawer-body">
+    <div class="asst-chat">
+      <div id="chatMessages" class="chat-messages">
+        <div class="msg">
+          <div class="msg-av ai" style="font-size:10px;letter-spacing:-0.5px">Hz</div>
+          <div>
+            <div class="msg-bubble"><strong>Hey — I'm your HZSec Assistant.</strong><br><br>I can read your code, search across files, and explain findings with full context.<br><br>Try: <em>"Where else is this AWS key used?"</em> or <em>"Fix all critical issues"</em></div>
+            <div class="msg-time">HZSec</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="chat-input-area">
+        <div class="ctx-bar">
+          <span style="font-size:10px;color:var(--muted);font-family:'Space Mono',monospace">CONTEXT:</span>
+          <div id="ctxFindingsChip" class="ctx-chip on">Findings (<span id="ctxCount">0</span>)</div>
+          <div id="ctxSnippetChip" class="ctx-chip">Snippet</div>
+          <div id="ctxBreachesChip" class="ctx-chip">Breaches</div>
+        </div>
+        <div class="input-row">
+          <textarea id="chatInput" class="chat-input" placeholder="Ask a question or request a fix..." rows="2"></textarea>
+          <button id="sendBtn" class="send-btn"><svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M15.964.686a.5.5 0 00-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 00-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.002.26.41a.5.5 0 00.886-.083l6-15zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 00-.154-.154l-.338-.215 7.494-7.494 1.178-.471-.47 1.178z"/></svg></button>
+        </div>
+      </div>
+
+      <div id="asstCtxOverlay" class="asst-ctx-overlay">
+        <div class="asst-ctx-overlay-hdr">
+          <span id="asstCtxOverlayTitle">Findings</span>
+          <button class="asst-icon-btn" id="asstCtxOverlayClose" title="Close">
+            <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd"/></svg>
+          </button>
+        </div>
+        <div class="asst-ctx-overlay-body">
+          <div id="ctxOverlayFindings"></div>
+          <div id="ctxOverlayBreaches" style="display:none"></div>
+          <div id="ctxOverlayCompliance" style="display:none"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="asst-ctx-strip">
+      <button class="asst-ctx-strip-tab active" data-ctx-strip="findings">Findings</button>
+      <button class="asst-ctx-strip-tab" data-ctx-strip="breaches">Breaches</button>
+      <button class="asst-ctx-strip-tab" data-ctx-strip="compliance">Compliance</button>
+    </div>
+
+    <div class="asst-ctx-side">
+      <div class="ctx-hdr-tabs">
+        <button class="ctx-tab active" data-ctx="findings">Findings</button>
+        <button class="ctx-tab" data-ctx="breaches">Breaches</button>
+        <button class="ctx-tab" data-ctx="compliance">Compliance</button>
+      </div>
+      <div id="ctxTabFindings" class="ctx-body">
+        <div class="ctx-sec-label">Click to focus assistant</div>
+        <div id="ctxFindingsList" class="empty-state" style="font-size:12px">Run a scan first.</div>
+      </div>
+      <div id="ctxTabBreaches" class="ctx-body" style="display:none">
+        <div class="ctx-sec-label">Real incidents matching your findings</div>
+        <div id="ctxBreachList" class="empty-state" style="font-size:12px">Run a scan to match breach cases.</div>
+      </div>
+      <div id="ctxTabCompliance" class="ctx-body" style="display:none">
+        <div class="ctx-sec-label">Framework gaps from current scan</div>
+        <div id="ctxComplianceList" class="empty-state" style="font-size:12px">Run a scan to see compliance gaps.</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- Floating launcher button -->
+<button id="asstLauncher" class="asst-launcher" data-tooltip="Press ⌘J anytime" title="Open Assistant (Cmd/Ctrl+J)" aria-label="Open assistant">
+  <svg viewBox="0 0 20 20" fill="currentColor"><path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z"/><path d="M15 7v2a4 4 0 01-4 4H9.828l-1.766 1.767c.28.149.599.233.938.233h2l3 3v-3h2a2 2 0 002-2V9a2 2 0 00-2-2h-1z"/></svg>
+</button>
+
+<!-- Breach detail modal -->
+<div id="breachModal" class="breach-modal-backdrop">
+  <div class="breach-modal">
+    <div class="breach-modal-hdr">
+      <div class="breach-modal-hdr-text">
+        <h3 id="breachModalTitle"></h3>
+        <span id="breachModalSev" class="library-card-sev"></span>
+      </div>
+      <button class="asst-icon-btn" id="breachModalClose" title="Close">
+        <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+      </button>
+    </div>
+    <div class="breach-modal-body" id="breachModalBody"></div>
+  </div>
+</div>
+
+</body>
+</html>

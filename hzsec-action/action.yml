@@ -1,0 +1,114 @@
+# hzsec/scan-action — drop-in GitHub Action that runs hzsec-cli and uploads
+# the SARIF report to GitHub Code Scanning.
+#
+# Usage:
+#
+#   permissions:
+#     contents:        read
+#     security-events: write
+#
+#   - uses: hzsec/scan-action@v1
+#     with:
+#       path:    '.'
+#       mode:    'full'
+#       fail-on: 'critical,high'
+#
+# That's it. Findings appear in the Security tab of your repo.
+
+name: 'HZSec Security Scan'
+description: 'Scan the workspace for secrets, misconfigs, and unsafe code patterns. Uploads SARIF to GitHub Code Scanning.'
+author: 'HZSec'
+branding:
+  icon:  'shield'
+  color: 'blue'
+
+inputs:
+  path:
+    description: 'Path to scan (default: workspace root)'
+    required: false
+    default:  '.'
+  mode:
+    description: 'Scan mode — full | quick | secret | config | web | hardening | custom'
+    required: false
+    default:  'full'
+  fail-on:
+    description: 'Comma-list of severities that cause the step to fail (CRITICAL,HIGH,MEDIUM,LOW,INFO). Empty = never fail.'
+    required: false
+    default:  ''
+  upload-sarif:
+    description: 'Upload SARIF to GitHub Code Scanning (requires security-events:write permission)'
+    required: false
+    default:  'true'
+  cli-version:
+    description: 'Pin a specific hzsec-cli npm version. Empty = latest.'
+    required: false
+    default:  ''
+
+outputs:
+  findings-count:
+    description: 'Total number of findings'
+    value: ${{ steps.scan.outputs.findings_count }}
+  critical-count:
+    description: 'Count of CRITICAL findings'
+    value: ${{ steps.scan.outputs.critical_count }}
+  sarif-path:
+    description: 'Path to the generated SARIF file'
+    value: ${{ steps.scan.outputs.sarif_path }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Set up Node 20 if needed
+      shell: bash
+      run: |
+        if ! command -v node >/dev/null 2>&1; then
+          curl -sL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+          sudo apt-get install -y nodejs
+        fi
+        node --version
+
+    - name: Run hzsec-cli
+      id: scan
+      shell: bash
+      env:
+        HZSEC_PATH:        ${{ inputs.path }}
+        HZSEC_MODE:        ${{ inputs.mode }}
+        HZSEC_FAIL_ON:     ${{ inputs.fail-on }}
+        HZSEC_CLI_VERSION: ${{ inputs.cli-version }}
+      run: |
+        set -e
+        SARIF="${RUNNER_TEMP:-/tmp}/hzsec.sarif"
+        echo "sarif_path=$SARIF" >> "$GITHUB_OUTPUT"
+
+        PKG="hzsec-cli"
+        if [ -n "$HZSEC_CLI_VERSION" ]; then PKG="hzsec-cli@$HZSEC_CLI_VERSION"; fi
+
+        # Run twice — once for SARIF (which needs no fail-on), once for the
+        # human-readable summary in the job log. The CLI is fast enough that
+        # this isn't a real cost; the alternative is parsing SARIF in bash.
+        npx -y "$PKG" scan "$HZSEC_PATH" \
+          --mode "$HZSEC_MODE" --format sarif --output "$SARIF" --quiet
+
+        # Counts for the outputs.
+        TOTAL=$(node -e "const r=JSON.parse(require('fs').readFileSync(process.argv[1])); console.log(r.runs[0].results.length)" "$SARIF")
+        CRIT=$(node -e "const r=JSON.parse(require('fs').readFileSync(process.argv[1])); console.log(r.runs[0].results.filter(x=>x.properties && x.properties['security-severity'] && parseFloat(x.properties['security-severity']) >= 9.0).length)" "$SARIF")
+        echo "findings_count=$TOTAL" >> "$GITHUB_OUTPUT"
+        echo "critical_count=$CRIT"  >> "$GITHUB_OUTPUT"
+
+        # Pretty summary in the log (text format ignores --output).
+        npx -y "$PKG" scan "$HZSEC_PATH" --mode "$HZSEC_MODE" --no-color --quiet || true
+
+        # --fail-on (after SARIF upload — we always want the report to land).
+        if [ -n "$HZSEC_FAIL_ON" ]; then
+          if ! npx -y "$PKG" scan "$HZSEC_PATH" --mode "$HZSEC_MODE" --quiet --no-color --fail-on "$HZSEC_FAIL_ON" >/dev/null; then
+            echo "::error::hzsec found findings at fail-on threshold ($HZSEC_FAIL_ON)"
+            exit 1
+          fi
+        fi
+
+    - name: Upload SARIF to GitHub Code Scanning
+      if: ${{ inputs.upload-sarif == 'true' && always() }}
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: ${{ steps.scan.outputs.sarif_path }}
+        category:   hzsec

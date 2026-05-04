@@ -1,0 +1,23 @@
+- id:           hzsec
+  name:         HZSec security scan
+  description:  Local security scanner — secrets, misconfigs, unsafe code
+  language:     node
+  entry:        hzsec scan
+  pass_filenames: false
+  args:         ['--mode', 'quick', '--fail-on', 'critical,high', '--no-color', '--quiet']
+  stages:       [pre-commit]
+  always_run:   true
+  additional_dependencies:
+    - 'hzsec-cli@^1.0.0'
+
+- id:           hzsec-secrets
+  name:         HZSec secrets-only scan
+  description:  Scan staged files for hardcoded credentials only (faster than full scan)
+  language:     node
+  entry:        hzsec scan
+  pass_filenames: false
+  args:         ['--mode', 'secret', '--fail-on', 'critical,high', '--no-color', '--quiet']
+  stages:       [pre-commit, pre-push]
+  always_run:   true
+  additional_dependencies:
+    - 'hzsec-cli@^1.0.0'

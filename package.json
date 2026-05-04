@@ -1,0 +1,75 @@
+{
+  "name": "hzsec",
+  "version": "1.0.0",
+  "description": "HZSec — Local security platform with AI assistant, live monitor, and security intelligence.",
+  "main": "main.js",
+  "type": "commonjs",
+  "scripts": {
+    "start":      "electron .",
+    "pack":       "electron-builder --dir",
+    "dist":       "electron-builder",
+    "dist:mac":   "electron-builder --mac",
+    "dist:win":   "electron-builder --win",
+    "dist:linux": "electron-builder --linux",
+    "release":    "electron-builder --publish always"
+  },
+  "dependencies": {
+    "electron-updater": "^6.3.9",
+    "@sentry/electron": "^5.5.0"
+  },
+  "devDependencies": {
+    "electron":         "^35.0.0",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId":       "io.hzsec.desktop",
+    "productName": "HZSec",
+    "files": [
+      "**/*",
+      "!**/*.{ts,map}",
+      "!.git/**",
+      "!backup-before-*/**",
+      "!test-lab/**",
+      "!website/**",
+      "!HZSec - Growth/**",
+      "!.github/**"
+    ],
+    "directories": {
+      "output":         "dist",
+      "buildResources": "build"
+    },
+    "mac": {
+      "category":            "public.app-category.developer-tools",
+      "target":              ["dmg", "zip"],
+      "hardenedRuntime":     true,
+      "gatekeeperAssess":    false,
+      "entitlements":        "build/entitlements.mac.plist",
+      "entitlementsInherit": "build/entitlements.mac.plist",
+      "notarize": {
+        "teamId": "REPLACE_WITH_TEAM_ID"
+      }
+    },
+    "win": {
+      "target":                    ["nsis", "portable"],
+      "publisherName":             "HZSec Inc",
+      "verifyUpdateCodeSignature": true
+    },
+    "linux": {
+      "target":   ["AppImage", "deb"],
+      "category": "Development"
+    },
+    "publish": [
+      {
+        "provider": "github",
+        "owner":    "REPLACE",
+        "repo":     "hzsec-desktop"
+      }
+    ],
+    "protocols": [
+      {
+        "name":    "HZSec",
+        "schemes": ["hzsec"]
+      }
+    ]
+  }
+}

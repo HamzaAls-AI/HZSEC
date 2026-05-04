@@ -1,0 +1,164 @@
+{
+  "scannedAt": "2026-04-06T13:35:59.021Z",
+  "mode": "config",
+  "targetPath": "/Users/hamzaals/Desktop/LSA/test-lab/config-tests/app.env",
+  "posture": {
+    "overallSecurityScore": 92,
+    "currentThreatLevel": "MEDIUM",
+    "totalFindings": 1,
+    "criticalFindings": 0,
+    "openSecrets": 0,
+    "unresolvedConfigIssues": 1,
+    "monitoredAlerts": 0,
+    "lastScanTime": "2026-04-06T13:35:59.021Z",
+    "monitoredStatus": "Inactive"
+  },
+  "topPriorityIssue": {
+    "id": "config-_Users_hamzaals_Desktop_LSA_test-lab_config-tests_app.env-2-Password_stored_in_configuration",
+    "title": "Password stored in configuration",
+    "file": "app.env",
+    "filePath": "/Users/hamzaals/Desktop/LSA/test-lab/config-tests/app.env",
+    "lineNumber": 2,
+    "severity": "HIGH",
+    "whyItMatters": "Hardcoded credentials in config files are easy to leak and difficult to rotate safely.",
+    "recommendedFix": "Move the password to a secure secret store or protected environment variable.",
+    "type": "config",
+    "source": "Configuration Rule",
+    "rawLine": "REDACTED_CHANGE_ME"
+    "status": "OPEN",
+    "fixType": "redact-secret",
+    "autoFixAvailable": true
+  },
+  "riskDistribution": {
+    "current": {
+      "CRITICAL": 0,
+      "HIGH": 1,
+      "MEDIUM": 0,
+      "LOW": 0,
+      "INFORMATIONAL": 0
+    },
+    "previous": {
+      "CRITICAL": 0,
+      "HIGH": 0,
+      "MEDIUM": 1,
+      "LOW": 0,
+      "INFORMATIONAL": 0
+    },
+    "risingCategory": "HIGH rising (+1)"
+  },
+  "securityScoreBreakdown": [
+    {
+      "key": "codeSafety",
+      "label": "Code Safety",
+      "value": 100,
+      "note": "Unsafe execution and browser-side patterns"
+    },
+    {
+      "key": "configSafety",
+      "label": "Config Safety",
+      "value": 86,
+      "note": "Configuration and hardening quality"
+    },
+    {
+      "key": "secretExposure",
+      "label": "Secret Exposure",
+      "value": 100,
+      "note": "Keys, passwords, and private material risk"
+    },
+    {
+      "key": "dependencyHealth",
+      "label": "Dependency Health",
+      "value": 82,
+      "note": "Placeholder until package audit is added"
+    },
+    {
+      "key": "monitorPressure",
+      "label": "Monitor Pressure",
+      "value": 90,
+      "note": "Live monitor pressure from active risky findings"
+    },
+    {
+      "key": "unresolvedFindings",
+      "label": "Unresolved Findings",
+      "value": 83,
+      "note": "Open findings affecting security posture"
+    },
+    {
+      "key": "fixCompletionRate",
+      "label": "Fix Completion Rate",
+      "value": 92,
+      "note": "How much remains open after the last scan"
+    }
+  ],
+  "statusCounts": {
+    "NEW": 1,
+    "OPEN": 1,
+    "IN_REVIEW": 0,
+    "FIXED_PENDING_RESCAN": 0,
+    "RESOLVED": 0,
+    "IGNORED": 0,
+    "FALSE_POSITIVE": 0
+  },
+  "quickActions": [
+    "Scan Folder",
+    "Scan File",
+    "Run Selected Scan",
+    "Start Live Monitor",
+    "Export Report"
+  ],
+  "recentActivity": [
+    {
+      "type": "scan completed",
+      "message": "Scan completed in config mode with 1 finding(s).",
+      "time": "2026-04-06T13:35:59.021Z"
+    },
+    {
+      "type": "guided fix ready",
+      "message": "1 finding(s) have a safe suggested fix available.",
+      "time": "2026-04-06T13:35:59.021Z"
+    }
+  ],
+  "trendSnapshot": {
+    "findingsOverTime": [
+      0,
+      0,
+      0,
+      0,
+      1
+    ],
+    "fixedVsOpen": {
+      "fixed": 0,
+      "open": 1
+    },
+    "averageSeverityTrend": "20.0",
+    "timeToResolve": "2 hrs avg"
+  },
+  "environmentSnapshot": {
+    "selectedTarget": "/Users/hamzaals/Desktop/LSA/test-lab/config-tests/app.env",
+    "platform": "darwin",
+    "projectType": "General Project",
+    "scanEnginesActive": [
+      "config"
+    ],
+    "monitoringStatus": "Inactive"
+  },
+  "findings": [
+    {
+      "id": "config-_Users_hamzaals_Desktop_LSA_test-lab_config-tests_app.env-2-Password_stored_in_configuration",
+      "title": "Password stored in configuration",
+      "file": "app.env",
+      "filePath": "/Users/hamzaals/Desktop/LSA/test-lab/config-tests/app.env",
+      "lineNumber": 2,
+      "severity": "HIGH",
+      "whyItMatters": "Hardcoded credentials in config files are easy to leak and difficult to rotate safely.",
+      "recommendedFix": "Move the password to a secure secret store or protected environment variable.",
+      "type": "config",
+      "source": "Configuration Rule",
+      "rawLine": "REDACTED_CHANGE_ME"
+      "status": "OPEN",
+      "fixType": "redact-secret",
+      "autoFixAvailable": true
+    }
+  ],
+  "filesScanned": 1
+}

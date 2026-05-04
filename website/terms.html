@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Terms of Service — HZSec</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #050c18; --bg1: #080f1e; --border: rgba(56,189,248,0.10);
+      --text: #c8dff5; --muted: #4a6785; --accent: #38bdf8;
+      --mono: 'Space Mono', monospace; --display: 'Syne', sans-serif; --body: 'DM Sans', sans-serif;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: var(--body); font-size: 16px; line-height: 1.8; }
+    nav { display: flex; align-items: center; justify-content: space-between; padding: 0 6%; height: 64px; background: var(--bg1); border-bottom: 1px solid var(--border); }
+    .nav-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; font-family: var(--mono); font-size: 15px; font-weight: 700; }
+    .hz { color: #fff; } .sec { color: var(--accent); }
+    .back { font-size: 13px; color: var(--muted); text-decoration: none; transition: color 0.15s; }
+    .back:hover { color: var(--text); }
+    .doc { max-width: 760px; margin: 0 auto; padding: 60px 6% 100px; }
+    .doc-eyebrow { font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; }
+    .doc-title { font-family: var(--display); font-size: 40px; font-weight: 700; color: #fff; margin-bottom: 8px; }
+    .doc-date { font-size: 13px; color: var(--muted); font-family: var(--mono); margin-bottom: 48px; }
+    h2 { font-family: var(--display); font-size: 20px; font-weight: 600; color: #fff; margin: 40px 0 12px; }
+    p { color: var(--muted); margin-bottom: 14px; font-size: 15px; }
+    ul { color: var(--muted); padding-left: 20px; margin-bottom: 14px; }
+    li { margin-bottom: 6px; font-size: 15px; }
+    strong { color: var(--text); }
+    .divider { height: 1px; background: var(--border); margin: 36px 0; }
+    footer { border-top: 1px solid var(--border); padding: 32px 6%; text-align: center; font-size: 13px; color: var(--muted); font-family: var(--mono); }
+  </style>
+</head>
+<body>
+<nav>
+  <a href="index.html" class="nav-brand"><span class="hz">HZ</span><span class="sec">Sec</span></a>
+  <a href="index.html" class="back">← Back to home</a>
+</nav>
+
+<div class="doc">
+  <div class="doc-eyebrow">Legal</div>
+  <h1 class="doc-title">Terms of Service</h1>
+  <div class="doc-date">Last updated: April 2025</div>
+
+  <p>These Terms of Service ("Terms") govern your use of HZSec ("the Software"), a local security scanning platform developed and distributed by Horizon Zero Security ("we," "us," or "our"). By downloading, installing, or using HZSec, you agree to these Terms.</p>
+
+  <h2>1. Description of the Software</h2>
+  <p>HZSec is a desktop application that runs locally on your computer. It scans files and directories for security vulnerabilities, misconfigurations, exposed secrets, and other security risks. The Pro tier includes an AI assistant powered by the Anthropic API and a live file monitor.</p>
+
+  <h2>2. License</h2>
+  <p>Subject to your compliance with these Terms and payment of applicable fees, we grant you a limited, non-exclusive, non-transferable, revocable license to install and use HZSec on devices you own or control, solely for your personal or internal business security purposes.</p>
+  <p>You may not:</p>
+  <ul>
+    <li>Copy, modify, distribute, sell, or sublicense the Software</li>
+    <li>Reverse engineer, decompile, or disassemble the Software</li>
+    <li>Use the Software to build a competing product</li>
+    <li>Remove or alter any proprietary notices or labels</li>
+  </ul>
+
+  <h2>3. Free and Pro Tiers</h2>
+  <p>HZSec is available in two tiers:</p>
+  <ul>
+    <li><strong>Free tier:</strong> Includes the security scanner, auto-fixes, score history, and audit log. Free forever, no credit card required.</li>
+    <li><strong>Pro tier:</strong> Includes the AI assistant, live monitor, breach intelligence, and compliance mapping. Billed monthly. Cancel at any time.</li>
+  </ul>
+  <p>We reserve the right to modify pricing with 30 days' notice to existing subscribers.</p>
+
+  <h2>4. Your Data and Privacy</h2>
+  <p>HZSec runs locally. Your code and files are never uploaded to our servers. The only external communication is:</p>
+  <ul>
+    <li>To the Anthropic API, when you use the AI assistant (Pro only) — only the specific findings context you're asking about is sent, not your full codebase</li>
+    <li>To CISA and NVD, when you manually sync the CVE database — no personal data is transmitted</li>
+  </ul>
+  <p>Your Anthropic API key is encrypted on your device using AES-256-GCM with PBKDF2 key derivation. We never have access to it.</p>
+
+  <h2>5. Security Disclaimer</h2>
+  <p><strong>HZSec is a security assistance tool, not a guarantee of security.</strong> The Software helps identify potential security issues but cannot guarantee complete detection of all vulnerabilities. Results should be reviewed by a qualified security professional for critical systems. We are not liable for any security breach or data loss that occurs despite use of the Software.</p>
+  <p>The breach case studies included in HZSec are based on publicly reported incidents and are provided for educational context only.</p>
+
+  <h2>6. Third-Party Services</h2>
+  <p>The AI assistant uses the Anthropic API. Your use of the AI assistant is also subject to Anthropic's Terms of Service and Usage Policy. We are not responsible for the accuracy of AI-generated responses — always review suggested fixes before applying them.</p>
+
+  <h2>7. Acceptable Use</h2>
+  <p>You agree to use HZSec only on files and systems you own or have explicit permission to scan. You must not use HZSec to:</p>
+  <ul>
+    <li>Scan systems or files you do not have authorization to access</li>
+    <li>Facilitate unauthorized access to any system</li>
+    <li>Violate any applicable law or regulation</li>
+  </ul>
+
+  <h2>8. Intellectual Property</h2>
+  <p>HZSec, including the HZSec name, logo, and all software components, is owned by Horizon Zero Security. The CVE data sourced from CISA and NVD is in the public domain. The breach case studies are original summaries based on public information.</p>
+
+  <h2>9. Limitation of Liability</h2>
+  <p>To the fullest extent permitted by law, Horizon Zero Security shall not be liable for any indirect, incidental, special, consequential, or punitive damages arising from your use of the Software. Our total liability to you for any claim arising from these Terms or your use of the Software shall not exceed the amount you paid us in the 12 months preceding the claim.</p>
+
+  <h2>10. Warranty Disclaimer</h2>
+  <p>The Software is provided "as is" without warranty of any kind. We do not warrant that the Software will be error-free, uninterrupted, or free of security vulnerabilities.</p>
+
+  <h2>11. Termination</h2>
+  <p>We may terminate or suspend your license if you breach these Terms. You may stop using the Software at any time. Pro subscribers may cancel their subscription at any time through their account settings.</p>
+
+  <h2>12. Changes to These Terms</h2>
+  <p>We may update these Terms from time to time. We will notify you of material changes by email or in-app notification. Continued use of the Software after changes constitutes acceptance of the new Terms.</p>
+
+  <h2>13. Governing Law</h2>
+  <p>These Terms are governed by applicable law. Any disputes shall be resolved through binding arbitration, except where prohibited by law.</p>
+
+  <h2>14. Contact</h2>
+  <p>If you have questions about these Terms, contact us at <strong>legal@hzsec.io</strong>.</p>
+</div>
+
+<footer>© 2025 HZSec · Horizon Zero Security · <a href="index.html" style="color:var(--muted);text-decoration:none">hzsec.io</a></footer>
+</body>
+</html>

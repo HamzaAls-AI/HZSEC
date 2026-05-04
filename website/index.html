@@ -1,0 +1,2587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="HZSec — Horizon Zero Security. Local security platform that finds exposed secrets, unsafe configs, and vulnerable code. AI-powered fixes with real breach intelligence." />
+  <meta property="og:title" content="HZSec — Horizon Zero Security" />
+  <meta property="og:description" content="Find every threat before it reaches you. Local security scanner with AI assistant, live monitor, and real breach intelligence." />
+  <meta property="og:type" content="website" />
+  <title>HZSec — Horizon Zero Security</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      /* ── Light theme ── */
+      --bg:         #ffffff;
+      --bg1:        #f8fafc;    /* subtle off-white alternating bands */
+      --bg2:        #f1f5f9;    /* card bg */
+      --bg3:        #e2e8f0;    /* deeper panels */
+      --border:     rgba(15,23,42,0.08);
+      --border2:    rgba(14,165,233,0.28);
+      --text:       #0f172a;    /* charcoal body text */
+      --headline:   #0a0f1e;    /* near-black for headlines */
+      --muted:      #64748b;    /* secondary text */
+      --accent:     #0ea5e9;    /* deeper cyan for contrast on white */
+      --accent2:    #0284c7;
+      --green:      #059669;
+      --red:        #dc2626;
+      --orange:     #ea580c;
+      --yellow:     #d97706;
+
+      /* ── Dark palette (for contrast sections + product mockups) ── */
+      --dark-bg:    #0a0f1e;
+      --dark-bg1:   #0f172a;
+      --dark-bg2:   #111d35;
+      --dark-bg3:   #1a2540;
+      --dark-border: rgba(56,189,248,0.12);
+      --dark-border2: rgba(56,189,248,0.25);
+      --dark-text:  #e2e8f0;
+      --dark-muted: #94a3b8;
+      --dark-accent: #38bdf8;
+
+      --mono:    'Space Mono', monospace;
+      --display: 'Syne', sans-serif;
+      --body:    'DM Sans', sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--body);
+      font-size: 16px;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    /* ── Subtle grid texture ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(14,165,233,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(14,165,233,0.04) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── Glow orbs (softened for light bg) ── */
+    .glow-orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(120px);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .orb-1 { width: 600px; height: 600px; background: rgba(14,165,233,0.10); top: -200px; right: -100px; }
+    .orb-2 { width: 400px; height: 400px; background: rgba(14,165,233,0.08); bottom: 100px; left: -150px; }
+
+    /* ── Nav ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 6%;
+      height: 68px;
+      background: rgba(255,255,255,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+
+    .nav-brand-text {
+      display: flex;
+      align-items: baseline;
+      gap: 0;
+      font-family: var(--mono);
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+
+    .nav-brand-hz { color: var(--headline); }
+    .nav-brand-sec { color: var(--accent); }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: color 0.15s;
+    }
+
+    .nav-links a:hover { color: var(--headline); }
+
+    .nav-cta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    /* ── Buttons ── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 22px;
+      border-radius: 8px;
+      font-family: var(--body);
+      font-size: 14px;
+      font-weight: 500;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: none;
+    }
+
+    .btn-primary {
+      background: var(--accent2);
+      color: #ffffff;
+    }
+
+    .btn-primary:hover { background: var(--accent); transform: translateY(-1px); }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid rgba(15,23,42,0.18);
+      color: var(--text);
+    }
+
+    .btn-outline:hover { border-color: var(--accent); color: var(--accent); background: rgba(14,165,233,0.04); }
+
+    .btn-lg {
+      padding: 14px 32px;
+      font-size: 16px;
+      border-radius: 10px;
+    }
+
+    .btn-ghost {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 13px;
+      padding: 8px 18px;
+    }
+
+    .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* ── Sections ── */
+    section {
+      position: relative;
+      z-index: 1;
+    }
+
+    .container {
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: 0 6%;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding: 120px 6% 80px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-inner {
+      max-width: 1160px;
+      margin: 0 auto;
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 5px 14px;
+      background: rgba(56,189,248,0.08);
+      border: 1px solid rgba(56,189,248,0.2);
+      border-radius: 20px;
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 24px;
+      animation: fadeUp 0.6s ease both;
+    }
+
+    .eyebrow-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+    .hero-headline {
+      font-family: var(--display);
+      font-size: clamp(38px, 5vw, 64px);
+      font-weight: 800;
+      line-height: 1.08;
+      color: var(--headline);
+      margin-bottom: 20px;
+      animation: fadeUp 0.6s 0.1s ease both;
+    }
+
+    .hero-headline .accent { color: var(--accent); }
+
+    .hero-sub {
+      font-size: 18px;
+      color: #475569;
+      max-width: 480px;
+      margin-bottom: 36px;
+      line-height: 1.7;
+      animation: fadeUp 0.6s 0.2s ease both;
+    }
+
+    .hero-actions {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      animation: fadeUp 0.6s 0.3s ease both;
+    }
+
+    .hero-note {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 16px;
+      font-family: var(--mono);
+      animation: fadeUp 0.6s 0.4s ease both;
+    }
+
+    .hero-note span { color: var(--green); }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* App mockup */
+    .hero-visual {
+      animation: fadeUp 0.8s 0.2s ease both;
+    }
+
+    .app-mockup {
+      background: var(--dark-bg1);
+      border: 1px solid var(--dark-border2);
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 30px 60px rgba(15,23,42,0.18), 0 0 0 1px rgba(14,165,233,0.08);
+    }
+
+    .mockup-topbar {
+      background: var(--dark-bg2);
+      border-bottom: 1px solid var(--dark-border);
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .mockup-dots { display: flex; gap: 6px; }
+    .mockup-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .mockup-dot.r { background: #f87171; }
+    .mockup-dot.y { background: #fbbf24; }
+    .mockup-dot.g { background: #34d399; }
+
+    .mockup-title {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--dark-muted);
+      margin-left: 4px;
+    }
+
+    .mockup-body {
+      display: grid;
+      grid-template-columns: 130px 1fr;
+      height: 340px;
+    }
+
+    .mockup-sidebar {
+      background: var(--dark-bg2);
+      border-right: 1px solid var(--dark-border);
+      padding: 12px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .mock-brand {
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 6px 8px;
+      margin-bottom: 8px;
+    }
+
+    .mock-brand .hz { color: #fff; }
+    .mock-brand .sec { color: var(--dark-accent); }
+
+    .mock-nav-item {
+      padding: 6px 8px;
+      border-radius: 5px;
+      font-size: 11px;
+      color: var(--dark-muted);
+    }
+
+    .mock-nav-item.active {
+      background: rgba(56,189,248,0.12);
+      border: 1px solid rgba(56,189,248,0.25);
+      color: var(--dark-accent);
+    }
+
+    .mockup-main {
+      padding: 14px;
+      overflow: hidden;
+    }
+
+    .mock-posture {
+      background: var(--dark-bg3);
+      border: 1px solid var(--dark-border);
+      border-radius: 7px;
+      padding: 10px 12px;
+      margin-bottom: 10px;
+    }
+
+    .mock-posture-label {
+      font-family: var(--mono);
+      font-size: 9px;
+      color: var(--dark-muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 7px;
+    }
+
+    .mock-track {
+      height: 6px;
+      border-radius: 3px;
+      background: linear-gradient(90deg, var(--red), var(--orange), var(--yellow), var(--green));
+      position: relative;
+      margin-bottom: 6px;
+    }
+
+    .mock-marker {
+      position: absolute;
+      top: 50%;
+      left: 78%;
+      transform: translate(-50%, -50%);
+      width: 14px; height: 14px;
+      border-radius: 50%;
+      background: var(--dark-bg1);
+      border: 2px solid #fff;
+    }
+
+    .mock-tags { display: flex; gap: 5px; }
+    .mock-tag {
+      padding: 2px 7px;
+      border-radius: 3px;
+      font-size: 9px;
+      font-family: var(--mono);
+      background: rgba(52,211,153,0.15);
+      color: #34d399;
+      border: 1px solid rgba(52,211,153,0.25);
+    }
+
+    .mock-tag.warn {
+      background: rgba(251,191,36,0.15);
+      color: #fbbf24;
+      border-color: rgba(251,191,36,0.25);
+    }
+
+    .mock-findings { display: flex; flex-direction: column; gap: 6px; }
+
+    .mock-finding {
+      background: var(--dark-bg3);
+      border: 1px solid var(--dark-border);
+      border-radius: 6px;
+      padding: 7px 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .mock-pill {
+      font-size: 8px;
+      font-family: var(--mono);
+      font-weight: 700;
+      padding: 2px 5px;
+      border-radius: 3px;
+      flex-shrink: 0;
+    }
+
+    .mock-pill.c { background: rgba(248,113,113,0.15); color: #f87171; }
+    .mock-pill.h { background: rgba(251,146,60,0.15); color: #fb923c; }
+    .mock-pill.m { background: rgba(251,191,36,0.15); color: #fbbf24; }
+
+    .mock-finding-text { font-size: 10px; color: var(--dark-text); opacity: 0.85; }
+
+    /* ── Stats bar ── */
+    .stats-bar {
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 40px 6%;
+      background: var(--bg1);
+    }
+
+    .stats-inner {
+      max-width: 1160px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 40px;
+    }
+
+    .stat-item { text-align: center; }
+
+    .stat-number {
+      font-family: var(--display);
+      font-size: 42px;
+      font-weight: 800;
+      color: var(--headline);
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+
+    .stat-number .accent { color: var(--accent); }
+    .stat-label { font-size: 13px; color: var(--muted); }
+
+    /* ── Section shared ── */
+    .section-eyebrow {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 12px;
+    }
+
+    .section-title {
+      font-family: var(--display);
+      font-size: clamp(28px, 4vw, 46px);
+      font-weight: 800;
+      color: var(--headline);
+      line-height: 1.1;
+      margin-bottom: 16px;
+    }
+
+    .section-sub {
+      font-size: 17px;
+      color: #475569;
+      max-width: 540px;
+      line-height: 1.7;
+    }
+
+    /* ── Problem section ── */
+    .problem {
+      padding: 100px 6%;
+    }
+
+    .problem-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-top: 56px;
+    }
+
+    .problem-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 1px 3px rgba(15,23,42,0.04);
+    }
+
+    .problem-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--red), transparent);
+    }
+
+    .problem-card:hover { border-color: rgba(220,38,38,0.3); transform: translateY(-2px); box-shadow: 0 12px 24px rgba(15,23,42,0.06); }
+
+    .problem-icon {
+      width: 40px; height: 40px;
+      border-radius: 8px;
+      background: rgba(220,38,38,0.08);
+      border: 1px solid rgba(220,38,38,0.18);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+      margin-bottom: 18px;
+    }
+
+    .problem-title {
+      font-family: var(--display);
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--headline);
+      margin-bottom: 10px;
+    }
+
+    .problem-desc { font-size: 14px; color: #475569; line-height: 1.7; }
+
+    /* ── Features ── */
+    .features { padding: 100px 6%; background: var(--bg1); border-top: 1px solid var(--border); }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+      margin-top: 60px;
+    }
+
+    .features-grid.reverse { direction: rtl; }
+    .features-grid.reverse > * { direction: ltr; }
+
+    .feature-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+
+    .feature-tag.blue { background: rgba(56,189,248,0.1); border: 1px solid rgba(56,189,248,0.2); color: var(--accent); }
+    .feature-tag.green { background: rgba(52,211,153,0.1); border: 1px solid rgba(52,211,153,0.2); color: var(--green); }
+    .feature-tag.orange { background: rgba(251,146,60,0.1); border: 1px solid rgba(251,146,60,0.2); color: var(--orange); }
+    .feature-tag.yellow { background: rgba(251,191,36,0.1); border: 1px solid rgba(251,191,36,0.2); color: var(--yellow); }
+
+    .feature-title {
+      font-family: var(--display);
+      font-size: 30px;
+      font-weight: 700;
+      color: var(--headline);
+      margin-bottom: 14px;
+      line-height: 1.2;
+    }
+
+    .feature-desc { font-size: 15px; color: #475569; line-height: 1.75; margin-bottom: 24px; }
+
+    .feature-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+
+    .feature-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 14px;
+      color: var(--text);
+    }
+
+    .feature-list li::before {
+      content: '';
+      width: 16px; height: 16px;
+      border-radius: 50%;
+      background: rgba(52,211,153,0.15);
+      border: 1px solid rgba(52,211,153,0.3);
+      flex-shrink: 0;
+      margin-top: 3px;
+      position: relative;
+    }
+
+    .feature-list li::before {
+      background: var(--green);
+      mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3 8l3.5 3.5L13 4.5' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E") center/contain no-repeat;
+      background-color: var(--green);
+      border: none;
+      width: 14px; height: 14px;
+      margin-top: 4px;
+    }
+
+    /* Feature card visual — stays dark (this IS the product UI) */
+    .feature-visual {
+      background: var(--dark-bg);
+      border: 1px solid var(--dark-border2);
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 20px 40px rgba(15,23,42,0.12);
+    }
+
+    .terminal {
+      background: #000;
+      border-radius: 8px;
+      overflow: hidden;
+      font-family: var(--mono);
+      font-size: 12px;
+    }
+
+    .terminal-bar {
+      background: #1a1a1a;
+      padding: 8px 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .terminal-bar span { font-size: 11px; color: #666; margin-left: 6px; }
+    .term-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .terminal-body { padding: 14px; display: flex; flex-direction: column; gap: 4px; }
+    .term-line { line-height: 1.6; }
+    .term-prompt { color: var(--dark-accent); }
+    .term-cmd { color: #e2e8f0; }
+    .term-out { color: #94a3b8; }
+    .term-finding { color: #f87171; }
+    .term-ok { color: #34d399; }
+    .term-warn { color: #fbbf24; }
+    .term-cursor { display: inline-block; width: 8px; height: 14px; background: var(--dark-accent); animation: blink 1s step-end infinite; vertical-align: text-bottom; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+    /* Monitor visual */
+    .monitor-visual {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .monitor-event {
+      background: var(--dark-bg2);
+      border: 1px solid var(--dark-border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      animation: slideIn 0.4s ease both;
+    }
+
+    .monitor-event.alert { border-color: rgba(248,113,113,0.3); background: rgba(248,113,113,0.08); }
+    .monitor-event.ai { border-color: rgba(56,189,248,0.3); background: rgba(56,189,248,0.08); }
+    .monitor-event.ok { border-color: rgba(52,211,153,0.3); background: rgba(52,211,153,0.08); }
+
+    @keyframes slideIn { from{opacity:0;transform:translateX(-8px)} to{opacity:1;transform:translateX(0)} }
+
+    .monitor-badge {
+      font-size: 9px;
+      font-family: var(--mono);
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 2px 7px;
+      border-radius: 3px;
+      margin-bottom: 5px;
+      display: inline-block;
+    }
+
+    .monitor-badge.alert { background: rgba(248,113,113,0.15); color: #f87171; }
+    .monitor-badge.ai { background: rgba(56,189,248,0.15); color: var(--dark-accent); }
+    .monitor-badge.ok { background: rgba(52,211,153,0.15); color: #34d399; }
+
+    .monitor-file { font-family: var(--mono); font-size: 11px; color: var(--dark-text); margin-bottom: 4px; }
+    .monitor-msg { font-size: 12px; color: var(--dark-muted); }
+
+    /* Chat visual */
+    .chat-visual { display: flex; flex-direction: column; gap: 10px; }
+
+    .chat-msg { display: flex; gap: 8px; }
+    .chat-msg.user { flex-direction: row-reverse; }
+
+    .chat-av {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--mono);
+      font-size: 9px;
+      font-weight: 700;
+    }
+
+    .chat-av.ai { background: rgba(56,189,248,0.15); border: 1px solid rgba(56,189,248,0.3); color: var(--dark-accent); }
+    .chat-av.u { background: rgba(52,211,153,0.15); border: 1px solid rgba(52,211,153,0.25); color: #34d399; }
+
+    .chat-bubble {
+      max-width: 80%;
+      background: var(--dark-bg2);
+      border: 1px solid var(--dark-border);
+      border-radius: 10px;
+      padding: 9px 12px;
+      font-size: 12px;
+      line-height: 1.6;
+      color: var(--dark-text);
+    }
+
+    .chat-msg.user .chat-bubble { background: rgba(56,189,248,0.1); border-color: rgba(56,189,248,0.2); }
+
+    .chat-breach {
+      background: rgba(248,113,113,0.1);
+      border: 1px solid rgba(248,113,113,0.25);
+      border-radius: 6px;
+      padding: 7px 10px;
+      margin-top: 7px;
+      font-size: 11px;
+    }
+
+    .chat-breach-title { color: #f87171; font-weight: 600; margin-bottom: 3px; }
+    .chat-breach-body { color: var(--dark-muted); }
+
+    /* ── How it works ── */
+    .how { padding: 100px 6%; }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 32px;
+      margin-top: 60px;
+      position: relative;
+    }
+
+    .steps::before {
+      content: '';
+      position: absolute;
+      top: 28px;
+      left: 20%;
+      right: 20%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border2), var(--border2), transparent);
+    }
+
+    .step {
+      text-align: center;
+      padding: 0 20px;
+    }
+
+    .step-num {
+      width: 56px; height: 56px;
+      border-radius: 50%;
+      background: rgba(14,165,233,0.08);
+      border: 1px solid var(--border2);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--mono);
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--accent);
+      margin: 0 auto 20px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .step-title {
+      font-family: var(--display);
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--headline);
+      margin-bottom: 10px;
+    }
+
+    .step-desc { font-size: 14px; color: #475569; line-height: 1.7; }
+
+    /* ── Pricing ── */
+    .pricing { padding: 100px 6%; background: var(--bg1); border-top: 1px solid var(--border); }
+
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      max-width: 860px;
+      margin: 56px auto 0;
+    }
+
+    .pricing-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 36px;
+      transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 1px 3px rgba(15,23,42,0.04);
+    }
+
+    .pricing-card:hover { transform: translateY(-2px); box-shadow: 0 14px 28px rgba(15,23,42,0.08); }
+
+    .pricing-card.featured {
+      background: linear-gradient(135deg, rgba(14,165,233,0.05), rgba(14,165,233,0.02));
+      border-color: rgba(14,165,233,0.35);
+      position: relative;
+      box-shadow: 0 14px 30px rgba(14,165,233,0.12);
+    }
+
+    .featured-badge {
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--accent2);
+      color: #ffffff;
+      font-size: 11px;
+      font-family: var(--mono);
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      padding: 4px 14px;
+      border-radius: 20px;
+      white-space: nowrap;
+    }
+
+    .pricing-tier {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+
+    .pricing-price {
+      font-family: var(--display);
+      font-size: 48px;
+      font-weight: 800;
+      color: var(--headline);
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .pricing-price sup {
+      font-size: 22px;
+      vertical-align: top;
+      margin-top: 8px;
+      display: inline-block;
+    }
+
+    .pricing-period { font-size: 13px; color: var(--muted); margin-bottom: 24px; }
+
+    .pricing-desc { font-size: 14px; color: #475569; margin-bottom: 28px; line-height: 1.6; }
+
+    .pricing-features { list-style: none; display: flex; flex-direction: column; gap: 10px; margin-bottom: 32px; }
+
+    .pricing-features li {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      color: var(--text);
+    }
+
+    .check { color: var(--green); font-size: 14px; flex-shrink: 0; }
+    .lock { color: var(--muted); font-size: 14px; flex-shrink: 0; }
+
+    .pricing-features li.locked { color: var(--muted); }
+
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 28px 0;
+    }
+
+    /* ── Breach showcase (dark contrast section) ── */
+    .breach-section {
+      padding: 100px 6%;
+      position: relative;
+      overflow: hidden;
+      background: var(--dark-bg);
+      color: var(--dark-text);
+    }
+
+    .breach-section::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(56,189,248,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(56,189,248,0.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+    }
+
+    .breach-section::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 50% at 50% 0%, rgba(220,38,38,0.10), transparent 70%);
+      pointer-events: none;
+    }
+
+    .breach-section .container { position: relative; z-index: 1; }
+
+    .breach-section .section-eyebrow { color: var(--dark-accent); }
+    .breach-section .section-title { color: #ffffff; }
+    .breach-section .section-sub { color: var(--dark-muted); }
+
+    .breach-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin-top: 56px;
+    }
+
+    .breach-card {
+      background: var(--dark-bg1);
+      border: 1px solid var(--dark-border);
+      border-left: 3px solid #f87171;
+      border-radius: 0 10px 10px 0;
+      padding: 20px 22px;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+
+    .breach-card:hover { border-color: rgba(248,113,113,0.45); border-left-color: #f87171; transform: translateX(3px); }
+
+    .breach-title { font-size: 14px; font-weight: 600; color: #ffffff; margin-bottom: 6px; }
+    .breach-consequence { font-size: 13px; color: var(--dark-muted); margin-bottom: 8px; }
+    .breach-meta { display: flex; gap: 10px; }
+
+    .breach-tag {
+      font-size: 10px;
+      font-family: var(--mono);
+      padding: 2px 7px;
+      border-radius: 3px;
+    }
+
+    .breach-tag.time { background: rgba(251,146,60,0.15); color: #fb923c; }
+    .breach-tag.detect { background: rgba(56,189,248,0.15); color: var(--dark-accent); }
+
+    /* ── FAQ ── */
+    .faq { padding: 100px 6%; background: var(--bg1); border-top: 1px solid var(--border); }
+
+    .faq-list {
+      max-width: 720px;
+      margin: 56px auto 0;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .faq-item {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+
+    .faq-item:hover { border-color: var(--border2); box-shadow: 0 4px 12px rgba(14,165,233,0.06); }
+
+    .faq-question {
+      width: 100%;
+      background: none;
+      border: none;
+      padding: 18px 22px;
+      text-align: left;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--headline);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      transition: color 0.15s;
+    }
+
+    .faq-question:hover { color: var(--accent); }
+
+    .faq-chevron {
+      width: 18px; height: 18px;
+      flex-shrink: 0;
+      transition: transform 0.2s;
+      color: var(--muted);
+    }
+
+    .faq-item.open .faq-chevron { transform: rotate(180deg); }
+
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+    }
+
+    .faq-item.open .faq-answer { max-height: 300px; }
+
+    .faq-answer-inner {
+      padding: 0 22px 18px;
+      font-size: 14px;
+      color: #475569;
+      line-height: 1.75;
+      border-top: 1px solid var(--border);
+      padding-top: 16px;
+    }
+
+    /* ── CTA ── */
+    .cta-section {
+      padding: 100px 6%;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta-section::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 60% 50% at 50% 50%, rgba(14,165,233,0.08), transparent);
+    }
+
+    .cta-title {
+      font-family: var(--display);
+      font-size: clamp(32px, 4vw, 52px);
+      font-weight: 800;
+      color: var(--headline);
+      margin-bottom: 16px;
+      position: relative;
+    }
+
+    .cta-sub {
+      font-size: 17px;
+      color: #475569;
+      margin-bottom: 36px;
+      position: relative;
+    }
+
+    .cta-actions {
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      position: relative;
+    }
+
+    /* ── Waitlist form ── */
+    .waitlist-form {
+      display: flex;
+      gap: 10px;
+      max-width: 420px;
+      margin: 0 auto 12px;
+      position: relative;
+    }
+
+    .waitlist-input {
+      flex: 1;
+      background: #ffffff;
+      border: 1px solid rgba(15,23,42,0.15);
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 14px;
+      color: var(--text);
+      outline: none;
+      font-family: var(--body);
+      transition: border-color 0.15s, box-shadow 0.15s;
+      box-shadow: 0 1px 2px rgba(15,23,42,0.04);
+    }
+
+    .waitlist-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(14,165,233,0.15); }
+    .waitlist-input::placeholder { color: var(--muted); }
+
+    .waitlist-success {
+      text-align: center;
+      font-size: 13px;
+      color: var(--green);
+      font-family: var(--mono);
+      display: none;
+    }
+
+    /* ── Footer ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 40px 6%;
+      position: relative;
+      z-index: 1;
+      background: var(--bg1);
+    }
+
+    .footer-inner {
+      max-width: 1160px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .footer-brand {
+      font-family: var(--mono);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .footer-brand .hz { color: var(--headline); }
+    .footer-brand .sec { color: var(--accent); }
+    .footer-brand .sub { display: block; font-size: 11px; color: var(--muted); font-weight: 400; margin-top: 2px; }
+
+    .footer-links {
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+
+    .footer-links a {
+      font-size: 13px;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+
+    .footer-links a:hover { color: var(--accent); }
+
+    .footer-copy {
+      font-size: 12px;
+      color: var(--muted);
+      font-family: var(--mono);
+    }
+
+    /* ── Scan line animation ── */
+    .scan-line {
+      position: absolute;
+      left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent 0%, rgba(56,189,248,0.4) 50%, transparent 100%);
+      animation: scan 4s linear infinite;
+      pointer-events: none;
+    }
+
+    @keyframes scan {
+      0% { top: 0; opacity: 0; }
+      5% { opacity: 1; }
+      95% { opacity: 1; }
+      100% { top: 100%; opacity: 0; }
+    }
+
+    /* ─────────────────────────────────────────
+       ANIMATED EXPLAINER "VIDEO" SECTION
+       Self-playing looped animation with 5 scenes
+       ───────────────────────────────────────── */
+    .explainer {
+      padding: 100px 6% 120px;
+      position: relative;
+      overflow: hidden;
+      background: var(--bg);
+      border-top: 1px solid var(--border);
+    }
+
+    .explainer::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 70% 50% at 50% 0%, rgba(14,165,233,0.10), transparent 70%);
+      pointer-events: none;
+    }
+
+    .explainer .container { position: relative; z-index: 1; }
+
+    .explainer-header {
+      text-align: center;
+      max-width: 720px;
+      margin: 0 auto 56px;
+    }
+
+    .explainer-header .section-sub { margin: 0 auto; }
+
+    /* The "video player" frame */
+    .player {
+      max-width: 1040px;
+      margin: 0 auto;
+      background: var(--dark-bg);
+      border: 1px solid var(--dark-border2);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow:
+        0 30px 60px rgba(15,23,42,0.18),
+        0 0 0 1px rgba(14,165,233,0.08),
+        0 0 80px rgba(14,165,233,0.12);
+      position: relative;
+    }
+
+    /* Player top chrome (window dots + title) */
+    .player-chrome {
+      background: var(--dark-bg2);
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1px solid var(--dark-border);
+    }
+
+    .player-chrome-dots { display: flex; gap: 6px; }
+    .player-chrome-dots span {
+      width: 11px; height: 11px; border-radius: 50%;
+      display: inline-block;
+    }
+    .player-chrome-dots span:nth-child(1) { background: #ef4444; }
+    .player-chrome-dots span:nth-child(2) { background: #f59e0b; }
+    .player-chrome-dots span:nth-child(3) { background: #22c55e; }
+
+    .player-chrome-title {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--dark-muted);
+      flex: 1;
+      text-align: center;
+      margin-right: 54px; /* compensate for dots on left */
+    }
+
+    .player-chrome-title .pulse {
+      display: inline-block;
+      width: 7px; height: 7px;
+      background: #ef4444;
+      border-radius: 50%;
+      margin-right: 8px;
+      vertical-align: middle;
+      animation: recPulse 1.4s ease-in-out infinite;
+    }
+
+    @keyframes recPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+
+    /* The stage where scenes live */
+    .stage {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background:
+        radial-gradient(ellipse 70% 60% at 50% 30%, rgba(14,165,233,0.08), transparent 60%),
+        var(--dark-bg);
+      overflow: hidden;
+    }
+
+    .stage::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(56,189,248,0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(56,189,248,0.05) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+    }
+
+    /* Each scene is absolutely positioned, staggered via animation-delay */
+    .scene {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 48px 80px;
+      opacity: 0;
+      animation: scenePlay 25s infinite;
+      color: var(--dark-text);
+    }
+
+    .scene-1 { animation-delay: 0s; }
+    .scene-2 { animation-delay: 5s; }
+    .scene-3 { animation-delay: 10s; }
+    .scene-4 { animation-delay: 15s; }
+    .scene-5 { animation-delay: 20s; }
+
+    @keyframes scenePlay {
+      0%   { opacity: 0; transform: scale(0.98); }
+      2%   { opacity: 1; transform: scale(1); }
+      18%  { opacity: 1; transform: scale(1); }
+      20%  { opacity: 0; transform: scale(1.01); }
+      100% { opacity: 0; transform: scale(0.98); }
+    }
+
+    .scene-caption {
+      position: absolute;
+      top: 28px;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+      width: calc(100% - 80px);
+    }
+
+    .scene-step {
+      display: inline-block;
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--dark-accent);
+      background: rgba(56,189,248,0.12);
+      border: 1px solid rgba(56,189,248,0.25);
+      padding: 4px 12px;
+      border-radius: 20px;
+      margin-bottom: 10px;
+    }
+
+    .scene-title {
+      font-family: var(--display);
+      font-size: 22px;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: -0.01em;
+    }
+
+    /* ─────── SCENE 1: Point at your project ─────── */
+    .s1-finder {
+      width: 70%;
+      max-width: 460px;
+      background: var(--dark-bg2);
+      border: 1px solid var(--dark-border2);
+      border-radius: 10px;
+      overflow: hidden;
+      margin-top: 20px;
+    }
+
+    .s1-finder-bar {
+      padding: 8px 12px;
+      background: var(--dark-bg3);
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--dark-muted);
+      border-bottom: 1px solid var(--dark-border);
+    }
+
+    .s1-files { padding: 14px 16px; }
+
+    .s1-file {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 10px;
+      border-radius: 6px;
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--dark-text);
+      margin-bottom: 2px;
+    }
+
+    .s1-file .ic { width: 14px; height: 14px; color: var(--dark-accent); }
+    .s1-file.highlight {
+      background: rgba(56,189,248,0.15);
+      border: 1px solid rgba(56,189,248,0.3);
+      animation: s1Highlight 5s ease 1.8s infinite;
+    }
+
+    @keyframes s1Highlight {
+      0%, 100% { background: var(--dark-bg2); border-color: transparent; }
+      5%, 60%  { background: rgba(56,189,248,0.18); border-color: rgba(56,189,248,0.4); }
+    }
+
+    .s1-cursor {
+      position: absolute;
+      width: 18px; height: 18px;
+      pointer-events: none;
+      animation: s1CursorMove 5s ease 0s infinite;
+      opacity: 0;
+      top: 56%;
+      left: 30%;
+    }
+
+    @keyframes s1CursorMove {
+      0%   { top: 45%; left: 22%; opacity: 0; }
+      8%   { opacity: 1; }
+      35%  { top: 60%; left: 48%; opacity: 1; }
+      45%  { top: 60%; left: 48%; transform: scale(0.85); }
+      55%  { top: 60%; left: 48%; transform: scale(1); }
+      85%  { top: 60%; left: 48%; opacity: 1; }
+      95%  { opacity: 0; }
+      100% { top: 45%; left: 22%; opacity: 0; }
+    }
+
+    /* ─────── SCENE 2: Scanner finds issues ─────── */
+    .s2-wrap {
+      width: 80%;
+      max-width: 620px;
+      background: var(--dark-bg2);
+      border: 1px solid var(--dark-border2);
+      border-radius: 10px;
+      overflow: hidden;
+      margin-top: 24px;
+      position: relative;
+    }
+
+    .s2-header {
+      padding: 10px 14px;
+      background: var(--dark-bg3);
+      border-bottom: 1px solid var(--dark-border);
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--dark-muted);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .s2-header .right { color: var(--dark-accent); }
+
+    .s2-body {
+      padding: 14px 16px;
+      font-family: var(--mono);
+      font-size: 12px;
+      position: relative;
+      min-height: 140px;
+    }
+
+    .s2-line {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 4px 0;
+      color: var(--dark-muted);
+      animation: s2Reveal 5s ease infinite;
+      opacity: 0;
+    }
+
+    .s2-line .sev {
+      font-weight: 700;
+      font-size: 10px;
+      padding: 2px 7px;
+      border-radius: 3px;
+      flex-shrink: 0;
+    }
+
+    .s2-line.crit .sev  { background: rgba(248,113,113,0.18); color: #fca5a5; }
+    .s2-line.high .sev  { background: rgba(251,146,60,0.18); color: #fdba74; }
+    .s2-line.med  .sev  { background: rgba(251,191,36,0.18); color: #fcd34d; }
+
+    .s2-line.crit { animation-delay: 1.2s; }
+    .s2-line.high { animation-delay: 1.8s; }
+    .s2-line.high.b { animation-delay: 2.4s; }
+    .s2-line.med  { animation-delay: 3.0s; }
+
+    @keyframes s2Reveal {
+      0%, 20%  { opacity: 0; transform: translateX(-8px); }
+      25%, 90% { opacity: 1; transform: translateX(0); }
+      100%     { opacity: 1; transform: translateX(0); }
+    }
+
+    .s2-scanline {
+      position: absolute;
+      left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--dark-accent), transparent);
+      filter: blur(1px);
+      opacity: 0.7;
+      animation: s2Scan 5s ease-in-out infinite;
+      top: 0;
+    }
+
+    @keyframes s2Scan {
+      0%   { top: 0%;   opacity: 0; }
+      5%   { opacity: 0.9; }
+      55%  { top: 95%;  opacity: 0.9; }
+      70%, 100% { opacity: 0; top: 95%; }
+    }
+
+    /* ─────── SCENE 3: AI explains & fixes ─────── */
+    .s3-chat {
+      width: 80%;
+      max-width: 580px;
+      margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .s3-bubble {
+      padding: 12px 14px;
+      border-radius: 12px;
+      font-size: 13px;
+      line-height: 1.6;
+      max-width: 85%;
+      opacity: 0;
+      animation: s3Pop 5s ease infinite;
+    }
+
+    .s3-bubble.user {
+      align-self: flex-end;
+      background: rgba(56,189,248,0.12);
+      border: 1px solid rgba(56,189,248,0.28);
+      color: var(--dark-text);
+      animation-delay: 0.4s;
+    }
+
+    .s3-bubble.ai {
+      align-self: flex-start;
+      background: var(--dark-bg2);
+      border: 1px solid var(--dark-border2);
+      color: var(--dark-text);
+      animation-delay: 1.6s;
+    }
+
+    .s3-bubble.ai .breach {
+      margin-top: 8px;
+      background: rgba(248,113,113,0.1);
+      border: 1px solid rgba(248,113,113,0.3);
+      border-radius: 6px;
+      padding: 7px 10px;
+      font-size: 11px;
+      color: #fca5a5;
+    }
+
+    .s3-bubble.ai .breach b { color: #fca5a5; }
+
+    .s3-fix {
+      display: inline-block;
+      margin-top: 8px;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: #34d399;
+      background: rgba(52,211,153,0.1);
+      border: 1px solid rgba(52,211,153,0.3);
+      padding: 3px 9px;
+      border-radius: 4px;
+    }
+
+    @keyframes s3Pop {
+      0%, 10%   { opacity: 0; transform: translateY(8px); }
+      15%, 90%  { opacity: 1; transform: translateY(0); }
+      100%      { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ─────── SCENE 4: Live monitor ─────── */
+    .s4-feed {
+      width: 80%;
+      max-width: 560px;
+      margin-top: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .s4-evt {
+      background: var(--dark-bg2);
+      border: 1px solid var(--dark-border);
+      border-left: 3px solid var(--dark-border2);
+      border-radius: 0 8px 8px 0;
+      padding: 10px 14px;
+      font-size: 12px;
+      color: var(--dark-text);
+      opacity: 0;
+      animation: s4Slide 5s ease infinite;
+    }
+
+    .s4-evt .tag {
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      padding: 2px 7px;
+      border-radius: 3px;
+      margin-right: 8px;
+    }
+
+    .s4-evt .path {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--dark-muted);
+    }
+
+    .s4-evt.change { animation-delay: 0.3s; }
+    .s4-evt.alert  { animation-delay: 1.2s; border-left-color: #f87171; }
+    .s4-evt.ai     { animation-delay: 2.2s; border-left-color: var(--dark-accent); }
+    .s4-evt.ok     { animation-delay: 3.4s; border-left-color: #34d399; }
+
+    .s4-evt.change .tag { background: rgba(148,163,184,0.15); color: #cbd5e1; }
+    .s4-evt.alert  .tag { background: rgba(248,113,113,0.15); color: #fca5a5; }
+    .s4-evt.ai     .tag { background: rgba(56,189,248,0.15); color: var(--dark-accent); }
+    .s4-evt.ok     .tag { background: rgba(52,211,153,0.15); color: #34d399; }
+
+    @keyframes s4Slide {
+      0%, 5%    { opacity: 0; transform: translateX(-12px); }
+      10%, 90%  { opacity: 1; transform: translateX(0); }
+      100%      { opacity: 1; transform: translateX(0); }
+    }
+
+    /* ─────── SCENE 5: You stay secure ─────── */
+    .s5-card {
+      width: 70%;
+      max-width: 460px;
+      background: var(--dark-bg2);
+      border: 1px solid rgba(52,211,153,0.3);
+      border-radius: 14px;
+      padding: 28px 32px;
+      margin-top: 20px;
+      text-align: center;
+      box-shadow: 0 0 40px rgba(52,211,153,0.08);
+    }
+
+    .s5-check {
+      width: 54px; height: 54px;
+      border-radius: 50%;
+      background: rgba(52,211,153,0.15);
+      border: 2px solid #34d399;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+      color: #34d399;
+      font-size: 26px;
+      font-weight: 700;
+      animation: s5Check 5s ease infinite;
+      opacity: 0;
+    }
+
+    @keyframes s5Check {
+      0%       { opacity: 0; transform: scale(0.5); }
+      12%      { opacity: 1; transform: scale(1.2); }
+      22%, 90% { opacity: 1; transform: scale(1); }
+      100%     { opacity: 1; transform: scale(1); }
+    }
+
+    .s5-score {
+      font-family: var(--display);
+      font-size: 48px;
+      font-weight: 800;
+      color: #ffffff;
+      line-height: 1;
+      display: inline-block;
+      opacity: 0;
+      animation: s5Fade 5s ease infinite;
+    }
+
+    .s5-unit { font-size: 20px; color: var(--dark-muted); font-weight: 500; opacity: 0; animation: s5Fade 5s ease infinite; }
+
+    @keyframes s5Fade {
+      0%, 10%   { opacity: 0; transform: translateY(6px); }
+      16%       { opacity: 1; transform: translateY(0); }
+      22%, 90%  { opacity: 1; transform: translateY(0); }
+      100%      { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Score tick-up bars visualization (the 5 small progress pips below the score) */
+    .s5-ticks {
+      display: flex;
+      justify-content: center;
+      gap: 5px;
+      margin: 12px 0 4px;
+    }
+
+    .s5-ticks span {
+      width: 28px; height: 4px;
+      border-radius: 2px;
+      background: rgba(148,163,184,0.15);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .s5-ticks span::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, #34d399, #10b981);
+      transform: scaleX(0);
+      transform-origin: left center;
+      animation: s5TickFill 5s ease infinite;
+    }
+
+    .s5-ticks span:nth-child(1)::after { animation-delay: 0.4s; }
+    .s5-ticks span:nth-child(2)::after { animation-delay: 0.7s; }
+    .s5-ticks span:nth-child(3)::after { animation-delay: 1.0s; }
+    .s5-ticks span:nth-child(4)::after { animation-delay: 1.3s; }
+    .s5-ticks span:nth-child(5)::after { animation-delay: 1.6s; }
+
+    @keyframes s5TickFill {
+      0%, 15%   { transform: scaleX(0); }
+      22%, 90%  { transform: scaleX(1); }
+      100%      { transform: scaleX(1); }
+    }
+
+    .s5-label {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--dark-muted);
+      margin-top: 6px;
+    }
+
+    .s5-meta {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--dark-border);
+      display: flex;
+      justify-content: space-around;
+      gap: 16px;
+    }
+
+    .s5-meta > div { text-align: center; }
+    .s5-meta .num { font-family: var(--display); font-size: 20px; font-weight: 700; color: #ffffff; }
+    .s5-meta .lbl { font-size: 11px; color: var(--dark-muted); margin-top: 2px; }
+
+    /* Progress bar */
+    .player-progress {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 4px;
+      background: rgba(255,255,255,0.06);
+      display: flex;
+      z-index: 2;
+    }
+
+    .player-progress span {
+      flex: 1;
+      position: relative;
+      height: 100%;
+    }
+
+    .player-progress span::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      width: 0;
+      background: linear-gradient(90deg, var(--dark-accent), #0ea5e9);
+      animation: progFill 25s linear infinite;
+    }
+
+    .player-progress span:nth-child(1)::after { animation-delay: 0s; }
+    .player-progress span:nth-child(2)::after { animation-delay: 5s; }
+    .player-progress span:nth-child(3)::after { animation-delay: 10s; }
+    .player-progress span:nth-child(4)::after { animation-delay: 15s; }
+    .player-progress span:nth-child(5)::after { animation-delay: 20s; }
+
+    @keyframes progFill {
+      0%, 80%, 100% { width: 0; opacity: 0.5; }
+      0.1%          { width: 0; opacity: 1; }
+      20%           { width: 100%; opacity: 1; }
+      20.1%         { opacity: 0.5; }
+    }
+
+    /* Player footer / controls */
+    .player-controls {
+      background: var(--dark-bg2);
+      border-top: 1px solid var(--dark-border);
+      padding: 12px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--dark-muted);
+    }
+
+    .player-controls .left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .player-controls .play-ic {
+      width: 0; height: 0;
+      border-left: 8px solid #ffffff;
+      border-top: 5px solid transparent;
+      border-bottom: 5px solid transparent;
+    }
+
+    .player-controls .right {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .player-controls .auto-play {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .player-controls .auto-play .dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: #34d399;
+      box-shadow: 0 0 8px rgba(52,211,153,0.6);
+      animation: recPulse 1.8s ease-in-out infinite;
+    }
+
+    /* Respect reduced-motion preference — show scene 3 (AI) as a still */
+    @media (prefers-reduced-motion: reduce) {
+      .scene, .scene *, .player-progress *, .s1-cursor { animation: none !important; }
+      .scene { opacity: 0; }
+      .scene-3 { opacity: 1; }
+      .s5-score, .s5-unit, .s5-check { opacity: 1; }
+      .s5-ticks span::after { transform: scaleX(1); }
+    }
+
+    /* Explainer CTA below the player */
+    .explainer-cta {
+      text-align: center;
+      margin-top: 36px;
+      font-size: 14px;
+      color: #475569;
+    }
+
+    .explainer-cta a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .explainer-cta a:hover { text-decoration: underline; }
+
+    /* ── Responsive ── */
+    @media (max-width: 900px) {
+      .hero-inner { grid-template-columns: 1fr; }
+      .hero-visual { display: none; }
+      .problem-grid { grid-template-columns: 1fr; }
+      .features-grid { grid-template-columns: 1fr; }
+      .features-grid.reverse { direction: ltr; }
+      .steps { grid-template-columns: 1fr; }
+      .steps::before { display: none; }
+      .pricing-grid { grid-template-columns: 1fr; max-width: 440px; }
+      .breach-grid { grid-template-columns: 1fr; }
+      .stats-inner { grid-template-columns: repeat(2, 1fr); }
+      .nav-links { display: none; }
+
+      /* Explainer — scale down fonts/padding on narrow screens */
+      .scene { padding: 54px 20px 56px; }
+      .scene-caption { top: 18px; }
+      .scene-title { font-size: 16px; }
+      .scene-step { font-size: 10px; padding: 3px 9px; }
+      .s1-finder, .s2-wrap, .s3-chat, .s4-feed, .s5-card { width: 94%; }
+      .s2-body { min-height: 110px; }
+      .s5-score { font-size: 40px; min-width: 100px; }
+      .s5-check { width: 44px; height: 44px; font-size: 22px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Nav ── -->
+<nav>
+  <a href="#" class="nav-brand">
+    <svg width="20" height="24" viewBox="0 0 48 56" fill="none">
+      <path d="M4 4 L44 4 L44 32 Q44 48 24 54 Q4 48 4 32 Z" fill="none" stroke="#0ea5e9" stroke-width="3.5" stroke-linejoin="round"/>
+      <line x1="10" y1="16" x2="10" y2="36" stroke="#0ea5e9" stroke-width="3.5" stroke-linecap="round"/>
+      <line x1="10" y1="26" x2="20" y2="26" stroke="#0ea5e9" stroke-width="3.5" stroke-linecap="round"/>
+      <line x1="20" y1="16" x2="20" y2="36" stroke="#0ea5e9" stroke-width="3.5" stroke-linecap="round"/>
+      <line x1="25" y1="16" x2="38" y2="16" stroke="#0ea5e9" stroke-width="3" stroke-linecap="round"/>
+      <line x1="38" y1="16" x2="25" y2="32" stroke="#0ea5e9" stroke-width="3" stroke-linecap="round"/>
+      <line x1="25" y1="32" x2="38" y2="32" stroke="#0ea5e9" stroke-width="3" stroke-linecap="round"/>
+    </svg>
+    <div class="nav-brand-text">
+      <span class="nav-brand-hz">HZ</span><span class="nav-brand-sec">Sec</span>
+    </div>
+  </a>
+
+  <ul class="nav-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#how">How it works</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+    <li><a href="#explainer">Demo</a></li>
+    <li><a href="#faq">FAQ</a></li>
+  </ul>
+
+  <div class="nav-cta">
+    <a href="#pricing" class="btn btn-ghost">View pricing</a>
+    <a href="#waitlist" class="btn btn-primary">Get early access</a>
+  </div>
+</nav>
+
+<!-- ── Hero ── -->
+<section class="hero">
+  <div class="glow-orb orb-1"></div>
+  <div class="glow-orb orb-2"></div>
+  <div class="scan-line"></div>
+
+  <div class="hero-inner">
+    <div class="hero-content">
+      <div class="hero-eyebrow">
+        <div class="eyebrow-dot"></div>
+        Horizon Zero Security
+      </div>
+      <h1 class="hero-headline">
+        See every threat<br>
+        <span class="accent">before it reaches you.</span>
+      </h1>
+      <p class="hero-sub">
+        HZSec is a local security platform that finds exposed secrets, unsafe configs, and vulnerable code — then fixes them with AI that knows your codebase and real breach history.
+      </p>
+      <div class="hero-actions">
+        <a href="#waitlist" class="btn btn-primary btn-lg">Get early access →</a>
+        <a href="#features" class="btn btn-outline btn-lg">See how it works</a>
+      </div>
+      <p class="hero-note"><span>✓ Runs 100% locally</span> &nbsp;·&nbsp; No code leaves your machine &nbsp;·&nbsp; macOS & Windows</p>
+    </div>
+
+    <div class="hero-visual">
+      <div class="app-mockup">
+        <div class="mockup-topbar">
+          <div class="mockup-dots">
+            <div class="mockup-dot r"></div>
+            <div class="mockup-dot y"></div>
+            <div class="mockup-dot g"></div>
+          </div>
+          <span class="mockup-title">HZSec — Security Platform</span>
+        </div>
+        <div class="mockup-body">
+          <div class="mockup-sidebar">
+            <div class="mock-brand"><span class="hz">HZ</span><span class="sec">Sec</span></div>
+            <div class="mock-nav-item active">▣ Scan Center</div>
+            <div class="mock-nav-item">◈ Assistant</div>
+            <div class="mock-nav-item">◎ Live Monitor</div>
+            <div class="mock-nav-item">≡ Audit Log</div>
+            <div class="mock-nav-item">⚙ Settings</div>
+          </div>
+          <div class="mockup-main">
+            <div class="mock-posture">
+              <div class="mock-posture-label">Security Posture</div>
+              <div class="mock-track"><div class="mock-marker"></div></div>
+              <div class="mock-tags">
+                <div class="mock-tag">Score: 78</div>
+                <div class="mock-tag warn">LOW THREAT</div>
+                <div class="mock-tag">OWASP 71%</div>
+              </div>
+            </div>
+            <div class="mock-findings">
+              <div class="mock-finding">
+                <div class="mock-pill c">CRITICAL</div>
+                <div class="mock-finding-text">AWS access key exposed in config</div>
+              </div>
+              <div class="mock-finding">
+                <div class="mock-pill h">HIGH</div>
+                <div class="mock-finding-text">SSL/TLS disabled in server config</div>
+              </div>
+              <div class="mock-finding">
+                <div class="mock-pill h">HIGH</div>
+                <div class="mock-finding-text">Wildcard CORS policy detected</div>
+              </div>
+              <div class="mock-finding">
+                <div class="mock-pill m">MEDIUM</div>
+                <div class="mock-finding-text">Debug mode enabled in production</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Stats ── -->
+<div class="stats-bar">
+  <div class="stats-inner">
+    <div class="stat-item">
+      <div class="stat-number"><span class="accent">200K+</span></div>
+      <div class="stat-label">CVEs in the knowledge base</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-number"><span class="accent">10</span></div>
+      <div class="stat-label">Real breach cases embedded</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-number"><span class="accent">6</span></div>
+      <div class="stat-label">Scan modes — code to hardening</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-number"><span class="accent">0</span></div>
+      <div class="stat-label">Lines of your code leave your machine</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Problem ── -->
+<section class="problem" id="problem">
+  <div class="container">
+    <div class="section-eyebrow">The problem</div>
+    <h2 class="section-title">Security tools are built<br>for teams. Not for you.</h2>
+    <p class="section-sub">Most developers don't find out about a vulnerability until it's already been exploited. HZSec changes that.</p>
+
+    <div class="problem-grid">
+      <div class="problem-card">
+        <div class="problem-icon">🔍</div>
+        <div class="problem-title">You don't know what you don't know</div>
+        <p class="problem-desc">Secrets get committed, configs get misconfigured, and debug flags get shipped to production. Without a scanner running locally, none of it surfaces until it's too late.</p>
+      </div>
+      <div class="problem-card">
+        <div class="problem-icon">🤖</div>
+        <div class="problem-title">Generic AI gives generic advice</div>
+        <p class="problem-desc">Asking ChatGPT about your security issues means describing your code in words. HZSec's assistant has already read your actual files — it knows exactly what's wrong and where.</p>
+      </div>
+      <div class="problem-card">
+        <div class="problem-icon">⏰</div>
+        <div class="problem-title">You catch issues after the commit</div>
+        <p class="problem-desc">CI/CD scanners run after you've already shipped the problem. HZSec's live monitor watches as you code, alerting you the moment something risky appears in any file.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Features ── -->
+<section class="features" id="features">
+  <div class="container">
+    <div class="section-eyebrow">What HZSec does</div>
+    <h2 class="section-title">Built different.<br>Actually local.</h2>
+    <p class="section-sub">Every feature runs on your machine. No uploads, no cloud processing, no SaaS subscriptions for basic functionality.</p>
+
+    <!-- Feature 1: Scanner -->
+    <div class="features-grid" style="margin-top:60px">
+      <div>
+        <div class="feature-tag blue">Security Scanner</div>
+        <h3 class="feature-title">Six scan modes.<br>One command.</h3>
+        <p class="feature-desc">Full scan, quick scan, secret scan, config audit, web front-end scan, and system hardening — each one tuned to its specific threat category with over 40 detection patterns.</p>
+        <ul class="feature-list">
+          <li>Exposed API keys, passwords, AWS credentials, private keys</li>
+          <li>Misconfigured CORS, SSL/TLS, debug flags, network bindings</li>
+          <li>Unsafe eval, child process execution, DOM injection patterns</li>
+          <li>SSH hardening, sudo rules, file permissions, certificate validation</li>
+        </ul>
+      </div>
+      <div class="feature-visual">
+        <div class="terminal">
+          <div class="terminal-bar">
+            <div class="term-dot" style="background:#f87171"></div>
+            <div class="term-dot" style="background:#fbbf24"></div>
+            <div class="term-dot" style="background:#34d399"></div>
+            <span>HZSec — Full Scan</span>
+          </div>
+          <div class="terminal-body">
+            <div class="term-line"><span class="term-prompt">$</span> <span class="term-cmd">hzsec scan ./my-project --mode full</span></div>
+            <div class="term-line"><span class="term-out">Scanning 247 files across 6 engines...</span></div>
+            <div class="term-line" style="margin-top:6px"><span class="term-finding">✗ CRITICAL  AWS access key in .env (line 12)</span></div>
+            <div class="term-line"><span class="term-finding">✗ HIGH      SSL disabled in server.yml (line 34)</span></div>
+            <div class="term-line"><span class="term-finding">✗ HIGH      Wildcard CORS in nginx.conf (line 8)</span></div>
+            <div class="term-line"><span class="term-warn">⚠ MEDIUM   Debug mode enabled (line 2)</span></div>
+            <div class="term-line"><span class="term-warn">⚠ MEDIUM   HTTP endpoint reference (line 19)</span></div>
+            <div class="term-line" style="margin-top:6px"><span class="term-out">Score: 61 → </span><span class="term-ok">Threat level: MEDIUM</span></div>
+            <div class="term-line"><span class="term-out">5 findings · 3 auto-fixable · </span><span class="term-ok">OWASP: 68%</span></div>
+            <div class="term-line" style="margin-top:4px"><span class="term-prompt">$</span> <span class="term-cursor"></span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Feature 2: Assistant -->
+    <div class="features-grid reverse" style="margin-top:80px">
+      <div>
+        <div class="feature-tag green">AI Assistant</div>
+        <h3 class="feature-title">An expert who's<br>already read your code.</h3>
+        <p class="feature-desc">The assistant doesn't just know security — it knows your specific findings, your project type, your git history, and real breach cases that match your exact issues. Every answer is grounded in your reality.</p>
+        <ul class="feature-list">
+          <li>Real breach cases injected — Uber, Equifax, Log4Shell and more</li>
+          <li>Live CVE database from CISA and NVD, synced on demand</li>
+          <li>OWASP, CIS, and SOC 2 compliance gap analysis</li>
+          <li>Proposes and applies multi-file fixes with a diff review step</li>
+        </ul>
+      </div>
+      <div class="feature-visual">
+        <div class="chat-visual">
+          <div class="chat-msg user">
+            <div class="chat-av u">U</div>
+            <div class="chat-bubble">Why is my AWS key finding so critical? Can you fix it?</div>
+          </div>
+          <div class="chat-msg">
+            <div class="chat-av ai" style="font-size:9px">Hz</div>
+            <div class="chat-bubble">
+              This is critical because exposed AWS keys are exploited in under 10 minutes on average after discovery.
+              <div class="chat-breach">
+                <div class="chat-breach-title">⚠ Real precedent: Uber (2022)</div>
+                <div class="chat-breach-body">AWS keys committed to a private GitHub repo led to 57M records exposed and a $148M settlement.</div>
+              </div>
+              <div style="margin-top:8px;font-size:12px;color:#34d399">I've prepared a fix plan — rotating the key reference to an environment variable. Want to review the diff?</div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Feature 3: Monitor -->
+    <div class="features-grid" style="margin-top:80px">
+      <div>
+        <div class="feature-tag orange">Live Monitor</div>
+        <h3 class="feature-title">Watching while<br>you work.</h3>
+        <p class="feature-desc">The monitor sits in the background watching your files — folders and single files both supported. The moment something risky appears, you get an alert. With your API key, alerts come with AI-generated explanations and fix suggestions.</p>
+        <ul class="feature-list">
+          <li>Diff-based — only alerts on net-new issues, not things you already know about</li>
+          <li>Desktop notifications so you see it even when the app isn't focused</li>
+          <li>AI explains what changed and why it matters, referencing real incidents</li>
+          <li>Session stats track files changed, issues found, and issues resolved</li>
+        </ul>
+      </div>
+      <div class="feature-visual">
+        <div class="monitor-visual">
+          <div class="monitor-event" style="animation-delay:0s">
+            <div class="monitor-badge info" style="background:rgba(74,103,133,0.15);color:#4a6785">FILE CHANGED</div>
+            <div class="monitor-file">config/server.yaml</div>
+          </div>
+          <div class="monitor-event alert" style="animation-delay:0.15s">
+            <div class="monitor-badge alert">⚠ NEW ISSUES (2)</div>
+            <div class="monitor-file">config/server.yaml</div>
+            <div class="monitor-msg">SSL disabled · Debug mode enabled</div>
+          </div>
+          <div class="monitor-event ai" style="animation-delay:0.3s">
+            <div class="monitor-badge ai">✦ AI ALERT</div>
+            <div class="monitor-file">config/server.yaml</div>
+            <div class="monitor-msg">You just disabled TLS in a production config. This matches the Equifax pattern — their expired cert left monitoring blind for 19 months. Re-enable SSL immediately.</div>
+          </div>
+          <div class="monitor-event ok" style="animation-delay:0.45s">
+            <div class="monitor-badge ok">✓ RESOLVED (2)</div>
+            <div class="monitor-file">config/server.yaml</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── How it works ── -->
+<section class="how" id="how">
+  <div class="container">
+    <div style="text-align:center">
+      <div class="section-eyebrow">How it works</div>
+      <h2 class="section-title">Up and running in 60 seconds.</h2>
+      <p class="section-sub" style="margin:0 auto">No accounts, no cloud setup, no pipeline config. Download, open, scan.</p>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-title">Download & open</div>
+        <p class="step-desc">Download HZSec for macOS or Windows. Open it — no install wizard, no dependencies, no account required.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-title">Point at your project</div>
+        <p class="step-desc">Select any folder or file. HZSec scans it locally across your chosen mode — full scan takes seconds on most projects.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-title">Fix what matters</div>
+        <p class="step-desc">Review findings ranked by severity. Apply auto-fixes directly, ask the assistant about anything, or start the monitor for continuous coverage.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Pricing ── -->
+<section class="pricing" id="pricing">
+  <div class="container">
+    <div style="text-align:center">
+      <div class="section-eyebrow">Pricing</div>
+      <h2 class="section-title">Simple. No surprises.</h2>
+      <p class="section-sub" style="margin:0 auto">Start free. Upgrade when you need the AI layer and live monitoring.</p>
+    </div>
+
+    <div class="pricing-grid">
+      <!-- Free tier -->
+      <div class="pricing-card">
+        <div class="pricing-tier">Free</div>
+        <div class="pricing-price">$0</div>
+        <div class="pricing-period">forever</div>
+        <div class="pricing-desc">Everything you need to scan your project, understand your findings, and fix the obvious issues.</div>
+        <ul class="pricing-features">
+          <li><span class="check">✓</span> Full security scanner — all 6 modes</li>
+          <li><span class="check">✓</span> 40+ detection patterns</li>
+          <li><span class="check">✓</span> Auto-fix for common issues</li>
+          <li><span class="check">✓</span> Score history & trend chart</li>
+          <li><span class="check">✓</span> Audit log</li>
+          <li><span class="check">✓</span> Dark & light theme</li>
+          <li class="locked"><span class="lock">○</span> AI assistant</li>
+          <li class="locked"><span class="lock">○</span> Live monitor</li>
+          <li class="locked"><span class="lock">○</span> Breach intelligence</li>
+          <li class="locked"><span class="lock">○</span> Compliance mapping</li>
+        </ul>
+        <a href="#waitlist" class="btn btn-outline" style="width:100%;justify-content:center">Get early access</a>
+      </div>
+
+      <!-- Pro tier -->
+      <div class="pricing-card featured">
+        <div class="featured-badge">MOST POPULAR</div>
+        <div class="pricing-tier">Pro</div>
+        <div class="pricing-price"><sup>$</sup>12</div>
+        <div class="pricing-period">per month · cancel anytime</div>
+        <div class="pricing-desc">The full platform — AI assistant with real breach intelligence, live monitor, and compliance mapping.</div>
+        <ul class="pricing-features">
+          <li><span class="check">✓</span> Everything in Free</li>
+          <li><span class="check">✓</span> AI assistant — explain, fix, advise</li>
+          <li><span class="check">✓</span> Live monitor — files & folders</li>
+          <li><span class="check">✓</span> Real breach case matching</li>
+          <li><span class="check">✓</span> Live CVE database (CISA + NVD)</li>
+          <li><span class="check">✓</span> OWASP · CIS · SOC 2 compliance</li>
+          <li><span class="check">✓</span> Agentic fixes with diff review</li>
+          <li><span class="check">✓</span> Fix memory & recurrence tracking</li>
+          <li><span class="check">✓</span> Desktop notifications</li>
+          <li><span class="check">✓</span> Priority support</li>
+        </ul>
+        <a href="#waitlist" class="btn btn-primary" style="width:100%;justify-content:center">Get early access →</a>
+      </div>
+    </div>
+
+    <p style="text-align:center;margin-top:24px;font-size:13px;color:var(--muted)">Early access members get Pro free for 3 months. No credit card required to join the waitlist.</p>
+  </div>
+</section>
+
+<!-- ── Breach cases ── -->
+<section class="breach-section">
+  <div class="container">
+    <div class="section-eyebrow">Why this matters</div>
+    <h2 class="section-title">These breaches started<br>with issues HZSec detects.</h2>
+    <p class="section-sub">Every breach case is embedded in HZSec's intelligence layer. When the scanner finds a matching pattern, the assistant tells you exactly what happened and how fast it was exploited.</p>
+
+    <div class="breach-grid">
+      <div class="breach-card">
+        <div class="breach-title">Uber — AWS Keys in GitHub (2022)</div>
+        <div class="breach-consequence">57 million records exposed · $148M settlement</div>
+        <div class="breach-meta">
+          <span class="breach-tag time">⏱ &lt; 10 min to exploit</span>
+          <span class="breach-tag detect">HZSec detects: exposed API keys</span>
+        </div>
+      </div>
+      <div class="breach-card">
+        <div class="breach-title">Equifax — Disabled TLS Monitoring (2017)</div>
+        <div class="breach-consequence">147 million records · $575M FTC settlement</div>
+        <div class="breach-meta">
+          <span class="breach-tag time">⏱ 78 days undetected</span>
+          <span class="breach-tag detect">HZSec detects: SSL/TLS disabled</span>
+        </div>
+      </div>
+      <div class="breach-card">
+        <div class="breach-title">Verkada — Hardcoded Admin Password (2021)</div>
+        <div class="breach-consequence">150,000 cameras compromised</div>
+        <div class="breach-meta">
+          <span class="breach-tag time">⏱ Immediate access</span>
+          <span class="breach-tag detect">HZSec detects: hardcoded credentials</span>
+        </div>
+      </div>
+      <div class="breach-card">
+        <div class="breach-title">Log4Shell — Dynamic Execution (2021)</div>
+        <div class="breach-consequence">Hundreds of millions of systems vulnerable</div>
+        <div class="breach-meta">
+          <span class="breach-tag time">⏱ &lt; 2 hrs after disclosure</span>
+          <span class="breach-tag detect">HZSec detects: unsafe eval/exec patterns</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FAQ ── -->
+<section class="faq" id="faq">
+  <div class="container">
+    <div style="text-align:center">
+      <div class="section-eyebrow">FAQ</div>
+      <h2 class="section-title">Common questions.</h2>
+    </div>
+    <div class="faq-list">
+
+      <div class="faq-item">
+        <button class="faq-question">
+          Does my code get sent anywhere?
+          <svg class="faq-chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+        </button>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">No. The scanner, monitor, and all detection logic run entirely on your machine. The only external call is to the Anthropic API when you use the AI assistant — and only the specific findings and snippet you're asking about are sent, not your entire codebase. Your API key is encrypted locally with AES-256-GCM.</div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question">
+          Do I need an Anthropic API key?
+          <svg class="faq-chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+        </button>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">Only for the AI assistant and AI-powered monitor alerts. The full security scanner, auto-fixes, score history, audit log, and all other features work without any API key. You can add your key at any time in the sidebar.</div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question">
+          What operating systems are supported?
+          <svg class="faq-chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+        </button>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">macOS and Windows. HZSec is built with Electron, so it runs natively on both. Linux support is planned for a future release.</div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question">
+          How is HZSec different from Snyk or SonarQube?
+          <svg class="faq-chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+        </button>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">Those tools are built for teams and CI/CD pipelines — they scan after you commit and require cloud accounts. HZSec runs locally on your machine, scans as you code, and pairs every finding with an AI assistant that knows your specific codebase. It's built for individual developers and small teams who want security without the enterprise setup.</div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question">
+          What is the Pro tier's AI assistant actually doing?
+          <svg class="faq-chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+        </button>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">Before every response, the assistant runs a pipeline: it matches your findings against 10 embedded real-world breach cases, searches a live CVE database from CISA and NVD, calculates your compliance gaps against OWASP/CIS/SOC 2, and checks your fix history for long-open or recurring issues. All of that context gets injected into Claude before it answers — so you get expert, specific advice rather than generic security tips.</div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question">
+          Can HZSec make changes to my files?
+          <svg class="faq-chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+        </button>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">Yes — but only with your explicit approval. Quick fixes apply a single safe transformation (toggling a flag, replacing a credential with a placeholder). The AI assistant proposes multi-file fix plans that you review in a diff view before anything is written. Every fix creates a versioned backup in ~/.hzsec/backups/ automatically — your project folder is never polluted.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ── CTA / Waitlist ── -->
+<section class="cta-section" id="waitlist">
+  <div class="container" style="text-align:center">
+    <div class="section-eyebrow" style="justify-content:center;display:flex">Early access</div>
+    <h2 class="cta-title">Your security horizon,<br>always clear.</h2>
+    <p class="cta-sub">Join the waitlist. Early access members get Pro free for 3 months.</p>
+
+    <div class="waitlist-form">
+      <input type="email" class="waitlist-input" placeholder="your@email.com" id="emailInput" />
+      <button class="btn btn-primary" id="waitlistBtn" onclick="submitWaitlist()">Join waitlist →</button>
+    </div>
+    <div class="waitlist-success" id="waitlistSuccess">
+      ✓ You're on the list. We'll be in touch soon.
+    </div>
+    <p style="font-size:12px;color:var(--muted);margin-top:10px;font-family:var(--mono)">No spam. One email when we launch.</p>
+  </div>
+</section>
+
+<!-- ── Animated Explainer "Video" ── -->
+<section class="explainer" id="explainer">
+  <div class="container">
+    <div class="explainer-header">
+      <div class="section-eyebrow">See it in action</div>
+      <h2 class="section-title">How HZSec works.<br>From scan to secure.</h2>
+      <p class="section-sub">Watch a typical session — point HZSec at your project, see what it finds, fix it with AI, and stay protected while you code. All running locally on your machine.</p>
+    </div>
+
+    <div class="player" aria-label="Animated explainer: how HZSec works" role="img">
+      <!-- Player chrome (fake browser/app window) -->
+      <div class="player-chrome">
+        <div class="player-chrome-dots"><span></span><span></span><span></span></div>
+        <div class="player-chrome-title"><span class="pulse"></span>HZSec — Live Demo</div>
+      </div>
+
+      <!-- The stage where scenes animate -->
+      <div class="stage">
+
+        <!-- ── Scene 1: Point at your project ── -->
+        <div class="scene scene-1">
+          <div class="scene-caption">
+            <div class="scene-step">Step 1 of 5</div>
+            <div class="scene-title">Point HZSec at your project</div>
+          </div>
+
+          <div class="s1-finder">
+            <div class="s1-finder-bar">~/projects</div>
+            <div class="s1-files">
+              <div class="s1-file"><svg class="ic" viewBox="0 0 16 16" fill="currentColor"><path d="M1.75 1A1.75 1.75 0 0 0 0 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0 0 16 13.25v-8.5A1.75 1.75 0 0 0 14.25 3H7.5a.25.25 0 0 1-.2-.1l-.9-1.2A1.75 1.75 0 0 0 5 1H1.75Z"/></svg>billing-api</div>
+              <div class="s1-file highlight"><svg class="ic" viewBox="0 0 16 16" fill="currentColor"><path d="M1.75 1A1.75 1.75 0 0 0 0 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0 0 16 13.25v-8.5A1.75 1.75 0 0 0 14.25 3H7.5a.25.25 0 0 1-.2-.1l-.9-1.2A1.75 1.75 0 0 0 5 1H1.75Z"/></svg>web-dashboard</div>
+              <div class="s1-file"><svg class="ic" viewBox="0 0 16 16" fill="currentColor"><path d="M1.75 1A1.75 1.75 0 0 0 0 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0 0 16 13.25v-8.5A1.75 1.75 0 0 0 14.25 3H7.5a.25.25 0 0 1-.2-.1l-.9-1.2A1.75 1.75 0 0 0 5 1H1.75Z"/></svg>auth-service</div>
+              <div class="s1-file"><svg class="ic" viewBox="0 0 16 16" fill="currentColor"><path d="M1.75 1A1.75 1.75 0 0 0 0 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0 0 16 13.25v-8.5A1.75 1.75 0 0 0 14.25 3H7.5a.25.25 0 0 1-.2-.1l-.9-1.2A1.75 1.75 0 0 0 5 1H1.75Z"/></svg>mobile-client</div>
+            </div>
+          </div>
+          <!-- Animated cursor -->
+          <svg class="s1-cursor" viewBox="0 0 18 18" fill="#ffffff" stroke="#0a0f1e" stroke-width="1">
+            <path d="M 2 2 L 2 14 L 6 10 L 9 16 L 11 15 L 8 9 L 13 9 Z"/>
+          </svg>
+        </div>
+
+        <!-- ── Scene 2: Scanner finds issues ── -->
+        <div class="scene scene-2">
+          <div class="scene-caption">
+            <div class="scene-step">Step 2 of 5</div>
+            <div class="scene-title">Scanner runs locally — 6 engines, 40+ patterns</div>
+          </div>
+
+          <div class="s2-wrap">
+            <div class="s2-header">
+              <span>hzsec scan ./web-dashboard --mode full</span>
+              <span class="right">247 files</span>
+            </div>
+            <div class="s2-body">
+              <div class="s2-scanline"></div>
+              <div class="s2-line crit"><span class="sev">CRITICAL</span><span>AWS access key exposed in .env:12</span></div>
+              <div class="s2-line high"><span class="sev">HIGH</span><span>SSL/TLS disabled in server.yml:34</span></div>
+              <div class="s2-line high b"><span class="sev">HIGH</span><span>Wildcard CORS policy in nginx.conf:8</span></div>
+              <div class="s2-line med"><span class="sev">MEDIUM</span><span>Debug mode enabled in production</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Scene 3: AI explains & fixes ── -->
+        <div class="scene scene-3">
+          <div class="scene-caption">
+            <div class="scene-step">Step 3 of 5</div>
+            <div class="scene-title">AI explains, grounded in real breaches</div>
+          </div>
+
+          <div class="s3-chat">
+            <div class="s3-bubble user">Why is the AWS key finding critical? Can you fix it?</div>
+            <div class="s3-bubble ai">
+              Exposed AWS keys are typically exploited within 10 minutes of discovery.
+              <div class="breach"><b>⚠ Real precedent — Uber (2022):</b> AWS keys in a repo led to 57M records exposed.</div>
+              <span class="s3-fix">✓ Fix prepared — rotate to env var</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Scene 4: Live monitor ── -->
+        <div class="scene scene-4">
+          <div class="scene-caption">
+            <div class="scene-step">Step 4 of 5</div>
+            <div class="scene-title">Live monitor catches new risks as you code</div>
+          </div>
+
+          <div class="s4-feed">
+            <div class="s4-evt change"><span class="tag">FILE CHANGED</span><span class="path">config/server.yaml</span></div>
+            <div class="s4-evt alert"><span class="tag">NEW ISSUE</span><span class="path">SSL disabled + debug mode on</span></div>
+            <div class="s4-evt ai"><span class="tag">AI ALERT</span><span class="path">Matches Equifax pattern — re-enable TLS</span></div>
+            <div class="s4-evt ok"><span class="tag">RESOLVED</span><span class="path">server.yaml · 2 issues fixed</span></div>
+          </div>
+        </div>
+
+        <!-- ── Scene 5: You stay secure ── -->
+        <div class="scene scene-5">
+          <div class="scene-caption">
+            <div class="scene-step">Step 5 of 5</div>
+            <div class="scene-title">You stay secure — with zero code leaving your machine</div>
+          </div>
+
+          <div class="s5-card">
+            <div class="s5-check">✓</div>
+            <div><span class="s5-score">94</span><span class="s5-unit"> / 100</span></div>
+            <div class="s5-ticks"><span></span><span></span><span></span><span></span><span></span></div>
+            <div class="s5-label">Security Posture · Clean</div>
+            <div class="s5-meta">
+              <div><div class="num">0</div><div class="lbl">Open critical</div></div>
+              <div><div class="num">4</div><div class="lbl">Auto-fixed</div></div>
+              <div><div class="num">100%</div><div class="lbl">Local</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Progress bar (5 segments, each lights up per scene) -->
+        <div class="player-progress">
+          <span></span><span></span><span></span><span></span><span></span>
+        </div>
+      </div>
+
+      <!-- Fake player controls -->
+      <div class="player-controls">
+        <div class="left">
+          <div class="play-ic"></div>
+          <span>Playing · Auto-loop</span>
+        </div>
+        <div class="right">
+          <div class="auto-play"><span class="dot"></span><span>LIVE</span></div>
+          <span>0:25</span>
+        </div>
+      </div>
+    </div>
+
+    <p class="explainer-cta">
+      Ready to try it yourself? <a href="#waitlist">Join the early access waitlist →</a>
+    </p>
+  </div>
+</section>
+
+<!-- ── Footer ── -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <span class="hz">HZ</span><span class="sec">Sec</span>
+      <span class="sub">Horizon Zero Security</span>
+    </div>
+    <div class="footer-links">
+      <a href="terms.html">Terms of Service</a>
+      <a href="privacy.html">Privacy Policy</a>
+      <a href="eula.html">EULA</a>
+      <a href="mailto:hello@hzsec.io">Contact</a>
+    </div>
+    <div class="footer-copy">© 2025 HZSec · Horizon Zero Security</div>
+  </div>
+</footer>
+
+<script>
+  // FAQ accordion
+  document.querySelectorAll('.faq-question').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const item = btn.closest('.faq-item');
+      const isOpen = item.classList.contains('open');
+      document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+      if (!isOpen) item.classList.add('open');
+    });
+  });
+
+  // Waitlist form — posts to our own Vercel serverless function at /api/waitlist
+  // The Resend API key lives server-side only (Vercel env var RESEND_API_KEY)
+  async function submitWaitlist() {
+    const email = document.getElementById('emailInput').value.trim();
+    if (!email || !email.includes('@')) return;
+
+    const btn = document.getElementById('waitlistBtn');
+    btn.textContent = 'Joining...';
+    btn.disabled = true;
+
+    try {
+      const res = await fetch('/api/waitlist', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+
+      if (!res.ok) {
+        let msg = 'Something went wrong. Please try again.';
+        try { const j = await res.json(); if (j?.error) msg = j.error; } catch {}
+        throw new Error(msg);
+      }
+
+      document.querySelector('.waitlist-form').style.display = 'none';
+      document.getElementById('waitlistSuccess').style.display = 'block';
+    } catch (err) {
+      btn.textContent = 'Join waitlist →';
+      btn.disabled = false;
+      alert(err?.message || 'Something went wrong. Please try again.');
+    }
+  }
+
+  document.getElementById('emailInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') submitWaitlist();
+  });
+
+  // Scroll animations
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.style.opacity = '1';
+        entry.target.style.transform = 'translateY(0)';
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.problem-card, .breach-card, .step, .pricing-card, .faq-item').forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(20px)';
+    el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+    observer.observe(el);
+  });
+</script>
+</body>
+</html>

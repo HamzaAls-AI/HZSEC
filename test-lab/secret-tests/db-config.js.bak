@@ -1,0 +1,5 @@
+const config = {
+  username: "admin",
+  password: "VeryFakePassword!",
+  token: "fake_token_1234567890",
+};

@@ -1,0 +1,10 @@
+server:
+  host: 127.0.0.1
+  port: 3000
+
+cors:
+  allow_origins:
+    - https://app.example.com
+
+security:
+  admin: false
