@@ -35,6 +35,13 @@ export default function GuidePage() {
             HZSec keeps the workflow focused: install the app, scan locally,
             review the result, and move on with a clear next step.
           </p>
+          <div className="mt-4 flex flex-wrap gap-2 text-xs text-muted">
+            <span className="rounded-full border border-border bg-panel px-3 py-1">Local scans</span>
+            <span className="rounded-full border border-border bg-panel px-3 py-1">No repo upload</span>
+            <Link href="/sample" className="rounded-full border border-border bg-panel px-3 py-1 hover:text-text">
+              View sample scan
+            </Link>
+          </div>
         </div>
 
         <div className="mt-10 grid gap-4 sm:grid-cols-3">

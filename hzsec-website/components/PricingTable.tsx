@@ -44,8 +44,8 @@ const tiers = [
   {
     id: 'team',
     name: 'Team',
-    blurb: 'For squads of 3+ engineers.',
-    priceMonthly: 39,
+    blurb: 'For squads of 3+ engineers. Custom pricing.',
+    priceMonthly: 0,
     priceAnnual: null,
     cta: 'Contact sales',
     href: 'mailto:hello@hzsec.io?subject=HZSec%20Team%20pricing',
@@ -113,7 +113,7 @@ export function PricingTable() {
         {tiers.map(t => {
           const price = interval === 'annual' ? t.priceAnnual : t.priceMonthly;
           const unit  = price === 0 ? '' : interval === 'annual' ? '/yr' : '/mo';
-          const isCustomPrice = t.id === 'team' && interval === 'annual';
+          const isCustomPrice = t.id === 'team';
 
           return (
             <div

@@ -13,7 +13,7 @@ export default function Pricing() {
           <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">Simple, fair pricing.</h1>
           <p className="mt-3 text-muted">
             Free is for solo use with your own Anthropic key. Pro adds the managed assistant and monthly message caps.
-            Team is for squads that need shared billing and seats.
+            Team is custom-priced for squads that need shared billing and seats.
           </p>
           <p className="mt-2 text-sm text-muted">All prices shown in USD.</p>
         </div>
@@ -31,7 +31,7 @@ export default function Pricing() {
           </div>
           <div>
             <h2 className="text-sm font-medium text-text">How does Team pricing work?</h2>
-            <p className="mt-1 text-sm text-muted">Team is custom-quoted for squads of 3+. Use the Contact sales link above to start the conversation.</p>
+            <p className="mt-1 text-sm text-muted">Team is custom-priced for squads of 3+. Use the Contact sales link above to start the conversation.</p>
           </div>
         </div>
 

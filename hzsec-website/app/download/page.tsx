@@ -42,6 +42,9 @@ export default function DownloadPage() {
           <p className="mt-2 text-sm text-muted">
             Open the latest release page, then use the guide to understand the app flow.
           </p>
+          <p className="mt-2 text-xs text-muted">
+            Every public release should include signed installers and published SHA-256 checksums in the release notes.
+          </p>
           <div className="mt-4 flex flex-wrap gap-3">
             <a
               href="https://github.com/HamzaAls-AI/HZSEC/releases/latest"
@@ -80,6 +83,9 @@ function DownloadCard({
       >
         {cta} <ArrowRight size={14} />
       </a>
+      <p className="mt-3 text-xs text-muted">
+        Check the release notes for the matching checksum before installing.
+      </p>
     </div>
   );
 }

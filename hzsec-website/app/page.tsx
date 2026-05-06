@@ -4,8 +4,8 @@ import { MarketingFooter } from '@/components/MarketingFooter';
 import { ShieldCheck, Eye, BookOpen, ArrowRight } from 'lucide-react';
 
 export const metadata = {
-  title: 'HZSec — Local security scanning and monitoring',
-  description: 'Scan code locally, monitor changes, and review findings in a clean desktop workflow.'
+  title: 'HZSec — Local-first security copilot for developers',
+  description: 'Scan code locally, monitor changes, and review findings in a clean desktop workflow. No repo upload required.'
 };
 
 export default function Landing() {
@@ -16,13 +16,13 @@ export default function Landing() {
       <section className="mx-auto max-w-6xl px-6 py-24 sm:py-32">
         <div className="max-w-3xl">
           <h1 className="text-4xl font-semibold leading-tight tracking-tight sm:text-6xl">
-            Security scanning and monitoring<br />
-            <span className="text-accent">for local development teams.</span>
+            Local-first security copilot<br />
+            <span className="text-accent">for development teams.</span>
           </h1>
           <p className="mt-6 text-lg text-muted">
             HZSec is a desktop security platform for developers who want a clean,
             local workflow. Scan code, monitor changes, and review findings in
-            one place without adding extra overhead.
+            one place without repo upload.
           </p>
           <div className="mt-10 flex gap-5">
             <Link href="/download" className="inline-flex items-center gap-2 rounded-md bg-accent px-5 py-2.5 text-sm font-medium text-white hover:bg-accent/90">
@@ -30,6 +30,13 @@ export default function Landing() {
             </Link>
             <Link href="/guide" className="rounded-md border border-border px-5 py-2.5 text-sm text-muted hover:text-text">
               How it works
+            </Link>
+          </div>
+          <div className="mt-4 flex flex-wrap gap-2 text-xs text-muted">
+            <span className="rounded-full border border-border bg-panel px-3 py-1">No repo upload required</span>
+            <span className="rounded-full border border-border bg-panel px-3 py-1">Local scans only</span>
+            <Link href="/sample" className="rounded-full border border-border bg-panel px-3 py-1 hover:text-text">
+              View sample scan
             </Link>
           </div>
           <p className="mt-4 text-sm text-text/75">

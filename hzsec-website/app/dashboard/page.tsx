@@ -24,8 +24,8 @@ export default async function DashboardHome() {
             <div>
               <div className="font-medium">Activate a 7-day free trial.</div>
               <p className="mt-1 text-sm text-muted">
-                Pro is $19/mo with 1,000 assistant messages. Team is $39/seat
-                with 5,000 messages per seat. Cancel any time during the trial.
+                Pro is $19/mo with 1,000 assistant messages. Team is custom-priced
+                for larger squads. Cancel any time during the trial.
               </p>
               <Link
                 href="/pricing"
