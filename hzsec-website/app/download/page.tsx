@@ -22,10 +22,19 @@ export default function DownloadPage() {
           </p>
         </div>
 
-        <div className="mt-10 grid gap-4 sm:grid-cols-3">
-          <Card title="Desktop builds" body="macOS, Windows, and Linux builds are published from tagged releases." />
-          <Card title="Secure workflow" body="Keep scanning local, then open the dashboard only when you need billing or license controls." />
-          <Card title="Simple install" body="Download, install, sign in, and run your first scan in a few minutes." />
+        <div className="mt-10 grid gap-4 sm:grid-cols-2">
+          <DownloadCard
+            os="macOS"
+            body="Apple Silicon and Intel builds are published from tagged releases."
+            href="https://github.com/HamzaAls-AI/HZSEC/releases/latest"
+            cta="Get the Mac build"
+          />
+          <DownloadCard
+            os="Windows"
+            body="Windows installers are published from tagged releases."
+            href="https://github.com/HamzaAls-AI/HZSEC/releases/latest"
+            cta="Get the Windows build"
+          />
         </div>
 
         <div className="mt-10 rounded-2xl border border-border bg-panel/40 p-6">
@@ -51,17 +60,26 @@ export default function DownloadPage() {
   );
 }
 
-function Card({
-  title, body
+function DownloadCard({
+  os, body, href, cta
 }: {
-  title: string;
+  os: string;
   body: string;
+  href: string;
+  cta: string;
 }) {
   return (
     <div className="rounded-xl border border-border bg-panel p-6">
       <ShieldCheck className="text-accent" size={20} />
-      <h2 className="mt-4 text-lg font-medium">{title}</h2>
+      <p className="mt-4 text-xs uppercase tracking-wider text-muted">{os}</p>
+      <h2 className="mt-2 text-lg font-medium">Download for {os}</h2>
       <p className="mt-2 text-sm leading-relaxed text-muted">{body}</p>
+      <a
+        href={href}
+        className="mt-5 inline-flex items-center gap-2 rounded-md bg-accent px-4 py-2 text-sm text-white hover:bg-accent/90"
+      >
+        {cta} <ArrowRight size={14} />
+      </a>
     </div>
   );
 }
