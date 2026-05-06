@@ -5,6 +5,8 @@ import { SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
 // adjacent typography for the brand mark, hover-only nav underline.
 
 export function MarketingHeader() {
+  const clerkKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
+
   return (
     <header className="border-b border-border">
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-6">
@@ -25,7 +27,7 @@ export function MarketingHeader() {
           </SignedOut>
           <SignedIn>
             <Link href="/dashboard" className="text-muted hover:text-text">Dashboard</Link>
-            <UserButton afterSignOutUrl="/" />
+            {clerkKey ? <UserButton afterSignOutUrl="/" /> : null}
           </SignedIn>
         </nav>
       </div>

@@ -28,6 +28,7 @@ const SETTINGS: ReadonlyArray<{ href: string; label: string; Icon: typeof Layout
 
 export function DashboardSidebar() {
   const pathname = usePathname();
+  const clerkKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
   return (
     <aside className="flex w-60 shrink-0 flex-col border-r border-border bg-panel">
@@ -53,7 +54,7 @@ export function DashboardSidebar() {
 
       <div className="border-t border-border p-3">
         <div className="flex items-center gap-2 rounded-md px-2 py-1.5 hover:bg-panel2">
-          <UserButton afterSignOutUrl="/" />
+          {clerkKey ? <UserButton afterSignOutUrl="/" /> : null}
           <span className="text-sm text-muted">Account</span>
         </div>
       </div>
@@ -98,3 +99,4 @@ function NavItem({
     </Link>
   );
 }
+
