@@ -15,7 +15,7 @@ export default function Landing() {
 
       <section className="mx-auto max-w-6xl px-6 py-24 sm:py-32">
         <div className="max-w-3xl">
-          <h1 className="text-4xl font-semibold tracking-tight sm:text-6xl">
+          <h1 className="text-4xl font-semibold leading-tight tracking-tight sm:text-6xl">
             Security scanning and monitoring<br />
             <span className="text-accent">for local development teams.</span>
           </h1>
@@ -24,7 +24,7 @@ export default function Landing() {
             local workflow. Scan code, monitor changes, and review findings in
             one place without adding extra overhead.
           </p>
-          <div className="mt-10 flex gap-4">
+          <div className="mt-10 flex gap-5">
             <Link href="/download" className="inline-flex items-center gap-2 rounded-md bg-accent px-5 py-2.5 text-sm font-medium text-white hover:bg-accent/90">
               Download desktop app <ArrowRight size={16} />
             </Link>
@@ -32,7 +32,7 @@ export default function Landing() {
               How it works
             </Link>
           </div>
-          <p className="mt-4 text-sm text-muted">
+          <p className="mt-4 text-sm text-text/75">
             Free for solo use with your own Anthropic key. Paid plans add a managed assistant,
             message limits, and team billing.
           </p>
@@ -40,7 +40,7 @@ export default function Landing() {
       </section>
 
       <section id="features" className="border-t border-border bg-panel">
-        <div className="mx-auto grid max-w-6xl gap-px border-x border-border bg-border sm:grid-cols-3">
+        <div className="mx-auto grid max-w-6xl gap-4 sm:grid-cols-3">
           <Feature
             Icon={ShieldCheck}
             title="Local scanning"

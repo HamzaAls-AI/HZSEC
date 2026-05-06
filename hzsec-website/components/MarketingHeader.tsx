@@ -14,7 +14,7 @@ export function MarketingHeader() {
           HZSec<span className="text-accent">.io</span>
         </Link>
 
-        <nav className="flex items-center gap-6 text-sm">
+        <nav className="flex items-center gap-7 text-sm">
           <Link href="/pricing" className="text-muted hover:text-text">Pricing</Link>
           <Link href="/guide" className="text-muted hover:text-text">How it works</Link>
           <Link href="/download" className="text-muted hover:text-text">Download</Link>
