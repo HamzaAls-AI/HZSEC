@@ -3,6 +3,7 @@ import { backend, BackendError } from '@/lib/backend';
 import { ArrowRight, Sparkles } from 'lucide-react';
 
 export const metadata = { title: 'Dashboard — HZSec' };
+export const dynamic = 'force-dynamic';
 
 export default async function DashboardHome() {
   const me = await safeMe();

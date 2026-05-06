@@ -1,6 +1,7 @@
 import { backend } from '@/lib/backend';
 
 export const metadata = { title: 'Usage — HZSec' };
+export const dynamic = 'force-dynamic';
 
 export default async function UsagePage() {
   let me = null;

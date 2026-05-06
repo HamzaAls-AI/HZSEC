@@ -3,6 +3,7 @@ import { OpenPortalButton } from '@/components/OpenPortalButton';
 import Link from 'next/link';
 
 export const metadata = { title: 'Billing — HZSec' };
+export const dynamic = 'force-dynamic';
 
 export default async function BillingPage() {
   let lic = null;

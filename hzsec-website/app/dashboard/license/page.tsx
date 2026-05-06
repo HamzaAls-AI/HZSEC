@@ -2,6 +2,7 @@ import { backend } from '@/lib/backend';
 import { LicenseKeyView } from '@/components/LicenseKeyView';
 
 export const metadata = { title: 'License — HZSec' };
+export const dynamic = 'force-dynamic';
 
 export default async function LicensePage() {
   let lic = null;
