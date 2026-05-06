@@ -47,8 +47,8 @@ const tiers = [
     blurb: 'For squads of 3+ engineers.',
     priceMonthly: 39,
     priceAnnual: null,
-    cta: 'Start 7-day trial',
-    href: null,
+    cta: 'Contact sales',
+    href: 'mailto:hello@hzsec.io?subject=HZSec%20Team%20pricing',
     features: [
       'Everything in Pro',
       '5,000 messages per seat / month',
@@ -102,7 +102,10 @@ export function PricingTable() {
           onClick={() => setInterval('annual')}
           className={`rounded px-3 py-1.5 ${interval === 'annual' ? 'bg-panel2 text-text' : 'text-muted hover:text-text'}`}
         >
-          Annual <span className="ml-1 text-xs text-accent">−2 months</span>
+          Annual{' '}
+          <span className="ml-1 rounded-full bg-accentSoft px-2 py-0.5 text-[11px] font-medium text-accent">
+            Save 2 months
+          </span>
         </button>
       </div>
 
@@ -110,7 +113,7 @@ export function PricingTable() {
         {tiers.map(t => {
           const price = interval === 'annual' ? t.priceAnnual : t.priceMonthly;
           const unit  = price === 0 ? '' : interval === 'annual' ? '/yr' : '/mo';
-          const teamUnavailable = t.id === 'team' && interval === 'annual';
+          const isCustomPrice = t.id === 'team' && interval === 'annual';
 
           return (
             <div
@@ -121,7 +124,7 @@ export function PricingTable() {
                   : 'border-border bg-panel'
               }`}
             >
-              <div className="flex items-baseline gap-2">
+              <div className="flex items-center justify-between gap-2">
                 <h3 className="text-lg font-medium">{t.name}</h3>
                 {t.highlighted && (
                   <span className="rounded-full bg-accent px-2 py-0.5 text-[10px] uppercase tracking-wider text-white">
@@ -132,8 +135,11 @@ export function PricingTable() {
               <p className="mt-1 text-sm text-muted">{t.blurb}</p>
 
               <div className="mt-6">
-                {teamUnavailable ? (
-                  <div className="text-sm text-muted">Annual billing on request.</div>
+                {isCustomPrice ? (
+                  <div>
+                    <div className="text-sm font-medium text-text">Custom pricing</div>
+                    <div className="mt-1 text-sm text-muted">Annual billing on request.</div>
+                  </div>
                 ) : (
                   <div className="flex items-baseline gap-1">
                     <span className="text-3xl font-semibold">${price}</span>
@@ -159,9 +165,16 @@ export function PricingTable() {
                   >
                     {t.cta}
                   </a>
+                ) : t.id === 'team' ? (
+                  <a
+                    href={t.href ?? '#'}
+                    className="block w-full rounded-md border border-accent/50 bg-accentSoft/20 py-2 text-center text-sm text-accent hover:bg-accentSoft/35"
+                  >
+                    {t.cta}
+                  </a>
                 ) : (
                   <button
-                    disabled={pending === t.id || teamUnavailable}
+                    disabled={pending === t.id}
                     onClick={() => startCheckout(t.id as 'pro' | 'team')}
                     className={`w-full rounded-md py-2 text-center text-sm transition-colors ${
                       t.highlighted
