@@ -14,23 +14,23 @@ export default async function DashboardHome() {
       <>
         <h1 className="text-2xl font-semibold tracking-tight">Welcome to HZSec.</h1>
         <p className="mt-2 text-muted">
-          You're signed in but not on a paid plan yet. Pick one to unlock the
-          managed assistant.
+          You&apos;re signed in, but you have not activated a plan yet.
+          Choose one to unlock the managed assistant.
         </p>
         <div className="mt-6 rounded-xl border border-border bg-panel p-6">
           <div className="flex items-start gap-4">
             <Sparkles className="text-accent" size={22} />
             <div>
-              <div className="font-medium">Start a 7-day free trial.</div>
+              <div className="font-medium">Activate a 7-day free trial.</div>
               <p className="mt-1 text-sm text-muted">
                 Pro is $19/mo with 1,000 assistant messages. Team is $39/seat
-                with 5,000 each. Cancel any time during the trial.
+                with 5,000 messages per seat. Cancel any time during the trial.
               </p>
               <Link
                 href="/pricing"
                 className="mt-4 inline-flex items-center gap-2 rounded-md bg-accent px-4 py-2 text-sm text-white hover:bg-accent/90"
               >
-                See pricing <ArrowRight size={14} />
+                View pricing <ArrowRight size={14} />
               </Link>
             </div>
           </div>

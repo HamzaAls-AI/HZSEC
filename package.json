@@ -21,6 +21,7 @@
     "electron": "^35.0.0",
     "electron-builder": "^25.1.8"
   },
+  "author": "Hamza Al-Samraaie <hello@hzsec.io>",
   "repository": {
     "type": "git",
     "url": "https://github.com/HamzaAls-AI/HZSEC.git"

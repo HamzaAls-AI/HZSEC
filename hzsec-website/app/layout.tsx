@@ -3,8 +3,8 @@ import type { Metadata } from 'next';
 import { ClerkProvider } from '@clerk/nextjs';
 
 export const metadata: Metadata = {
-  title:       'HZSec — Local AI security platform',
-  description: 'AI-assisted code security scanning, live monitoring, and breach intelligence for developers.',
+  title:       'HZSec — Local-first security scanning for developers',
+  description: 'HZSec is a desktop security platform for local scanning, live monitoring, and guided remediation.',
   metadataBase: new URL('https://hzsec.io')
 };
 

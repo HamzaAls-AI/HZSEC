@@ -15,9 +15,11 @@ export function MarketingHeader() {
         </Link>
 
         <nav className="flex items-center gap-6 text-sm">
-          <Link href="/pricing"      className="text-muted hover:text-text">Pricing</Link>
+          <Link href="/pricing" className="text-muted hover:text-text">Pricing</Link>
+          <Link href="/guide" className="text-muted hover:text-text">How it works</Link>
+          <Link href="/download" className="text-muted hover:text-text">Download</Link>
           <Link href="/legal/privacy" className="text-muted hover:text-text">Privacy</Link>
-          <Link href="/legal/terms"   className="text-muted hover:text-text">Terms</Link>
+          <Link href="/legal/terms" className="text-muted hover:text-text">Terms</Link>
 
           <SignedOut>
             <Link href="/login"  className="text-muted hover:text-text">Sign in</Link>

@@ -3,6 +3,11 @@ import { MarketingHeader } from '@/components/MarketingHeader';
 import { MarketingFooter } from '@/components/MarketingFooter';
 import { ShieldCheck, Eye, BookOpen, ArrowRight } from 'lucide-react';
 
+export const metadata = {
+  title: 'HZSec — Local security scanning and monitoring',
+  description: 'Scan code locally, monitor changes, and review findings in a clean desktop workflow.'
+};
+
 export default function Landing() {
   return (
     <>
@@ -11,22 +16,26 @@ export default function Landing() {
       <section className="mx-auto max-w-6xl px-6 py-24 sm:py-32">
         <div className="max-w-3xl">
           <h1 className="text-4xl font-semibold tracking-tight sm:text-6xl">
-            Catch security bugs<br />
-            <span className="text-accent">before they ship.</span>
+            Security scanning and monitoring<br />
+            <span className="text-accent">for local development teams.</span>
           </h1>
           <p className="mt-6 text-lg text-muted">
-            HZSec is a local-first security platform. Scan your code, watch
-            it live, ask the AI assistant what to fix — all from a desktop
-            app that never sends your code anywhere except where you tell it.
+            HZSec is a desktop security platform for developers who want a clean,
+            local workflow. Scan code, monitor changes, and review findings in
+            one place without adding extra overhead.
           </p>
           <div className="mt-10 flex gap-4">
-            <Link href="/pricing" className="inline-flex items-center gap-2 rounded-md bg-accent px-5 py-2.5 text-sm font-medium text-white hover:bg-accent/90">
-              Start free trial <ArrowRight size={16} />
+            <Link href="/download" className="inline-flex items-center gap-2 rounded-md bg-accent px-5 py-2.5 text-sm font-medium text-white hover:bg-accent/90">
+              Download desktop app <ArrowRight size={16} />
             </Link>
-            <Link href="#features" className="rounded-md border border-border px-5 py-2.5 text-sm text-muted hover:text-text">
-              See features
+            <Link href="/guide" className="rounded-md border border-border px-5 py-2.5 text-sm text-muted hover:text-text">
+              How it works
             </Link>
           </div>
+          <p className="mt-4 text-sm text-muted">
+            Free for solo use with your own Anthropic key. Paid plans add a managed assistant,
+            message limits, and team billing.
+          </p>
         </div>
       </section>
 
@@ -35,18 +44,26 @@ export default function Landing() {
           <Feature
             Icon={ShieldCheck}
             title="Local scanning"
-            body="Detectors for secrets, misconfigs, and code-quality issues that run entirely on your machine. No cloud upload."
+            body="Run detectors for secrets, misconfigurations, and code-quality issues directly on your machine."
           />
           <Feature
             Icon={Eye}
             title="Live monitor"
-            body="Watch a folder. Every save runs scoped detectors. Quiet during work, loud about real issues."
+            body="Watch a folder and re-run scoped checks when files change, so findings stay current."
           />
           <Feature
             Icon={BookOpen}
-            title="Breach library + AI assistant"
-            body="Real-world breach cases keyed to findings. Tool-using assistant that reads, greps, and blames your code."
+            title="Guided remediation"
+            body="Review findings with supporting context, playbooks, and a structured assistant workflow."
           />
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-6xl px-6 py-20">
+        <div className="grid gap-4 sm:grid-cols-3">
+          <MiniStep title="1. Scan" body="Run a local scan or watch a folder for new changes." />
+          <MiniStep title="2. Review" body="Open findings, read context, and follow the recommended next step." />
+          <MiniStep title="3. Ship" body="Resolve issues, keep the log clean, and move to the next task." />
         </div>
       </section>
 
@@ -64,6 +81,20 @@ function Feature({
     <div className="bg-bg px-6 py-10">
       <Icon className="text-accent" size={22} />
       <h3 className="mt-4 text-lg font-medium">{title}</h3>
+      <p className="mt-2 text-sm leading-relaxed text-muted">{body}</p>
+    </div>
+  );
+}
+
+function MiniStep({
+  title, body
+}: {
+  title: string; body: string;
+}) {
+  return (
+    <div className="rounded-xl border border-border bg-panel p-6">
+      <div className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-accent/15 text-sm font-medium text-accent">•</div>
+      <h3 className="mt-4 text-base font-medium">{title}</h3>
       <p className="mt-2 text-sm leading-relaxed text-muted">{body}</p>
     </div>
   );
