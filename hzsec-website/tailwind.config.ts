@@ -8,18 +8,19 @@ export default {
   theme: {
     extend: {
       colors: {
-        // HZSec palette — dark by default, neutral grays + a single accent.
-        bg:        '#0b0c0f',
-        panel:     '#13151a',
-        panel2:    '#1a1d24',
-        border:    '#252932',
-        text:      '#e8eaed',
-        muted:     '#8b8f99',
-        accent:    '#7c3aed',  // violet-600
-        accentSoft:'#1f1530',
-        danger:    '#ef4444',
-        warn:      '#f59e0b',
-        ok:        '#10b981'
+        // Theme tokens use CSS variables so the site can switch between
+        // light, mid, and dark modes.
+        bg:        'rgb(var(--color-bg) / <alpha-value>)',
+        panel:     'rgb(var(--color-panel) / <alpha-value>)',
+        panel2:    'rgb(var(--color-panel2) / <alpha-value>)',
+        border:    'rgb(var(--color-border) / <alpha-value>)',
+        text:      'rgb(var(--color-text) / <alpha-value>)',
+        muted:     'rgb(var(--color-muted) / <alpha-value>)',
+        accent:    'rgb(var(--color-accent) / <alpha-value>)',
+        accentSoft:'rgb(var(--color-accent-soft) / <alpha-value>)',
+        danger:    'rgb(var(--color-danger) / <alpha-value>)',
+        warn:      'rgb(var(--color-warn) / <alpha-value>)',
+        ok:        'rgb(var(--color-ok) / <alpha-value>)'
       },
       fontFamily: {
         sans: ['ui-sans-serif', 'system-ui', '-apple-system', 'Inter', 'sans-serif'],

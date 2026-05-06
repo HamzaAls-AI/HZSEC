@@ -1,6 +1,7 @@
 import './globals.css';
 import type { Metadata } from 'next';
 import { ClerkProvider } from '@clerk/nextjs';
+import Script from 'next/script';
 
 export const metadata: Metadata = {
   title:       'HZSec — Local-first security scanning for developers',
@@ -22,6 +23,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
   const app = (
     <html lang="en">
+      <head>
+        <Script id="hzsec-theme-init" strategy="beforeInteractive">{`(function(){try{var t=localStorage.getItem('hzsec-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){document.documentElement.setAttribute('data-theme','dark');}})();`}</Script>
+      </head>
       <body className="min-h-screen bg-bg text-text font-sans">
         {children}
       </body>

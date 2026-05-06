@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
+import { ThemeSwitcher } from '@/components/ThemeSwitcher';
 
 // Public-page header — landing, pricing, legal. Linear-ish: minimal, mono-
 // adjacent typography for the brand mark, hover-only nav underline.
@@ -20,6 +21,7 @@ export function MarketingHeader() {
           <Link href="/download" className="text-muted hover:text-text">Download</Link>
           <Link href="/legal/privacy" className="text-muted hover:text-text">Privacy</Link>
           <Link href="/legal/terms" className="text-muted hover:text-text">Terms</Link>
+          <ThemeSwitcher />
 
           <SignedOut>
             <Link href="/login"  className="text-muted hover:text-text">Sign in</Link>

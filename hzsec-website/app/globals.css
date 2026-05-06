@@ -2,11 +2,54 @@
 @tailwind components;
 @tailwind utilities;
 
-:root { color-scheme: dark; }
+:root {
+  color-scheme: dark;
+  --color-bg: 11 12 15;
+  --color-panel: 19 21 26;
+  --color-panel2: 26 29 36;
+  --color-border: 37 41 50;
+  --color-text: 232 234 237;
+  --color-muted: 139 143 153;
+  --color-accent: 124 58 237;
+  --color-accent-soft: 31 21 48;
+  --color-danger: 239 68 68;
+  --color-warn: 245 158 11;
+  --color-ok: 16 185 129;
+}
+
+html[data-theme='light'] {
+  color-scheme: light;
+  --color-bg: 255 255 255;
+  --color-panel: 248 250 252;
+  --color-panel2: 241 245 249;
+  --color-border: 226 232 240;
+  --color-text: 15 23 42;
+  --color-muted: 71 85 105;
+  --color-accent: 124 58 237;
+  --color-accent-soft: 237 233 254;
+  --color-danger: 220 38 38;
+  --color-warn: 217 119 6;
+  --color-ok: 5 150 105;
+}
+
+html[data-theme='mid'] {
+  color-scheme: dark;
+  --color-bg: 24 24 27;
+  --color-panel: 39 39 42;
+  --color-panel2: 63 63 70;
+  --color-border: 82 82 91;
+  --color-text: 244 244 245;
+  --color-muted: 161 161 170;
+  --color-accent: 167 139 250;
+  --color-accent-soft: 49 46 129;
+  --color-danger: 248 113 113;
+  --color-warn: 251 191 36;
+  --color-ok: 52 211 153;
+}
 
 html, body {
-  background: #0b0c0f;
-  color: #e8eaed;
+  background: rgb(var(--color-bg));
+  color: rgb(var(--color-text));
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -15,6 +58,6 @@ a { color: inherit; text-decoration: none; }
 
 /* Scrollbar — subtle, matches the dark palette. */
 ::-webkit-scrollbar { width: 10px; height: 10px; }
-::-webkit-scrollbar-thumb { background: #252932; border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: #2f3340; }
+::-webkit-scrollbar-thumb { background: rgb(var(--color-border)); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: rgb(var(--color-panel2)); }
 ::-webkit-scrollbar-track { background: transparent; }
