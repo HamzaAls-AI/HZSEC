@@ -160,7 +160,7 @@ export function PricingTable() {
               <div className="mt-6">
                 {t.id === 'free' ? (
                   <a
-                    href="#"
+                    href={t.href ?? '/download'}
                     className="block w-full rounded-md border border-border bg-panel2 py-2 text-center text-sm hover:bg-panel"
                   >
                     {t.cta}
