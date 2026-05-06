@@ -31,7 +31,7 @@ export default function Pricing() {
           </div>
           <div>
             <h2 className="text-sm font-medium text-text">How does Team pricing work?</h2>
-            <p className="mt-1 text-sm text-muted">Team is custom-quoted for squads of 3+. Use the Team button above to start the conversation.</p>
+            <p className="mt-1 text-sm text-muted">Team is custom-quoted for squads of 3+. Use the Contact sales link above to start the conversation.</p>
           </div>
         </div>
 
