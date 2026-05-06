@@ -1,7 +1,7 @@
 # hzsec-precommit
 
 [`pre-commit` framework](https://pre-commit.com/) hooks for
-[hzsec-cli](https://github.com/REPLACE/hzsec-cli).
+[hzsec-cli](https://github.com/HamzaAls-AI/hzsec-cli).
 
 Two hooks ship in this repo:
 
@@ -16,7 +16,7 @@ Add to your repo's `.pre-commit-config.yaml`:
 
 ```yaml
 repos:
-  - repo: https://github.com/REPLACE/hzsec-precommit
+  - repo: https://github.com/HamzaAls-AI/hzsec-precommit
     rev:  v1.0.0
     hooks:
       - id: hzsec
@@ -35,7 +35,7 @@ Belt-and-braces — `quick` on every commit, `secret` again on push:
 
 ```yaml
 repos:
-  - repo: https://github.com/REPLACE/hzsec-precommit
+  - repo: https://github.com/HamzaAls-AI/hzsec-precommit
     rev:  v1.0.0
     hooks:
       - id: hzsec
@@ -48,7 +48,7 @@ Override `args` in your config to change the failure threshold or mode:
 
 ```yaml
 repos:
-  - repo: https://github.com/REPLACE/hzsec-precommit
+  - repo: https://github.com/HamzaAls-AI/hzsec-precommit
     rev:  v1.0.0
     hooks:
       - id: hzsec

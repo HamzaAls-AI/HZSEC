@@ -111,7 +111,7 @@ jobs:
 
 Findings appear in the **Security** tab of your repo with file/line context.
 
-There's also a [pre-built composite action](https://github.com/REPLACE/hzsec-action):
+There's also a [pre-built composite action](https://github.com/HamzaAls-AI/hzsec-action):
 
 ```yaml
 - uses: hzsec/scan-action@v1
@@ -127,7 +127,7 @@ There's also a [pre-built composite action](https://github.com/REPLACE/hzsec-act
 
 ```yaml
 repos:
-  - repo: https://github.com/REPLACE/hzsec-precommit
+  - repo: https://github.com/HamzaAls-AI/hzsec-precommit
     rev:  v1.0.0
     hooks:
       - id: hzsec

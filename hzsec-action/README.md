@@ -1,6 +1,6 @@
 # hzsec/scan-action
 
-GitHub Action that runs [hzsec-cli](https://github.com/REPLACE/hzsec-cli)
+GitHub Action that runs [hzsec-cli](https://github.com/HamzaAls-AI/hzsec-cli)
 against your repo and uploads results to GitHub Code Scanning.
 
 ## Quick start

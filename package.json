@@ -1,28 +1,35 @@
 {
   "name": "hzsec",
   "version": "1.0.0",
-  "description": "HZSec — Local security platform with AI assistant, live monitor, and security intelligence.",
+  "description": "HZSec \u2014 Local security platform with AI assistant, live monitor, and security intelligence.",
   "main": "main.js",
   "type": "commonjs",
   "scripts": {
-    "start":      "electron .",
-    "pack":       "electron-builder --dir",
-    "dist":       "electron-builder",
-    "dist:mac":   "electron-builder --mac",
-    "dist:win":   "electron-builder --win",
+    "start": "electron .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder",
+    "dist:mac": "electron-builder --mac",
+    "dist:win": "electron-builder --win",
     "dist:linux": "electron-builder --linux",
-    "release":    "electron-builder --publish always"
+    "release": "electron-builder --publish always"
   },
   "dependencies": {
     "electron-updater": "^6.3.9",
     "@sentry/electron": "^5.5.0"
   },
   "devDependencies": {
-    "electron":         "^35.0.0",
+    "electron": "^35.0.0",
     "electron-builder": "^25.1.8"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/HamzaAls-AI/HZSEC.git"
+  },
+  "bugs": {
+    "url": "https://github.com/HamzaAls-AI/HZSEC/issues"
+  },
   "build": {
-    "appId":       "io.hzsec.desktop",
+    "appId": "io.hzsec.desktop",
     "productName": "HZSec",
     "files": [
       "**/*",
@@ -35,40 +42,51 @@
       "!.github/**"
     ],
     "directories": {
-      "output":         "dist",
+      "output": "dist",
       "buildResources": "build"
     },
     "mac": {
-      "category":            "public.app-category.developer-tools",
-      "target":              ["dmg", "zip"],
-      "hardenedRuntime":     true,
-      "gatekeeperAssess":    false,
-      "entitlements":        "build/entitlements.mac.plist",
+      "category": "public.app-category.developer-tools",
+      "target": [
+        "dmg",
+        "zip"
+      ],
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false,
+      "entitlements": "build/entitlements.mac.plist",
       "entitlementsInherit": "build/entitlements.mac.plist",
       "notarize": {
         "teamId": "REPLACE_WITH_TEAM_ID"
       }
     },
     "win": {
-      "target":                    ["nsis", "portable"],
-      "publisherName":             "HZSec Inc",
+      "target": [
+        "nsis",
+        "portable"
+      ],
+      "publisherName": "HZSec Inc",
       "verifyUpdateCodeSignature": true
     },
     "linux": {
-      "target":   ["AppImage", "deb"],
+      "target": [
+        "AppImage",
+        "deb"
+      ],
       "category": "Development"
     },
     "publish": [
       {
         "provider": "github",
-        "owner":    "REPLACE",
-        "repo":     "hzsec-desktop"
+        "owner": "HamzaAls-AI",
+        "repo": "HZSEC"
       }
     ],
     "protocols": [
       {
-        "name":    "HZSec",
-        "schemes": ["hzsec"]
+        "name": "HZSec",
+        "schemes": [
+          "hzsec"
+        ]
       }
     ]
   }
