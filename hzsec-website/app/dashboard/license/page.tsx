@@ -15,9 +15,9 @@ export default async function LicensePage() {
     return (
       <>
         <h1 className="text-2xl font-semibold tracking-tight">License key</h1>
-        <p className="mt-3 text-muted">
-          Your license key appears here once you start a paid plan.
-        </p>
+          <p className="mt-3 text-muted">
+            Your license key appears after you start a paid plan.
+          </p>
       </>
     );
   }
