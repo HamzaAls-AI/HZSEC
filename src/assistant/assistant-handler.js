@@ -14,12 +14,13 @@ const {
   getFixMemorySummary,
   recordFindings
 } = require('../intelligence/knowledge-base');
+const { runSecurityScan } = require('../scanner/scan-engine');
 
 const { TOOL_DEFINITIONS, executeTool } = require('./tool-runner');
 const { getPlaybooksForFindings } = require('./playbooks');
 
-const MODEL = 'claude-opus-4-5';
-const MAX_TOKENS = 4096;
+const MODEL = 'claude-3-haiku-20240307';
+const MAX_TOKENS = 3000;
 const MAX_TOOL_ITERATIONS = 6;
 const FULL_FILE_LINE_LIMIT = 500;
 const SNIPPET_CONTEXT_LINES = 100;
@@ -330,6 +331,18 @@ async function handleAssistantMessage({ apiKey, creds, messages, findings, snipp
     try { recordFindings(findings); } catch { /* non-fatal */ }
   }
 
+  // ─── Local Pre-Scan (Cost/Safety Filter) ───
+  let preScanFindings = [];
+  if (scanRoot) {
+    try {
+      const scanResult = await runSecurityScan(scanRoot, { mode: 'quick' });
+      preScanFindings = scanResult.findings || [];
+    } catch (e) {
+      console.warn('[Assistant] Pre-scan failed (non-fatal):', e.message);
+    }
+  }
+
+
   const lastUserMsg = messages.filter(m => m.role === 'user').slice(-1)[0]?.content || '';
   const kbContext = await buildKbContext(findings || [], lastUserMsg, includeBreaches);
   const hasTools = !!scanRoot;
@@ -339,9 +352,15 @@ async function handleAssistantMessage({ apiKey, creds, messages, findings, snipp
   if (apiMessages.length > 0) {
     const last = apiMessages[apiMessages.length - 1];
     if (last.role === 'user') {
-      last.content = buildUserContent(last.content, findings, snippet, scanRoot);
+      // Inject local findings into the user input so the AI treats them as extra context
+      const localContext = preScanFindings.length > 0
+        ? `\n\n## Automated Local Security Scan Context (Pre-scan)\n${JSON.stringify(preScanFindings.slice(0, 10), null, 2)}`
+        : '';
+        
+      last.content = buildUserContent(last.content + localContext, findings, snippet, scanRoot);
     }
   }
+
 
   const tools = hasTools ? TOOL_DEFINITIONS : null;
   const toolCallTrace = [];

@@ -63,8 +63,12 @@ router.post('/proxy', requireLicense, async (req, res) => {
   for (const k of Object.keys(body)) {
     if (ALLOWED_FIELDS.has(k)) forward[k] = body[k];
   }
-  if (!forward.model)      forward.model = 'claude-sonnet-4-6';
-  if (!forward.max_tokens) forward.max_tokens = 4096;
+  // Default to cheaper model for non-pro/economy tasks
+  if (!forward.model) forward.model = 'claude-3-haiku-20240307'; 
+  
+  // Enforce max_tokens limit
+  forward.max_tokens = Math.min(forward.max_tokens || 3000, 3000);
+
 
   // ─── Configured Anthropic key? ───
   if (!isRealKey(config.anthropic.apiKey)) {
