@@ -24,7 +24,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   const app = (
     <html lang="en">
       <head>
-        <Script id="hzsec-theme-init" strategy="beforeInteractive">{`(function(){try{var t=localStorage.getItem('hzsec-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){document.documentElement.setAttribute('data-theme','dark');}})();`}</Script>
+        <Script id="hzsec-theme-init" strategy="beforeInteractive">{`(function(){try{var t=localStorage.getItem('hzsec-theme');var v=(t==='light')?'light':'dark';document.documentElement.setAttribute('data-theme',v);}catch(e){document.documentElement.setAttribute('data-theme','dark');}})();`}</Script>
       </head>
       <body className="min-h-screen bg-bg text-text font-sans">
         {children}

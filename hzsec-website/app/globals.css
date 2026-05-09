@@ -19,32 +19,17 @@
 
 html[data-theme='light'] {
   color-scheme: light;
-  --color-bg: 255 255 255;
-  --color-panel: 248 250 252;
+  --color-bg: 248 250 252;
+  --color-panel: 255 255 255;
   --color-panel2: 241 245 249;
-  --color-border: 226 232 240;
+  --color-border: 203 213 225;
   --color-text: 15 23 42;
-  --color-muted: 71 85 105;
-  --color-accent: 124 58 237;
+  --color-muted: 51 65 85;
+  --color-accent: 109 40 217;
   --color-accent-soft: 237 233 254;
-  --color-danger: 220 38 38;
-  --color-warn: 217 119 6;
-  --color-ok: 5 150 105;
-}
-
-html[data-theme='mid'] {
-  color-scheme: dark;
-  --color-bg: 24 24 27;
-  --color-panel: 39 39 42;
-  --color-panel2: 63 63 70;
-  --color-border: 82 82 91;
-  --color-text: 244 244 245;
-  --color-muted: 161 161 170;
-  --color-accent: 167 139 250;
-  --color-accent-soft: 49 46 129;
-  --color-danger: 248 113 113;
-  --color-warn: 251 191 36;
-  --color-ok: 52 211 153;
+  --color-danger: 185 28 28;
+  --color-warn: 180 83 9;
+  --color-ok: 4 120 87;
 }
 
 html, body {
