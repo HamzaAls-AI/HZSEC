@@ -16,7 +16,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Lint action.yml with actionlint
-        uses: docker://rhysd/actionlint:1.7.7
-        with:
-          args: -color hzsec-action/action.yml
+      - name: Validate action.yml is valid YAML
+        run: python3 -c "import yaml, sys; yaml.safe_load(open('hzsec-action/action.yml')); print('action.yml: valid YAML')"

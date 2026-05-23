@@ -45,7 +45,7 @@ export default function BlogIndexPage() {
           <div className="rounded-lg border border-dashed border-border bg-bg p-8 text-center">
             <div className="text-sm font-medium text-text">No posts yet.</div>
             <p className="mt-2 text-sm text-muted">
-              The first posts are being drafted. Subscribe to follow along, or skim what's planned below.
+              The first posts are being drafted. Subscribe to follow along, or skim what&apos;s planned below.
             </p>
             <div className="mt-5 flex flex-wrap justify-center gap-3">
               <Link

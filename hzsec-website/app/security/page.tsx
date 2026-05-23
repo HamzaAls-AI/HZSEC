@@ -67,7 +67,7 @@ export default function SecurityPage() {
         <div className="mx-auto max-w-4xl px-6 py-16">
           <h2 className="text-2xl font-semibold tracking-tight">Architecture guarantees</h2>
           <p className="mt-3 text-base text-muted">
-            These aren't promises we can break with a config flag — they're properties of how HZSec is built.
+            These aren&apos;t promises we can break with a config flag — they&apos;re properties of how HZSec is built.
           </p>
           <ul className="mt-8 space-y-4">
             <Guarantee

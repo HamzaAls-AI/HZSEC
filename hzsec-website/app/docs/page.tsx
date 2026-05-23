@@ -35,7 +35,7 @@ export default function DocsPage() {
             HZSec docs
           </h1>
           <p className="mt-4 max-w-2xl text-lg leading-relaxed text-muted">
-            Full documentation is in the works. In the meantime, here's enough
+            Full documentation is in the works. In the meantime, here&apos;s enough
             to install HZSec and run your first scan.
           </p>
 
@@ -61,9 +61,9 @@ export default function DocsPage() {
         <div className="mx-auto max-w-4xl px-6 py-16">
           <div className="flex items-center gap-2">
             <BookOpen size={18} className="text-accent" />
-            <h2 className="text-2xl font-semibold tracking-tight">What's coming</h2>
+            <h2 className="text-2xl font-semibold tracking-tight">What&apos;s coming</h2>
           </div>
-          <p className="mt-2 text-sm text-muted">A sketch of the documentation we're writing.</p>
+          <p className="mt-2 text-sm text-muted">A sketch of the documentation we&apos;re writing.</p>
           <ul className="mt-8 grid gap-3 sm:grid-cols-2">
             {SECTIONS.map(({ title, summary }) => (
               <li

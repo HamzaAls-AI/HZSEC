@@ -43,7 +43,7 @@ export function MarketingFooter() {
       <div className="border-t border-border">
         <div className="mx-auto flex max-w-6xl flex-col gap-2 px-6 py-5 text-xs text-muted sm:flex-row sm:items-center sm:justify-between">
           <div>© {new Date().getFullYear()} HZSec. All rights reserved.</div>
-          <div>Built for developers who don't want their source code in someone else's cloud.</div>
+          <div>Built for developers who don&apos;t want their source code in someone else&apos;s cloud.</div>
         </div>
       </div>
     </footer>
