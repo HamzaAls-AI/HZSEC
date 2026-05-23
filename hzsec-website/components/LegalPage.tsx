@@ -24,17 +24,25 @@ export function LegalPage({ slug }: { slug: 'privacy' | 'terms' | 'eula' }) {
       </article>
       <MarketingFooter />
 
+      {/* Body styles reference theme tokens so the legal docs invert correctly
+          when the user switches modes. Body copy is slightly de-emphasized
+          vs. headings, kept above the AA contrast floor in both themes. */}
       <style>{`
         .legal-body h2  { margin-top: 2rem; margin-bottom: 0.5rem;
-                          font-size: 1.125rem; font-weight: 500; color: #e8eaed; }
-        .legal-body p   { margin: 0.75rem 0; line-height: 1.65; color: #c5c8cf; }
-        .legal-body ul  { list-style: disc; padding-left: 1.25rem; margin: 0.75rem 0; color: #c5c8cf; }
+                          font-size: 1.125rem; font-weight: 500;
+                          color: rgb(var(--text)); }
+        .legal-body p   { margin: 0.75rem 0; line-height: 1.65;
+                          color: rgb(var(--text) / 0.85); }
+        .legal-body ul  { list-style: disc; padding-left: 1.25rem;
+                          margin: 0.75rem 0; color: rgb(var(--text) / 0.85); }
         .legal-body li  { margin: 0.25rem 0; line-height: 1.55; }
-        .legal-body strong { color: #e8eaed; }
+        .legal-body strong { color: rgb(var(--text)); }
+        .legal-body a   { color: rgb(var(--accent)); text-decoration: underline;
+                          text-underline-offset: 2px; }
         .legal-body .highlight-box {
           margin: 1.5rem 0; padding: 1rem 1.25rem;
-          border-left: 3px solid #7c3aed;
-          background: #1f1530;
+          border-left: 3px solid rgb(var(--accent));
+          background: rgb(var(--accent-soft));
           border-radius: 6px;
         }
       `}</style>
