@@ -17,4 +17,5 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Validate action.yml is valid YAML
-        run: python3 -c "import yaml, sys; yaml.safe_load(open('hzsec-action/action.yml')); print('action.yml: valid YAML')"
+        run: |
+          python3 -c "import yaml; yaml.safe_load(open('hzsec-action/action.yml')); print('OK')"
