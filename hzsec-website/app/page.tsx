@@ -162,37 +162,124 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Live Proof Component (Mock Dashboard) */}
-      <section className="border-y border-border bg-panel py-16">
-        <div className="mx-auto max-w-6xl px-6">
-          <h2 className="text-2xl font-bold mb-8">Scan Results in Action</h2>
-          <div className="rounded-xl border border-border bg-bg p-8 font-mono text-sm shadow-xl">
-            <div className="flex gap-2 text-red-500 mb-2"><span>[CRITICAL]</span> <span>Unsafe DOM injection in `dashboard.js` (line 42)</span></div>
-            <div className="flex gap-2 text-yellow-500 mb-2"><span>[HIGH]</span> <span>Hardcoded AWS secret in `config.ts` (line 12)</span></div>
-            <div className="flex gap-2 text-blue-400"><span>[INFO]</span> <span>Scan complete: 42 files analyzed in 0.4s</span></div>
-          </div>
-        </div>
-      </section>
+      {/* Pillar Section — Scan / Defend / Govern */}
+      <section className="py-24 px-[6%]">
+        <div className="mx-auto max-w-[1180px]">
 
-      {/* Feature Grid */}
-      <section className="mx-auto max-w-6xl px-6 py-24">
-        <div className="grid gap-12 sm:grid-cols-3">
-          <Feature title="Automated Static Analysis" body="Native detectors for secrets, XSS, and misconfigurations." />
-          <Feature title="Sub-second Scans" body="Optimized for huge codebases. Instant feedback loop." />
-          <Feature title="Privacy Guaranteed" body="Code never leaves your local machine. Period." />
+          {/* Centered header */}
+          <div className="max-w-[640px] mx-auto text-center mb-16">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 border border-accent/20 font-mono text-[11px] uppercase tracking-widest text-accent mb-6">
+              <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" aria-hidden="true" />
+              Built for Developers
+            </div>
+            <h2 className="text-[clamp(28px,3.5vw,44px)] font-extrabold leading-[1.1] tracking-tight text-text">
+              One app.<br />
+              <span className="text-accent">Scan, defend, govern.</span>
+            </h2>
+            <p className="text-lg text-muted leading-relaxed mt-5">
+              HZSec covers every stage of local security work — from finding what&apos;s
+              wrong, to fixing it with AI that knows your code, to proving compliance
+              when the audit comes.
+            </p>
+          </div>
+
+          {/* Three pillars */}
+          <div className="grid grid-cols-1 min-[900px]:grid-cols-3 gap-6">
+
+            {/* Pillar 1 — Scan */}
+            <div className="rounded-2xl border border-border bg-panel p-8 flex flex-col hover:border-accent/40 hover:-translate-y-0.5 transition-all duration-200">
+              <div className="font-mono text-[10px] uppercase tracking-widest text-accent mb-4 pb-2 border-b border-border">
+                Scan
+              </div>
+              <h3 className="text-xl font-bold text-text mb-3">Find what&apos;s already broken.</h3>
+              <p className="text-sm text-muted leading-relaxed mb-6 flex-1">
+                Six scan modes covering forty-plus detection patterns — secrets, configs,
+                vulnerable code, hardening gaps, web exposure, system risks. Runs in seconds,
+                entirely on your machine.
+              </p>
+              <ul className="space-y-2 mb-8">
+                {[
+                  'Security Scanner (6 modes)',
+                  'Auto-fixes for common issues',
+                  'Score history & trend chart',
+                  'Audit log of every scan',
+                ].map((f) => (
+                  <li key={f} className="flex items-start gap-2">
+                    <span className="text-accent flex-shrink-0 text-xs mt-0.5">✓</span>
+                    <span className="text-sm text-text">{f}</span>
+                  </li>
+                ))}
+              </ul>
+              {/* TODO: build /product/scan page */}
+              <a href="#" className="inline-flex items-center gap-2 text-sm font-medium text-accent hover:gap-3 transition-all">
+                Explore scanning →
+              </a>
+            </div>
+
+            {/* Pillar 2 — Defend */}
+            <div className="rounded-2xl border border-border bg-panel p-8 flex flex-col hover:border-accent/40 hover:-translate-y-0.5 transition-all duration-200">
+              <div className="font-mono text-[10px] uppercase tracking-widest text-accent mb-4 pb-2 border-b border-border">
+                Defend
+              </div>
+              <h3 className="text-xl font-bold text-text mb-3">Fix what AI can see clearly.</h3>
+              <p className="text-sm text-muted leading-relaxed mb-6 flex-1">
+                An AI assistant that&apos;s already read your code, matched it against ten
+                real-world breaches, and checked it against live CVE data — before you ask
+                the first question.
+              </p>
+              <ul className="space-y-2 mb-8">
+                {[
+                  'AI Assistant with codebase context',
+                  'Live Monitor for files & folders',
+                  'Real breach case matching',
+                  'Live CVE database (CISA + NVD)',
+                ].map((f) => (
+                  <li key={f} className="flex items-start gap-2">
+                    <span className="text-accent flex-shrink-0 text-xs mt-0.5">✓</span>
+                    <span className="text-sm text-text">{f}</span>
+                  </li>
+                ))}
+              </ul>
+              {/* TODO: build /product/defend page */}
+              <a href="#" className="inline-flex items-center gap-2 text-sm font-medium text-accent hover:gap-3 transition-all">
+                Explore defending →
+              </a>
+            </div>
+
+            {/* Pillar 3 — Govern */}
+            <div className="rounded-2xl border border-border bg-panel p-8 flex flex-col hover:border-accent/40 hover:-translate-y-0.5 transition-all duration-200">
+              <div className="font-mono text-[10px] uppercase tracking-widest text-accent mb-4 pb-2 border-b border-border">
+                Govern
+              </div>
+              <h3 className="text-xl font-bold text-text mb-3">Prove you&apos;re compliant.</h3>
+              <p className="text-sm text-muted leading-relaxed mb-6 flex-1">
+                Map every finding to OWASP, CIS, and SOC 2. Track your fix history. Surface
+                long-open or recurring issues before they become an audit problem.
+              </p>
+              <ul className="space-y-2 mb-8">
+                {[
+                  'OWASP / CIS / SOC 2 mapping',
+                  'Fix memory & recurrence tracking',
+                  'Compliance gap calculations',
+                  'Agentic fixes with diff review',
+                ].map((f) => (
+                  <li key={f} className="flex items-start gap-2">
+                    <span className="text-accent flex-shrink-0 text-xs mt-0.5">✓</span>
+                    <span className="text-sm text-text">{f}</span>
+                  </li>
+                ))}
+              </ul>
+              {/* TODO: build /product/govern page */}
+              <a href="#" className="inline-flex items-center gap-2 text-sm font-medium text-accent hover:gap-3 transition-all">
+                Explore governance →
+              </a>
+            </div>
+
+          </div>
         </div>
       </section>
 
       <MarketingFooter />
     </>
-  );
-}
-
-function Feature({ title, body }: { title: string; body: string; }) {
-  return (
-    <div className="group rounded-xl border border-border bg-panel p-8 transition-all hover:border-accent">
-      <h3 className="text-lg font-bold mb-3">{title}</h3>
-      <p className="text-muted leading-relaxed">{body}</p>
-    </div>
   );
 }
