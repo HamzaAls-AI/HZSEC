@@ -279,6 +279,90 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* Breach Cases — "Why this matters" */}
+      <section className="bg-panel py-24 px-[6%]">
+        <div className="mx-auto max-w-[1180px]">
+
+          {/* Left-aligned header */}
+          <div className="max-w-[700px] mb-14">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/10 border border-red-500/20 font-mono text-[11px] uppercase tracking-widest text-red-500 mb-6">
+              <span className="w-1.5 h-1.5 rounded-full bg-red-500" aria-hidden="true" />
+              Why This Matters
+            </div>
+            <h2 className="text-[clamp(28px,3.5vw,44px)] font-extrabold leading-[1.1] tracking-tight text-text">
+              These breaches started<br />
+              with issues HZSec detects.
+            </h2>
+            <p className="text-lg text-muted leading-relaxed mt-5">
+              Every breach case is embedded in HZSec&apos;s intelligence layer. When the
+              scanner finds a matching pattern, the assistant tells you exactly what
+              happened and how fast it was exploited.
+            </p>
+          </div>
+
+          {/* 2×2 breach grid */}
+          <div className="grid grid-cols-1 min-[700px]:grid-cols-2 gap-5">
+
+            {/* Case 1 — Uber */}
+            <div className="rounded-2xl border border-border bg-bg p-7 hover:border-red-500/30 transition-all duration-200">
+              <h3 className="text-lg font-bold text-text mb-2">Uber — AWS Keys in GitHub (2022)</h3>
+              <p className="text-sm text-muted mb-5 font-mono">57 million records exposed · $148M settlement</p>
+              <div className="flex flex-wrap gap-2">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-red-500/10 border border-red-500/20 text-red-500 text-[11px] font-mono font-medium">
+                  ⏱ &lt; 10 min to exploit
+                </span>
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-accent/10 border border-accent/20 text-accent text-[11px] font-mono font-medium">
+                  HZSec detects: exposed API keys
+                </span>
+              </div>
+            </div>
+
+            {/* Case 2 — Equifax */}
+            <div className="rounded-2xl border border-border bg-bg p-7 hover:border-red-500/30 transition-all duration-200">
+              <h3 className="text-lg font-bold text-text mb-2">Equifax — Disabled TLS Monitoring (2017)</h3>
+              <p className="text-sm text-muted mb-5 font-mono">147 million records · $575M FTC settlement</p>
+              <div className="flex flex-wrap gap-2">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-red-500/10 border border-red-500/20 text-red-500 text-[11px] font-mono font-medium">
+                  ⏱ 78 days undetected
+                </span>
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-accent/10 border border-accent/20 text-accent text-[11px] font-mono font-medium">
+                  HZSec detects: SSL/TLS disabled
+                </span>
+              </div>
+            </div>
+
+            {/* Case 3 — Verkada */}
+            <div className="rounded-2xl border border-border bg-bg p-7 hover:border-red-500/30 transition-all duration-200">
+              <h3 className="text-lg font-bold text-text mb-2">Verkada — Hardcoded Admin Password (2021)</h3>
+              <p className="text-sm text-muted mb-5 font-mono">150,000 cameras compromised</p>
+              <div className="flex flex-wrap gap-2">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-red-500/10 border border-red-500/20 text-red-500 text-[11px] font-mono font-medium">
+                  ⏱ Immediate access
+                </span>
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-accent/10 border border-accent/20 text-accent text-[11px] font-mono font-medium">
+                  HZSec detects: hardcoded credentials
+                </span>
+              </div>
+            </div>
+
+            {/* Case 4 — Log4Shell */}
+            <div className="rounded-2xl border border-border bg-bg p-7 hover:border-red-500/30 transition-all duration-200">
+              <h3 className="text-lg font-bold text-text mb-2">Log4Shell — Dynamic Execution (2021)</h3>
+              <p className="text-sm text-muted mb-5 font-mono">Hundreds of millions of systems vulnerable</p>
+              <div className="flex flex-wrap gap-2">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-red-500/10 border border-red-500/20 text-red-500 text-[11px] font-mono font-medium">
+                  ⏱ &lt; 2 hrs after disclosure
+                </span>
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-accent/10 border border-accent/20 text-accent text-[11px] font-mono font-medium">
+                  HZSec detects: unsafe eval/exec patterns
+                </span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
       <MarketingFooter />
     </>
   );
