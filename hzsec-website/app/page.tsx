@@ -363,6 +363,56 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* Closing CTA */}
+      <section className="relative bg-bg py-28 px-[6%] overflow-hidden">
+        {/* Centered glow — echoes the hero, bookends the page */}
+        <div
+          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] rounded-full bg-accent/10 blur-[120px] pointer-events-none"
+          aria-hidden="true"
+        />
+
+        <div className="relative z-10 max-w-[680px] mx-auto text-center">
+          {/* Eyebrow */}
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 border border-accent/20 font-mono text-[11px] uppercase tracking-widest text-accent">
+            <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" aria-hidden="true" />
+            Early Access
+          </div>
+
+          {/* Headline */}
+          <h2 className="text-[clamp(32px,4vw,52px)] font-extrabold leading-[1.1] tracking-tight text-text mt-6">
+            Your security horizon,<br />
+            <span className="text-accent">always clear.</span>
+          </h2>
+
+          {/* Subhead */}
+          <p className="text-lg text-muted leading-relaxed mt-5 mx-auto">
+            Join the early access program and get Pro free for your first three months.
+            No credit card, no code leaving your machine, no catch.
+          </p>
+
+          {/* CTAs */}
+          <div className="flex justify-center gap-4 flex-wrap mt-8">
+            <Link
+              href="/download"
+              className="inline-flex items-center bg-accent text-white px-8 py-3.5 rounded-lg font-medium text-base hover:bg-accent/90 hover:-translate-y-px transition-all"
+            >
+              Get early access →
+            </Link>
+            <Link
+              href="/pricing"
+              className="inline-flex items-center border border-border text-text px-8 py-3.5 rounded-lg font-medium text-base hover:border-accent hover:text-accent hover:bg-accent/5 transition-all"
+            >
+              View pricing
+            </Link>
+          </div>
+
+          {/* Note */}
+          <p className="font-mono text-xs text-muted mt-6">
+            Free tier free forever · Mac + Windows · 100% local processing
+          </p>
+        </div>
+      </section>
+
       <MarketingFooter />
     </>
   );
