@@ -39,6 +39,27 @@ function Chevron({ open }: { open: boolean }) {
   );
 }
 
+// Signed-out nav buttons — shared between the Clerk <SignedOut> path and the
+// keyless CI fallback so the rendered output is identical in both cases.
+function NavSignedOutUI() {
+  return (
+    <>
+      <Link
+        href="/pricing"
+        className="text-sm text-muted border border-border px-3 py-1.5 rounded-md hover:border-accent hover:text-accent transition-colors max-[899px]:hidden"
+      >
+        View pricing
+      </Link>
+      <Link
+        href="/download"
+        className="text-sm bg-accent text-white px-3 py-1.5 rounded-md hover:bg-accent/90 transition-colors max-[899px]:hidden"
+      >
+        Get early access
+      </Link>
+    </>
+  );
+}
+
 export function MarketingHeader() {
   const [activeDropdown, setActiveDropdown] = useState<DropdownKey | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -105,11 +126,17 @@ export function MarketingHeader() {
           >
             Contact
           </a>
-          <SignedOut>
+          {clerkKey ? (
+            <SignedOut>
+              <Link href="/login" className="text-xs text-muted hover:text-text transition-colors">
+                Sign in
+              </Link>
+            </SignedOut>
+          ) : (
             <Link href="/login" className="text-xs text-muted hover:text-text transition-colors">
               Sign in
             </Link>
-          </SignedOut>
+          )}
         </div>
       </div>
 
@@ -288,29 +315,24 @@ export function MarketingHeader() {
         {/* Right: theme switcher + auth + CTAs + hamburger */}
         <div className="flex items-center gap-3">
           <ThemeSwitcher />
-          <SignedIn>
-            <Link
-              href="/dashboard"
-              className="text-sm text-muted hover:text-text transition-colors max-[899px]:hidden"
-            >
-              Dashboard
-            </Link>
-            {clerkKey ? <UserButton afterSignOutUrl="/" /> : null}
-          </SignedIn>
-          <SignedOut>
-            <Link
-              href="/pricing"
-              className="text-sm text-muted border border-border px-3 py-1.5 rounded-md hover:border-accent hover:text-accent transition-colors max-[899px]:hidden"
-            >
-              View pricing
-            </Link>
-            <Link
-              href="/download"
-              className="text-sm bg-accent text-white px-3 py-1.5 rounded-md hover:bg-accent/90 transition-colors max-[899px]:hidden"
-            >
-              Get early access
-            </Link>
-          </SignedOut>
+          {clerkKey ? (
+            <>
+              <SignedIn>
+                <Link
+                  href="/dashboard"
+                  className="text-sm text-muted hover:text-text transition-colors max-[899px]:hidden"
+                >
+                  Dashboard
+                </Link>
+                <UserButton afterSignOutUrl="/" />
+              </SignedIn>
+              <SignedOut>
+                <NavSignedOutUI />
+              </SignedOut>
+            </>
+          ) : (
+            <NavSignedOutUI />
+          )}
           {/* Hamburger — shown below 900px */}
           <button
             className="hidden max-[899px]:flex flex-col justify-center gap-[5px] w-9 h-9 p-1.5 rounded-md bg-transparent border-none cursor-pointer hover:bg-text/5 transition-colors"
@@ -404,7 +426,17 @@ export function MarketingHeader() {
           </a>
         </div>
         <div className="flex flex-col gap-3 px-5 py-5 border-t border-border flex-shrink-0">
-          <SignedOut>
+          {clerkKey ? (
+            <SignedOut>
+              <Link
+                href="/login"
+                className="flex justify-center items-center text-sm text-muted border border-border px-4 py-2.5 rounded-md hover:border-border hover:text-text transition-colors"
+                onClick={() => setMobileOpen(false)}
+              >
+                Sign in
+              </Link>
+            </SignedOut>
+          ) : (
             <Link
               href="/login"
               className="flex justify-center items-center text-sm text-muted border border-border px-4 py-2.5 rounded-md hover:border-border hover:text-text transition-colors"
@@ -412,7 +444,7 @@ export function MarketingHeader() {
             >
               Sign in
             </Link>
-          </SignedOut>
+          )}
           <Link
             href="/pricing"
             className="flex justify-center items-center text-sm text-text border border-border px-4 py-2.5 rounded-md hover:border-accent hover:text-accent transition-colors"
