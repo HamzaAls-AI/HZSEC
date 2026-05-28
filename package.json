@@ -38,7 +38,7 @@
       "!.git/**",
       "!backup-before-*/**",
       "!test-lab/**",
-      "!website/**",
+      "!design-reference/**",
       "!HZSec - Growth/**",
       "!.github/**"
     ],
