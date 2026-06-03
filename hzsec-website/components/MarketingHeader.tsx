@@ -248,16 +248,11 @@ export function MarketingHeader() {
               onMouseEnter={cancelClose}
               onMouseLeave={scheduleClose}
             >
-              {/* TODO: build page */}
-              <a href="#" role="menuitem" className={dropdownLink}>For Solo Developers</a>
-              {/* TODO: build page */}
-              <a href="#" role="menuitem" className={dropdownLink}>For Small Teams</a>
-              {/* TODO: build page */}
-              <a href="#" role="menuitem" className={dropdownLink}>For Open Source Maintainers</a>
-              {/* TODO: build page */}
-              <a href="#" role="menuitem" className={dropdownLink}>Pre-commit Security</a>
-              {/* TODO: build page */}
-              <a href="#" role="menuitem" className={dropdownLink}>Compliance for Startups</a>
+              <Link href="/product/scan" role="menuitem" className={dropdownLink}>For Solo Developers</Link>
+              <Link href="/product/defend" role="menuitem" className={dropdownLink}>For Small Teams</Link>
+              <Link href="/product/scan" role="menuitem" className={dropdownLink}>For Open Source Maintainers</Link>
+              <Link href="/product/scan#auto-fixes" role="menuitem" className={dropdownLink}>Pre-commit Security</Link>
+              <Link href="/product/govern" role="menuitem" className={dropdownLink}>Compliance for Startups</Link>
             </div>
           </li>
 
@@ -286,10 +281,8 @@ export function MarketingHeader() {
             >
               <Link href="/blog" role="menuitem" className={dropdownLink}>Blog</Link>
               <Link href="/docs" role="menuitem" className={dropdownLink}>How It Works</Link>
-              {/* TODO: build page */}
-              <a href="#" role="menuitem" className={dropdownLink}>Demo</a>
-              {/* TODO: build page */}
-              <a href="#" role="menuitem" className={dropdownLink}>FAQ</a>
+              <Link href="/demo" role="menuitem" className={dropdownLink}>Demo</Link>
+              <Link href="/faq" role="menuitem" className={dropdownLink}>FAQ</Link>
             </div>
           </li>
 
@@ -378,13 +371,13 @@ export function MarketingHeader() {
           >
             Product
           </Link>
-          <a
-            href="#"
+          <Link
+            href="/product/scan"
             className="px-4 py-2.5 text-sm font-medium text-text rounded-md hover:text-accent hover:bg-accent/5 transition-colors"
             onClick={() => setMobileOpen(false)}
           >
             Solutions
-          </a>
+          </Link>
           <Link
             href="/guide"
             className="px-4 py-2.5 text-sm font-medium text-text rounded-md hover:text-accent hover:bg-accent/5 transition-colors"
