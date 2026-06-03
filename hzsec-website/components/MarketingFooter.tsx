@@ -68,12 +68,9 @@ export function MarketingFooter() {
           <div>
             <div className={colTitle}>Product</div>
             <ul className="space-y-2.5">
-              {/* TODO: /product/scan */}
-              <li><a href="#" className={colLink}>Security Scanner</a></li>
-              {/* TODO: /product/defend */}
-              <li><a href="#" className={colLink}>AI Assistant</a></li>
-              {/* TODO: /product/defend */}
-              <li><a href="#" className={colLink}>Live Monitor</a></li>
+              <li><Link href="/product/scan" className={colLink}>Security Scanner</Link></li>
+              <li><Link href="/product/defend" className={colLink}>AI Assistant</Link></li>
+              <li><Link href="/product/defend" className={colLink}>Live Monitor</Link></li>
               <li><Link href="/pricing" className={colLink}>Pricing</Link></li>
               <li><Link href="/download" className={colLink}>Download</Link></li>
             </ul>

@@ -204,32 +204,22 @@ export function MarketingHeader() {
               <div className="flex gap-7">
                 <div className="flex-1">
                   <div className={colTitle}>Scan</div>
-                  {/* TODO: build page */}
-                  <a href="#" role="menuitem" className={dropdownLink}>Security Scanner</a>
-                  {/* TODO: build page */}
-                  <a href="#" role="menuitem" className={dropdownLink}>Auto-fixes</a>
-                  {/* TODO: build page */}
-                  <a href="#" role="menuitem" className={dropdownLink}>Score history</a>
-                  {/* TODO: build page */}
-                  <a href="#" role="menuitem" className={dropdownLink}>Audit log</a>
+                  <Link href="/product/scan#scanner" role="menuitem" className={dropdownLink}>Security Scanner</Link>
+                  <Link href="/product/scan#auto-fixes" role="menuitem" className={dropdownLink}>Auto-fixes</Link>
+                  <Link href="/product/scan#score-history" role="menuitem" className={dropdownLink}>Score history</Link>
+                  <Link href="/product/scan#audit-log" role="menuitem" className={dropdownLink}>Audit log</Link>
                 </div>
                 <div className="flex-1">
                   <div className={colTitle}>Defend</div>
-                  {/* TODO: build page */}
-                  <a href="#" role="menuitem" className={dropdownLink}>AI Assistant</a>
-                  {/* TODO: build page */}
-                  <a href="#" role="menuitem" className={dropdownLink}>Live Monitor</a>
-                  {/* TODO: build page */}
-                  <a href="#" role="menuitem" className={dropdownLink}>Breach Intelligence</a>
+                  <Link href="/product/defend#ai-assistant" role="menuitem" className={dropdownLink}>AI Assistant</Link>
+                  <Link href="/product/defend#live-monitor" role="menuitem" className={dropdownLink}>Live Monitor</Link>
+                  <Link href="/product/defend#breach-intelligence" role="menuitem" className={dropdownLink}>Breach Intelligence</Link>
+                  <Link href="/product/defend#cve-database" role="menuitem" className={dropdownLink}>CVE database</Link>
                 </div>
                 <div className="flex-1">
                   <div className={colTitle}>Govern</div>
-                  {/* TODO: build page */}
-                  <a href="#" role="menuitem" className={dropdownLink}>Compliance mapping</a>
-                  {/* TODO: build page */}
-                  <a href="#" role="menuitem" className={dropdownLink}>OWASP / CIS / SOC 2</a>
-                  {/* TODO: build page */}
-                  <a href="#" role="menuitem" className={dropdownLink}>CVE database</a>
+                  <Link href="/product/govern#compliance-mapping" role="menuitem" className={dropdownLink}>Compliance mapping</Link>
+                  <Link href="/product/govern#framework-mapping" role="menuitem" className={dropdownLink}>OWASP / CIS / SOC 2</Link>
                 </div>
               </div>
             </div>
@@ -381,15 +371,13 @@ export function MarketingHeader() {
           </button>
         </div>
         <div className="flex flex-col px-3 py-4 gap-1 flex-1 overflow-y-auto">
-          {/* TODO: expand to sub-items or dedicated pages */}
-          <a
-            href="#"
+          <Link
+            href="/product/scan"
             className="px-4 py-2.5 text-sm font-medium text-text rounded-md hover:text-accent hover:bg-accent/5 transition-colors"
             onClick={() => setMobileOpen(false)}
           >
             Product
-          </a>
-          {/* TODO: expand to sub-items or dedicated pages */}
+          </Link>
           <a
             href="#"
             className="px-4 py-2.5 text-sm font-medium text-text rounded-md hover:text-accent hover:bg-accent/5 transition-colors"
@@ -398,11 +386,11 @@ export function MarketingHeader() {
             Solutions
           </a>
           <Link
-            href="/docs"
+            href="/guide"
             className="px-4 py-2.5 text-sm font-medium text-text rounded-md hover:text-accent hover:bg-accent/5 transition-colors"
             onClick={() => setMobileOpen(false)}
           >
-            Demo
+            How It Works
           </Link>
           <Link
             href="/pricing"

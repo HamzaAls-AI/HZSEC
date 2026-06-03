@@ -22,7 +22,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   const clerkKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
   const app = (
-    <html lang="en">
+    <html lang="en" className="scroll-smooth">
       <head>
         <Script id="hzsec-theme-init" strategy="beforeInteractive">{`(function(){try{var t=localStorage.getItem('hzsec-theme');var v=(t==='light')?'light':'dark';document.documentElement.setAttribute('data-theme',v);}catch(e){document.documentElement.setAttribute('data-theme','dark');}})();`}</Script>
       </head>

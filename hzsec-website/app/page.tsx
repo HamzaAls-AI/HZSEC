@@ -210,10 +210,9 @@ export default function Landing() {
                   </li>
                 ))}
               </ul>
-              {/* TODO: build /product/scan page */}
-              <a href="#" className="inline-flex items-center gap-2 text-sm font-medium text-accent hover:gap-3 transition-all">
+              <Link href="/product/scan" className="inline-flex items-center gap-2 text-sm font-medium text-accent hover:gap-3 transition-all">
                 Explore scanning →
-              </a>
+              </Link>
             </div>
 
             {/* Pillar 2 — Defend */}
@@ -240,10 +239,9 @@ export default function Landing() {
                   </li>
                 ))}
               </ul>
-              {/* TODO: build /product/defend page */}
-              <a href="#" className="inline-flex items-center gap-2 text-sm font-medium text-accent hover:gap-3 transition-all">
+              <Link href="/product/defend" className="inline-flex items-center gap-2 text-sm font-medium text-accent hover:gap-3 transition-all">
                 Explore defending →
-              </a>
+              </Link>
             </div>
 
             {/* Pillar 3 — Govern */}
@@ -269,10 +267,9 @@ export default function Landing() {
                   </li>
                 ))}
               </ul>
-              {/* TODO: build /product/govern page */}
-              <a href="#" className="inline-flex items-center gap-2 text-sm font-medium text-accent hover:gap-3 transition-all">
+              <Link href="/product/govern" className="inline-flex items-center gap-2 text-sm font-medium text-accent hover:gap-3 transition-all">
                 Explore governance →
-              </a>
+              </Link>
             </div>
 
           </div>
