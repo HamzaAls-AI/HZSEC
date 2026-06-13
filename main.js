@@ -60,6 +60,7 @@ const {
   getLicenseValidation, saveLicenseValidation
 } = require('./src/storage/store');
 const { listBackups } = require('./src/fixes/safe-fixes');
+const { getAll: getSuppressions, add: addSuppression, remove: removeSuppression } = require('./src/storage/suppressions');
 
 let mainWindow = null;
 let monitorState = { watcher: null, targetPath: null, debounceTimers: {} };
@@ -679,6 +680,36 @@ ipcMain.handle('sync-kb', async () => {
 ipcMain.handle('mark-finding-fixed', async (_, findingId, method) => {
   try {
     markFindingFixed(findingId, method || 'manual');
+    return { success: true };
+  } catch (err) {
+    return { success: false, error: err.message };
+  }
+});
+
+// ─── Suppression IPC ─────────────────────────────────────────────────────────
+
+ipcMain.handle('get-suppressions', async () => {
+  try {
+    return { success: true, suppressions: getSuppressions() };
+  } catch (err) {
+    return { success: false, error: err.message };
+  }
+});
+
+ipcMain.handle('suppress-finding', async (_, suppression) => {
+  try {
+    const entry = addSuppression(suppression);
+    appendAuditLog({ action: 'finding-suppressed', detail: `kind=${entry.kind} reason=${entry.reason} id=${entry.id}` });
+    return { success: true, entry };
+  } catch (err) {
+    return { success: false, error: err.message };
+  }
+});
+
+ipcMain.handle('unsuppress-finding', async (_, suppressionId) => {
+  try {
+    removeSuppression(suppressionId);
+    appendAuditLog({ action: 'finding-unsuppressed', detail: `id=${suppressionId}` });
     return { success: true };
   } catch (err) {
     return { success: false, error: err.message };

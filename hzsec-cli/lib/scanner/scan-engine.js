@@ -13,6 +13,7 @@ const {
   detectPlatform
 } = require('../core/file-utils');
 const { severityRank, dedupeFindings } = require('../core/findings');
+const { getAll: getSuppressions, applySuppressions } = require('../storage/suppressions');
 const { scanFile, extractCustomRules } = require('./scan-file');
 const {
   bucketCounts,
@@ -144,13 +145,16 @@ async function runSecurityScan(targetPath, options = {}, monitorTargetPath = nul
     return a.lineNumber - b.lineNumber;
   });
 
+  const { active: activeFindings, acknowledged: acknowledgedFindings, suppressed: suppressedFindings } =
+    applySuppressions(findings, getSuppressions());
+
   const scannedAt = new Date().toISOString();
-  const buckets = bucketCounts(findings);
+  const buckets = bucketCounts(activeFindings);
   const previousBuckets = previousBucketsFromCurrent(buckets);
-  const breakdown = scoreBreakdown(findings);
-  const threatLevel = getThreatLevel(findings);
+  const breakdown = scoreBreakdown(activeFindings);
+  const threatLevel = getThreatLevel(activeFindings);
   const environment = buildEnvironmentSnapshot(resolved, allFiles, scopedFiles, mode, monitorTargetPath);
-  const recentActivity = generateRecentActivity(findings, scannedAt, mode, environment.monitoringStatus === 'Active');
+  const recentActivity = generateRecentActivity(activeFindings, scannedAt, mode, environment.monitoringStatus === 'Active');
 
   return {
     scannedAt,
@@ -159,26 +163,30 @@ async function runSecurityScan(targetPath, options = {}, monitorTargetPath = nul
     posture: {
       overallSecurityScore: breakdown.overall,
       currentThreatLevel: threatLevel,
-      totalFindings: findings.length,
+      totalFindings: activeFindings.length,
       criticalFindings: buckets.CRITICAL,
-      openSecrets: findings.filter(f => f.type === 'secret').length,
-      unresolvedConfigIssues: findings.filter(f => f.type === 'config' || f.type === 'hardening').length,
+      acknowledgedCount: acknowledgedFindings.length,
+      suppressedCount: suppressedFindings.length,
+      openSecrets: activeFindings.filter(f => f.type === 'secret').length,
+      unresolvedConfigIssues: activeFindings.filter(f => f.type === 'config' || f.type === 'hardening').length,
       monitoredAlerts: environment.monitoringStatus === 'Active' ? Math.max(0, buckets.CRITICAL + buckets.HIGH) : 0,
       lastScanTime: scannedAt,
       monitoredStatus: environment.monitoringStatus
     },
-    topPriorityIssue: findings[0] || null,
+    topPriorityIssue: activeFindings[0] || null,
     riskDistribution: {
       current: buckets,
       previous: previousBuckets,
       risingCategory: getRisingCategory(buckets, previousBuckets)
     },
     securityScoreBreakdown: breakdown.items,
-    statusCounts: buildFindingStatuses(findings),
+    statusCounts: buildFindingStatuses(activeFindings),
     recentActivity,
-    trendSnapshot: generateTrendSnapshot(findings),
+    trendSnapshot: generateTrendSnapshot(activeFindings),
     environmentSnapshot: environment,
-    findings,
+    findings: activeFindings,
+    acknowledgedFindings,
+    suppressedFindings,
     filesScanned: scopedFiles.length
   };
 }

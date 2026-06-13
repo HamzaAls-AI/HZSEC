@@ -24,7 +24,10 @@ function detectWebIssue(filePath, line) {
     };
   }
 
-  if (/fetch\(['"]http:\/\//.test(lower) || /axios\.[a-z]+\(['"]http:\/\//.test(lower)) {
+  if (
+    (/fetch\(['"]http:\/\//.test(lower) || /axios\.[a-z]+\(['"]http:\/\//.test(lower)) &&
+    !/localhost|127\.\d+\.\d+\.\d+|\[?::1\]?/.test(lower)
+  ) {
     return {
       title: 'HTTP request from front-end code',
       severity: 'MEDIUM',

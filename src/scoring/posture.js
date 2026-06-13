@@ -63,22 +63,22 @@ function scoreBreakdown(findings) {
   const codeSafety = Math.max(0, 100 - Math.round((web * 10) + (code * 12)));
   const configSafety = Math.max(0, 100 - Math.round(configs * 14));
   const secretExposure = Math.max(0, 100 - Math.round(secrets * 24));
-  const dependencyHealth = 82;
   const unresolvedFindings = Math.max(0, 100 - Math.round(totalRisk * 0.85));
   const fixCompletionRate = findings.length === 0 ? 100 : Math.max(0, 100 - findings.length * 8);
   const monitorPressure = Math.max(0, 100 - Math.round((buckets.CRITICAL * 25) + (buckets.HIGH * 10)));
 
+  // dependencyHealth removed from formula — no package scanner exists yet.
+  // Weights redistributed proportionally across the remaining six components (sum = 1.00).
   const overall = Math.max(
     0,
     Math.min(
       100,
       Math.round(
-        (codeSafety * 0.18) +
-        (configSafety * 0.20) +
-        (secretExposure * 0.22) +
-        (dependencyHealth * 0.08) +
+        (codeSafety * 0.20) +
+        (configSafety * 0.22) +
+        (secretExposure * 0.24) +
         (monitorPressure * 0.08) +
-        (unresolvedFindings * 0.16) +
+        (unresolvedFindings * 0.18) +
         (fixCompletionRate * 0.08)
       )
     )
@@ -91,7 +91,7 @@ function scoreBreakdown(findings) {
       { key: 'codeSafety', label: 'Code Safety', value: codeSafety, note: 'Unsafe execution and browser-side patterns' },
       { key: 'configSafety', label: 'Config Safety', value: configSafety, note: 'Configuration and hardening quality' },
       { key: 'secretExposure', label: 'Secret Exposure', value: secretExposure, note: 'Keys, passwords, and private material risk' },
-      { key: 'dependencyHealth', label: 'Dependency Health', value: dependencyHealth, note: 'Placeholder until package audit is added' },
+      { key: 'dependencyHealth', label: 'Dependency Health', value: null, note: 'Not yet scanned — run a dependency scan to populate' },
       { key: 'monitorPressure', label: 'Monitor Pressure', value: monitorPressure, note: 'Live monitor pressure from active risky findings' },
       { key: 'unresolvedFindings', label: 'Unresolved Findings', value: unresolvedFindings, note: 'Open findings affecting security posture' },
       { key: 'fixCompletionRate', label: 'Fix Completion Rate', value: fixCompletionRate, note: 'How much remains open after the last scan' }

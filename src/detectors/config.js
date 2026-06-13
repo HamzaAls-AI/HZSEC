@@ -1,4 +1,7 @@
 function detectConfigIssue(filePath, line) {
+  // Skip comment lines — avoids false positives from disabled config, docs, and examples
+  if (/^\s*(#|\/\/|\/\*|\*(?!\/)|<!--)/.test(line)) return null;
+
   const lower = line.toLowerCase();
   const file = filePath.toLowerCase();
 
@@ -90,8 +93,11 @@ function detectConfigIssue(filePath, line) {
     };
   }
 
-  // HTTP 
-  if (/http:\/\//.test(lower) && !/localhost/.test(lower)) {
+  // HTTP — exclude local development addresses (localhost, 127.x, [::1], 0.0.0.0)
+  if (
+    /http:\/\//.test(lower) &&
+    !/localhost|127\.\d+\.\d+\.\d+|\[?::1\]?|0\.0\.0\.0/.test(lower)
+  ) {
     return {
       title: 'Unencrypted endpoint reference',
       severity: 'MEDIUM',

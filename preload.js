@@ -71,6 +71,11 @@ contextBridge.exposeInMainWorld('securityAPI', {
   getAuditLog: (limit) => ipcRenderer.invoke('get-audit-log', limit),
   clearAuditLog: () => ipcRenderer.invoke('clear-audit-log'),
 
+  // Finding suppressions
+  suppressFinding: (suppression) => ipcRenderer.invoke('suppress-finding', suppression),
+  unsuppressFinding: (suppressionId) => ipcRenderer.invoke('unsuppress-finding', suppressionId),
+  getSuppressions: () => ipcRenderer.invoke('get-suppressions'),
+
   // Monitor
   startMonitor: (targetPath) => ipcRenderer.invoke('start-monitor', targetPath),
   stopMonitor: () => ipcRenderer.invoke('stop-monitor'),

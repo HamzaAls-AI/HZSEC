@@ -461,16 +461,20 @@ function scoreColor(score) {
   return 'var(--red)';
 }
 
-function renderPostureBar(score, threatLevel, totalFindings, criticalFindings, mode) {
+function renderPostureBar(score, threatLevel, totalFindings, criticalFindings, mode, acknowledgedCount, suppressedCount) {
   el('postureScoreLabel').textContent = score;
   el('postureMarker').style.left = score + '%';
 
   const threat = String(threatLevel).toUpperCase();
-  el('postureTags').innerHTML = `
-    <div class="posture-tag threat-${threat}"><div class="posture-tag-dot"></div>${threat} THREAT</div>
-    <div class="posture-tag">${totalFindings} finding${totalFindings !== 1 ? 's' : ''}</div>
-    <div class="posture-tag" style="color:var(--red)">${criticalFindings} critical</div>
-    <div class="posture-tag">${esc(mode)} mode</div>`;
+  const tags = [
+    `<div class="posture-tag threat-${threat}"><div class="posture-tag-dot"></div>${threat} THREAT</div>`,
+    `<div class="posture-tag">${totalFindings} active finding${totalFindings !== 1 ? 's' : ''}</div>`,
+    `<div class="posture-tag" style="color:var(--red)">${criticalFindings} critical</div>`,
+    `<div class="posture-tag">${esc(mode)} mode</div>`,
+  ];
+  if (acknowledgedCount > 0) tags.push(`<div class="posture-tag" style="color:var(--yellow)">${acknowledgedCount} acknowledged</div>`);
+  if (suppressedCount > 0) tags.push(`<div class="posture-tag" style="color:var(--muted)">${suppressedCount} suppressed</div>`);
+  el('postureTags').innerHTML = tags.join('');
 }
 
 function renderRadial(score, threatLevel, totalFindings, criticalFindings, mode) {
@@ -501,7 +505,7 @@ function renderScanResults(data) {
   el('scoreChip').style.display = 'inline-flex';
   el('scoreVal').textContent = score;
 
-  renderPostureBar(score, p.currentThreatLevel, p.totalFindings, p.criticalFindings, data.mode);
+  renderPostureBar(score, p.currentThreatLevel, p.totalFindings, p.criticalFindings, data.mode, p.acknowledgedCount || 0, p.suppressedCount || 0);
   renderRadial(score, p.currentThreatLevel, p.totalFindings, p.criticalFindings, data.mode);
 
   const r = data.riskDistribution.current;
@@ -514,7 +518,7 @@ function renderScanResults(data) {
 
   renderPriority(data.topPriorityIssue);
   renderEnvironment(data.environmentSnapshot);
-  renderFindings(data.findings);
+  renderFindings(data.findings, data.acknowledgedFindings || [], data.suppressedFindings || []);
 }
 
 function renderPriority(issue) {
@@ -584,11 +588,16 @@ function renderEnvironment(snap) {
     </div>`).join('');
 }
 
-function renderFindings(findings = []) {
-  if (!findings.length) { el('findingsList').innerHTML = `<div class="empty-state">No findings — looking clean.</div>`; return; }
-  el('findingsList').innerHTML = findings.map(f => `
-    <div class="finding-card">
-      <div class="finding-top"><div class="finding-title">${esc(f.title)}</div><span class="pill ${f.severity}">${f.severity}</span></div>
+function findingCardHtml(f) {
+  return `
+    <div class="finding-card" data-finding-id="${esc(f.id)}">
+      <div class="finding-top">
+        <div class="finding-title">${esc(f.title)}</div>
+        <div style="display:flex;align-items:center;gap:6px;flex-shrink:0">
+          <span class="pill ${f.severity}">${f.severity}</span>
+          <button class="abtn suppress-trigger" data-suppress-id="${esc(f.id)}" style="padding:2px 7px;font-size:13px;letter-spacing:1px" title="Suppress options">···</button>
+        </div>
+      </div>
       <div class="finding-meta">${esc(f.file)} · line ${f.lineNumber} · ${esc(f.type)}</div>
       <div class="finding-why"><strong>Why:</strong> ${esc(f.whyItMatters)}</div>
       <div class="finding-fix"><strong>Fix:</strong> ${esc(f.recommendedFix)}</div>
@@ -597,7 +606,58 @@ function renderFindings(findings = []) {
         ${f.autoFixAvailable ? `<button class="abtn green" data-action="fix" data-id="${esc(f.id)}">Quick fix</button>` : ''}
         <button class="abtn purple" data-action="ask" data-id="${esc(f.id)}">Ask assistant</button>
       </div>
-    </div>`).join('');
+    </div>`;
+}
+
+function renderFindings(activeFindings = [], acknowledgedFindings = [], suppressedFindings = []) {
+  const activeHtml = activeFindings.length
+    ? activeFindings.map(f => findingCardHtml(f)).join('')
+    : `<div class="empty-state">No active findings — looking clean.</div>`;
+
+  let extras = '';
+
+  if (acknowledgedFindings.length) {
+    const cards = acknowledgedFindings.map(f => `
+      <div class="finding-card finding-card--ack">
+        <div class="finding-top">
+          <div class="finding-title">${esc(f.title)}</div>
+          <span class="pill" style="font-size:9px;padding:3px 7px;background:rgba(251,191,36,0.12);color:var(--yellow)">ACKNOWLEDGED</span>
+        </div>
+        <div class="finding-meta">${esc(f.file)} · line ${f.lineNumber}</div>
+        ${f.suppressionNote ? `<div class="finding-why" style="font-size:11px">${esc(f.suppressionNote)}</div>` : ''}
+        <div class="finding-actions">
+          <button class="abtn" data-action="unsuppress" data-sup-id="${esc(f.suppressionId)}">Unsuppress</button>
+        </div>
+      </div>`).join('');
+    extras += `
+      <div class="findings-section-divider" data-toggle="ack-section">
+        <span class="divider-arrow">▼</span>
+        <span style="color:var(--yellow)">Acknowledged Risks (${acknowledgedFindings.length})</span>
+      </div>
+      <div id="ack-section">${cards}</div>`;
+  }
+
+  if (suppressedFindings.length) {
+    const cards = suppressedFindings.map(f => `
+      <div class="finding-card finding-card--sup">
+        <div class="finding-top">
+          <div class="finding-title">${esc(f.title)}</div>
+          <span class="pill" style="font-size:9px;padding:3px 7px;opacity:0.5">${f.suppressionReason === 'false-positive' ? 'FALSE POSITIVE' : 'N/A'}</span>
+        </div>
+        <div class="finding-meta">${esc(f.file)} · line ${f.lineNumber}</div>
+        <div class="finding-actions">
+          <button class="abtn" data-action="unsuppress" data-sup-id="${esc(f.suppressionId)}">Unsuppress</button>
+        </div>
+      </div>`).join('');
+    extras += `
+      <div class="findings-section-divider" data-toggle="sup-section">
+        <span class="divider-arrow">▶</span>
+        <span style="color:var(--muted)">Suppressed (${suppressedFindings.length})</span>
+      </div>
+      <div id="sup-section" style="display:none">${cards}</div>`;
+  }
+
+  el('findingsList').innerHTML = activeHtml + extras;
 }
 
 // ─── Score history ─────────────────────────────────────────────────────────
@@ -659,14 +719,178 @@ async function applyQuickFix(issue) {
 
 function findById(id) { return lastReport?.findings?.find(f => f.id === id) || null; }
 
+// ─── Suppress menu ────────────────────────────────────────────────────────────
+let _suppressTarget = null;
+
+function showSuppressMenu(triggerBtn, finding) {
+  hideSuppressMenu();
+  _suppressTarget = finding;
+
+  const folder = finding.filePath.split('/').slice(0, -1).pop() || '';
+  const folderPattern = finding.filePath.split('/').slice(0, -1).join('/') + '/**';
+
+  const menu = document.createElement('div');
+  menu.id = 'suppress-menu';
+  menu.className = 'suppress-dropdown';
+  menu.innerHTML = `
+    <button data-sup-action="finding">Ignore finding</button>
+    <button data-sup-action="rule">Ignore rule <span class="sup-hint">"${esc(finding.title)}"</span></button>
+    <button data-sup-action="file">Ignore file <span class="sup-hint">${esc(finding.file)}</span></button>
+    <button data-sup-action="folder" data-folder-pattern="${esc(folderPattern)}">Ignore folder <span class="sup-hint">${esc(folder)}/</span></button>
+    <hr style="border:none;border-top:1px solid var(--border);margin:4px 0">
+    <button data-sup-action="ack" class="sup-ack-btn">Acknowledge risk</button>
+  `;
+  document.body.appendChild(menu);
+
+  const rect = triggerBtn.getBoundingClientRect();
+  menu.style.top = `${rect.bottom + 4}px`;
+  menu.style.left = `${Math.min(rect.left, window.innerWidth - 230)}px`;
+}
+
+function hideSuppressMenu() {
+  document.getElementById('suppress-menu')?.remove();
+  _suppressTarget = null;
+}
+
+async function handleSuppressAction(action, finding, folderPattern) {
+  let suppression;
+  switch (action) {
+    case 'finding':
+      suppression = { kind: 'finding', findingId: finding.id, title: finding.title, filePath: finding.filePath, lineNumber: finding.lineNumber, reason: 'false-positive' };
+      break;
+    case 'rule':
+      suppression = { kind: 'rule', ruleTitle: finding.title, reason: 'false-positive' };
+      break;
+    case 'file':
+      suppression = { kind: 'file', filePath: finding.filePath, reason: 'false-positive' };
+      break;
+    case 'folder':
+      suppression = { kind: 'path-pattern', pattern: folderPattern, reason: 'false-positive' };
+      break;
+    case 'ack':
+      suppression = { kind: 'finding', findingId: finding.id, title: finding.title, filePath: finding.filePath, lineNumber: finding.lineNumber, reason: 'acknowledged' };
+      break;
+    default: return;
+  }
+
+  const result = await window.securityAPI.suppressFinding(suppression);
+  if (!result.success) { setBanner('Could not suppress finding.'); return; }
+
+  // Update lastReport immediately so the UI reflects the change without a re-scan
+  if (lastReport) {
+    const f = lastReport.findings?.find(f => f.id === finding.id);
+    if (f) {
+      lastReport.findings = (lastReport.findings || []).filter(x => x.id !== finding.id);
+      if (action === 'ack') {
+        lastReport.acknowledgedFindings = [...(lastReport.acknowledgedFindings || []), { ...f, suppressionId: result.entry.id, suppressionNote: '' }];
+        lastReport.posture.acknowledgedCount = (lastReport.posture.acknowledgedCount || 0) + 1;
+      } else {
+        lastReport.suppressedFindings = [...(lastReport.suppressedFindings || []), { ...f, suppressionId: result.entry.id, suppressionReason: suppression.reason }];
+        lastReport.posture.suppressedCount = (lastReport.posture.suppressedCount || 0) + 1;
+      }
+      if (f.severity === 'CRITICAL') lastReport.posture.criticalFindings = Math.max(0, (lastReport.posture.criticalFindings || 0) - 1);
+      lastReport.posture.totalFindings = lastReport.findings.length;
+
+      renderFindings(lastReport.findings, lastReport.acknowledgedFindings || [], lastReport.suppressedFindings || []);
+      renderPostureBar(lastReport.posture.overallSecurityScore, lastReport.posture.currentThreatLevel, lastReport.posture.totalFindings, lastReport.posture.criticalFindings, lastReport.mode, lastReport.posture.acknowledgedCount || 0, lastReport.posture.suppressedCount || 0);
+      updateCtxFindings(lastReport.findings);
+    }
+  }
+
+  const broadAction = action === 'rule' || action === 'file' || action === 'folder';
+  setBanner(
+    action === 'ack'  ? 'Risk acknowledged.' :
+    broadAction       ? 'Suppressed — rescan to apply to all matching findings.' :
+                        'Finding suppressed — excluded from posture score.'
+  );
+}
+
+async function handleUnsuppress(suppressionId) {
+  const result = await window.securityAPI.unsuppressFinding(suppressionId);
+  if (!result.success) { setBanner('Could not unsuppress.'); return; }
+
+  if (lastReport) {
+    let restored = null;
+
+    lastReport.acknowledgedFindings = (lastReport.acknowledgedFindings || []).filter(f => {
+      if (f.suppressionId === suppressionId) { restored = f; return false; }
+      return true;
+    });
+    if (!restored) {
+      lastReport.suppressedFindings = (lastReport.suppressedFindings || []).filter(f => {
+        if (f.suppressionId === suppressionId) { restored = f; return false; }
+        return true;
+      });
+    }
+
+    if (restored) {
+      const { suppressionId: _a, suppressionNote: _b, suppressionReason: _c, ...clean } = restored;
+      lastReport.findings = [clean, ...(lastReport.findings || [])];
+      lastReport.posture.totalFindings = lastReport.findings.length;
+      lastReport.posture.acknowledgedCount = (lastReport.acknowledgedFindings || []).length;
+      lastReport.posture.suppressedCount = (lastReport.suppressedFindings || []).length;
+      if (clean.severity === 'CRITICAL') lastReport.posture.criticalFindings = (lastReport.posture.criticalFindings || 0) + 1;
+
+      renderFindings(lastReport.findings, lastReport.acknowledgedFindings || [], lastReport.suppressedFindings || []);
+      renderPostureBar(lastReport.posture.overallSecurityScore, lastReport.posture.currentThreatLevel, lastReport.posture.totalFindings, lastReport.posture.criticalFindings, lastReport.mode, lastReport.posture.acknowledgedCount || 0, lastReport.posture.suppressedCount || 0);
+      updateCtxFindings(lastReport.findings);
+    }
+  }
+
+  setBanner('Finding unsuppressed — will reappear on next scan.');
+}
+
 // ─── Global click delegation ─────────────────────────────────────────────────
 document.addEventListener('click', async e => {
+  // Section toggle (acknowledged / suppressed)
+  const toggle = e.target.closest('[data-toggle]');
+  if (toggle) {
+    const targetEl = document.getElementById(toggle.dataset.toggle);
+    if (targetEl) {
+      const hidden = targetEl.style.display === 'none';
+      targetEl.style.display = hidden ? 'block' : 'none';
+      const arrow = toggle.querySelector('.divider-arrow');
+      if (arrow) arrow.textContent = hidden ? '▼' : '▶';
+    }
+    return;
+  }
+
+  // Suppress menu trigger (···)
+  const supTrigger = e.target.closest('.suppress-trigger');
+  if (supTrigger) {
+    e.stopPropagation();
+    const id = supTrigger.dataset.suppressId;
+    const finding = findById(id);
+    if (finding) showSuppressMenu(supTrigger, finding);
+    return;
+  }
+
+  // Suppress menu item
+  const supAction = e.target.closest('[data-sup-action]');
+  if (supAction && _suppressTarget) {
+    e.stopPropagation();
+    const action = supAction.dataset.supAction;
+    const folderPattern = supAction.dataset.folderPattern || '';
+    const target = _suppressTarget;
+    hideSuppressMenu();
+    await handleSuppressAction(action, target, folderPattern);
+    return;
+  }
+
+  // Click outside suppress menu → close it
+  if (document.getElementById('suppress-menu')) { hideSuppressMenu(); }
+
   const btn = e.target.closest('[data-action]');
   if (!btn) return;
   const action = btn.getAttribute('data-action');
   const id = btn.getAttribute('data-id');
   const issue = id ? findById(id) : null;
 
+  if (action === 'unsuppress') {
+    const supId = btn.getAttribute('data-sup-id');
+    if (supId) await handleUnsuppress(supId);
+    return;
+  }
   if (action === 'view' && issue) {
     await showSnippet(issue);
     switchPanel('scan');
@@ -1508,12 +1732,16 @@ window.securityAPI.onLicenseUpdated?.(() => {
 const CHANGELOG = [
   {
     version: '1.1.0',
-    date:    'Phase 3 release',
+    date:    '2026-06-12',
     summary: [
-      'New 8-slide welcome tour. Re-open it from Settings → Help & tour.',
-      'Sign in to HZSec from Settings → Account to use the managed assistant — no Anthropic key required.',
-      'Floating chat bubble shows a ⌘J reminder on hover.',
-      'Scan Center has a friendlier empty-state when no scan has run yet.'
+      'Suppress findings by individual finding, rule, file, or folder — one click from any finding card.',
+      'Acknowledge risks separately: acknowledged findings stay visible in a collapsible section.',
+      'Unsuppress findings at any time. CLI scans respect the same suppression file.',
+      'Posture bar now shows acknowledged and suppressed counts when non-zero.',
+      'All suppress/unsuppress actions logged to the audit trail.',
+      'Scanner no longer fires on comment lines — fewer false positives in docs and examples.',
+      'Score formula updated — the placeholder Dependency Health value was removed, so scores now reflect only what HZSec actually scans.',
+      'Welcome tour, account sign-in, and deep-link support (Phase 3).'
     ]
   },
   {
