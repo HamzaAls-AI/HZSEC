@@ -59,11 +59,31 @@ function detectSecretIssue(filePath, line) {
       fixType: 'redact-secret'
     },
     {
-      test: /github_pat_[a-zA-Z0-9_]{20,}/,
+      // Fine-grained PATs (github_pat_) and classic PATs (ghp_)
+      test: /github_pat_[a-zA-Z0-9_]{20,}|ghp_[A-Za-z0-9]{36}/,
       title: 'GitHub token exposed',
       severity: 'CRITICAL',
       why: 'A leaked GitHub token can grant repository or workflow access.',
       fix: 'Revoke the token now and replace it with a securely stored token.',
+      fixType: 'redact-secret'
+    },
+    {
+      // npm/yarn _authToken in lock files or .npmrc — grants access to private registry
+      test: /"?_?authToken"?\s*[:=]\s*["']?\S{8,}/i,
+      checkPlaceholder: true,
+      title: 'Registry auth token exposed',
+      severity: 'CRITICAL',
+      why: 'A registry auth token grants full access to private packages and must never appear in committed files.',
+      fix: 'Remove the token, rotate it in your registry, and store credentials via a credential helper or CI secret.',
+      fixType: 'redact-secret'
+    },
+    {
+      // Credentials embedded in a URL: https://user:password@host or https://token@host
+      test: /https?:\/\/[^@\s\/]+:[^@\s\/]+@\S/,
+      title: 'Credentials embedded in URL',
+      severity: 'CRITICAL',
+      why: 'Passwords or tokens embedded in URLs leak through logs, lock files, and git history.',
+      fix: 'Remove the credentials from the URL, rotate them, and use a credential helper or environment variable.',
       fixType: 'redact-secret'
     }
   ];
