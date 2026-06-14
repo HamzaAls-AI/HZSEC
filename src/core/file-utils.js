@@ -26,6 +26,11 @@ function safeReadFile(filePath) {
   }
 }
 
+const IGNORED_DIRS = new Set([
+  'node_modules', '.git', 'dist', 'build', '.next', '.cache',
+  'vendor', 'coverage', 'out', 'target', '__pycache__'
+]);
+
 function getAllFilesRecursive(startPath, collector = []) {
   if (!fs.existsSync(startPath)) return collector;
 
@@ -40,7 +45,7 @@ function getAllFilesRecursive(startPath, collector = []) {
   for (const entry of entries) {
     const fullPath = path.join(startPath, entry.name);
 
-    if (['node_modules', '.git', 'dist', 'build', '.next', '.cache'].includes(entry.name)) {
+    if (IGNORED_DIRS.has(entry.name)) {
       continue;
     }
 
@@ -99,6 +104,7 @@ function detectPlatform(files) {
 }
 
 module.exports = {
+  IGNORED_DIRS,
   isFilePath,
   isDirectoryPath,
   safeReadFile,

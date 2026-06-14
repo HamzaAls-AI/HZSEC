@@ -10,6 +10,7 @@ function formatJson(report, { pretty = true } = {}) {
     mode:     report.mode,
     scannedAt: report.scannedAt || new Date().toISOString(),
     posture:  report.posture || null,
+    filesScanned: report.filesScanned ?? 0,
     findings: report.findings || []
   };
   return pretty ? JSON.stringify(out, null, 2) : JSON.stringify(out);

@@ -30,6 +30,19 @@ fs.writeFileSync(path.join(tmp, 'leaky.js'),
   'const AWS_ACCESS_KEY_ID = "AKIAIOSFODNN7EXAMPLE";\n' +
   'const AWS_SECRET_ACCESS_KEY = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY";\n');
 
+// ── Fixture: an exclusion-test folder ─────────────────────────────────────
+const excl = fs.mkdtempSync(path.join(os.tmpdir(), 'hzsec-excl-'));
+// real source file — should be scanned
+fs.writeFileSync(path.join(excl, 'app.js'), 'console.log("hi")\n');
+// node_modules secret — must NOT appear in results
+fs.mkdirSync(path.join(excl, 'node_modules'));
+fs.writeFileSync(path.join(excl, 'node_modules', 'dep.js'),
+  'const KEY = "AKIAIOSFODNN7EXAMPLE";\n');
+// .git file — must NOT appear in results
+fs.mkdirSync(path.join(excl, '.git'));
+fs.writeFileSync(path.join(excl, '.git', 'config'),
+  '[core]\n\trepositoryformatversion = 0\n');
+
 let pass = 0, fail = 0;
 function it(name, fn) {
   try { fn(); console.log(`ok   ${name}`); pass++; }
@@ -72,6 +85,38 @@ it('--fail-on info exits 0 on clean fixture', () => {
   fs.writeFileSync(path.join(clean, 'app.js'), 'console.log("hi")\n');
   const out = run(['scan', clean, '--quiet', '--no-color', '--fail-on', 'info']);
   assert.ok(out.includes('No findings') || out.length === 0);
+});
+
+it('node_modules secrets are not reported', () => {
+  const out = run(['scan', excl, '--format', 'json', '--quiet']);
+  const report = JSON.parse(out);
+  const nmFindings = report.findings.filter(f =>
+    f.filePath.split(path.sep).includes('node_modules')
+  );
+  assert.strictEqual(nmFindings.length, 0, 'found findings inside node_modules: ' + JSON.stringify(nmFindings));
+});
+
+it('.git files are not scanned', () => {
+  const out = run(['scan', excl, '--format', 'json', '--quiet']);
+  const report = JSON.parse(out);
+  const gitFindings = report.findings.filter(f =>
+    f.filePath.split(path.sep).includes('.git')
+  );
+  assert.strictEqual(gitFindings.length, 0, 'found findings inside .git: ' + JSON.stringify(gitFindings));
+});
+
+it('real source file outside excluded dirs is still scanned', () => {
+  const out = run(['scan', excl, '--format', 'json', '--quiet']);
+  const report = JSON.parse(out);
+  assert.ok(report.filesScanned >= 1, 'expected at least one file scanned');
+  const scannedPaths = report.findings.map(f => f.filePath);
+  const outsideIgnored = scannedPaths.filter(p => {
+    const segs = p.split(path.sep);
+    return !segs.includes('node_modules') && !segs.includes('.git');
+  });
+  // The app.js itself has no secrets so we check it is counted in filesScanned,
+  // not that it produced findings
+  assert.ok(report.filesScanned >= 1, 'expected filesScanned >= 1');
 });
 
 console.log(`\n${pass} passed, ${fail} failed.`);
