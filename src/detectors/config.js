@@ -93,10 +93,10 @@ function detectConfigIssue(filePath, line) {
     };
   }
 
-  // HTTP — exclude local development addresses (localhost, 127.x, [::1], 0.0.0.0)
+  // HTTP — exclude local addresses and W3C/XML namespace URIs (not network endpoints)
   if (
     /http:\/\//.test(lower) &&
-    !/localhost|127\.\d+\.\d+\.\d+|\[?::1\]?|0\.0\.0\.0/.test(lower)
+    !/localhost|127\.\d+\.\d+\.\d+|\[?::1\]?|0\.0\.0\.0|www\.w3\.org/.test(lower)
   ) {
     return {
       title: 'Unencrypted endpoint reference',

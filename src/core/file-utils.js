@@ -28,15 +28,20 @@ function safeReadFile(filePath) {
 
 const IGNORED_DIRS = new Set([
   'node_modules', '.git', 'dist', 'build', '.next', '.cache',
-  'vendor', 'coverage', 'out', 'target', '__pycache__'
+  'vendor', 'coverage', 'out', 'target', '__pycache__', '.backup'
 ]);
+
+const IGNORED_DIR_PREFIXES = ['backup-'];
+
+const IGNORED_FILE_EXTS = new Set(['.bak', '.backup']);
 
 function getAllFilesRecursive(startPath, collector = []) {
   if (!fs.existsSync(startPath)) return collector;
 
   const stat = fs.statSync(startPath);
   if (stat.isFile()) {
-    collector.push(startPath);
+    const ext = path.extname(startPath).toLowerCase();
+    if (!IGNORED_FILE_EXTS.has(ext)) collector.push(startPath);
     return collector;
   }
 
@@ -45,14 +50,13 @@ function getAllFilesRecursive(startPath, collector = []) {
   for (const entry of entries) {
     const fullPath = path.join(startPath, entry.name);
 
-    if (IGNORED_DIRS.has(entry.name)) {
-      continue;
-    }
-
     if (entry.isDirectory()) {
+      if (IGNORED_DIRS.has(entry.name)) continue;
+      if (IGNORED_DIR_PREFIXES.some(prefix => entry.name.startsWith(prefix))) continue;
       getAllFilesRecursive(fullPath, collector);
     } else if (entry.isFile()) {
-      collector.push(fullPath);
+      const ext = path.extname(entry.name).toLowerCase();
+      if (!IGNORED_FILE_EXTS.has(ext)) collector.push(fullPath);
     }
   }
 
@@ -105,6 +109,8 @@ function detectPlatform(files) {
 
 module.exports = {
   IGNORED_DIRS,
+  IGNORED_DIR_PREFIXES,
+  IGNORED_FILE_EXTS,
   isFilePath,
   isDirectoryPath,
   safeReadFile,

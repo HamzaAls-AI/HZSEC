@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const { generateMonitorAlert, generateFixSuggestion } = require('../assistant/assistant-handler');
-const { IGNORED_DIRS } = require('../core/file-utils');
+const { IGNORED_DIRS, IGNORED_DIR_PREFIXES, IGNORED_FILE_EXTS } = require('../core/file-utils');
 
 let previousFindingsMap = {};
 
@@ -51,8 +51,13 @@ function createSmartMonitor(targetPath, scanFn, sendEvent, getApiKey, previousSt
     // Single file mode: ignore events for other files
     if (targetIsFile && path.resolve(fullPath) !== resolved) return;
 
-    // Skip ignored directories and non-existent paths
-    if (filename && filename.split(path.sep).some(seg => IGNORED_DIRS.has(seg))) return;
+    // Skip ignored directories and backup/excluded files
+    if (filename) {
+      const segments = filename.split(path.sep);
+      if (segments.some(seg => IGNORED_DIRS.has(seg) || IGNORED_DIR_PREFIXES.some(p => seg.startsWith(p)))) return;
+      const ext = path.extname(filename).toLowerCase();
+      if (IGNORED_FILE_EXTS.has(ext)) return;
+    }
 
     try {
       if (!fs.existsSync(fullPath)) return;
