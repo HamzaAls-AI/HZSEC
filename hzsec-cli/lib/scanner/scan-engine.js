@@ -13,6 +13,7 @@ const {
   detectPlatform
 } = require('../core/file-utils');
 const { severityRank, dedupeFindings } = require('../core/findings');
+const { loadIgnoreRules } = require('../core/ignore-rules');
 const { getAll: getSuppressions, applySuppressions } = require('../storage/suppressions');
 const { scanFile, extractCustomRules } = require('./scan-file');
 const {
@@ -124,9 +125,12 @@ async function runSecurityScan(targetPath, options = {}, monitorTargetPath = nul
 
   let allFiles = [];
   if (isFilePath(resolved)) {
-    allFiles = [resolved];
+    const projectRoot  = path.dirname(resolved);
+    const ignoreRules  = loadIgnoreRules(projectRoot);
+    if (!ignoreRules.shouldIgnore(resolved, projectRoot)) allFiles = [resolved];
   } else if (isDirectoryPath(resolved)) {
-    allFiles = getAllFilesRecursive(resolved);
+    const ignoreRules = loadIgnoreRules(resolved);
+    allFiles = getAllFilesRecursive(resolved, [], ignoreRules, resolved);
   } else {
     throw new Error('Selected path no longer exists.');
   }

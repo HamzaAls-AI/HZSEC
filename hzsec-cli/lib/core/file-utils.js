@@ -35,13 +35,20 @@ const IGNORED_DIR_PREFIXES = ['backup-'];
 
 const IGNORED_FILE_EXTS = new Set(['.bak', '.backup']);
 
-function getAllFilesRecursive(startPath, collector = []) {
+function getAllFilesRecursive(startPath, collector = [], ignoreRules = null, projectRoot = null) {
   if (!fs.existsSync(startPath)) return collector;
+
+  // projectRoot is fixed at the initial call site and passed unchanged on recursion
+  const root = projectRoot || startPath;
 
   const stat = fs.statSync(startPath);
   if (stat.isFile()) {
     const ext = path.extname(startPath).toLowerCase();
-    if (!IGNORED_FILE_EXTS.has(ext)) collector.push(startPath);
+    if (!IGNORED_FILE_EXTS.has(ext)) {
+      if (!ignoreRules || !ignoreRules.shouldIgnore(startPath, root)) {
+        collector.push(startPath);
+      }
+    }
     return collector;
   }
 
@@ -53,10 +60,12 @@ function getAllFilesRecursive(startPath, collector = []) {
     if (entry.isDirectory()) {
       if (IGNORED_DIRS.has(entry.name)) continue;
       if (IGNORED_DIR_PREFIXES.some(prefix => entry.name.startsWith(prefix))) continue;
-      getAllFilesRecursive(fullPath, collector);
+      getAllFilesRecursive(fullPath, collector, ignoreRules, root);
     } else if (entry.isFile()) {
       const ext = path.extname(entry.name).toLowerCase();
-      if (!IGNORED_FILE_EXTS.has(ext)) collector.push(fullPath);
+      if (IGNORED_FILE_EXTS.has(ext)) continue;
+      if (ignoreRules && ignoreRules.shouldIgnore(fullPath, root)) continue;
+      collector.push(fullPath);
     }
   }
 

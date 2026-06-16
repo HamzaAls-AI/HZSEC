@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const { generateMonitorAlert, generateFixSuggestion } = require('../assistant/assistant-handler');
 const { IGNORED_DIRS, IGNORED_DIR_PREFIXES, IGNORED_FILE_EXTS } = require('../core/file-utils');
+const { loadIgnoreRules } = require('../core/ignore-rules');
 
 let previousFindingsMap = {};
 
@@ -36,6 +37,7 @@ function createSmartMonitor(targetPath, scanFn, sendEvent, getApiKey, previousSt
 
   const targetIsFile = fs.statSync(resolved).isFile();
   const watchRoot    = targetIsFile ? path.dirname(resolved) : resolved;
+  const ignoreRules  = loadIgnoreRules(watchRoot);
   const state = { watcher: null, targetPath: resolved, debounceTimers: {} };
 
   // Watch the parent directory when monitoring a single file —
@@ -58,6 +60,9 @@ function createSmartMonitor(targetPath, scanFn, sendEvent, getApiKey, previousSt
       const ext = path.extname(filename).toLowerCase();
       if (IGNORED_FILE_EXTS.has(ext)) return;
     }
+
+    // Skip paths excluded by .hzsecignore
+    if (ignoreRules.shouldIgnore(fullPath, watchRoot)) return;
 
     try {
       if (!fs.existsSync(fullPath)) return;
