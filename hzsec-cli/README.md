@@ -36,10 +36,9 @@ full mode · /your/project
 ```bash
 # npm (anywhere with Node 18+)
 npm install -g hzsec-cli
-
-# Homebrew (macOS / Linux)
-brew install hzsec/tap/hzsec
 ```
+
+Homebrew support is planned but not yet available.
 
 Or run without installing:
 
@@ -110,16 +109,6 @@ jobs:
 ```
 
 Findings appear in the **Security** tab of your repo with file/line context.
-
-There's also a [pre-built composite action](https://github.com/HamzaAls-AI/hzsec-action):
-
-```yaml
-- uses: hzsec/scan-action@v1
-  with:
-    path:    '.'
-    mode:    'full'
-    fail-on: 'critical,high'
-```
 
 ### pre-commit (the framework)
 

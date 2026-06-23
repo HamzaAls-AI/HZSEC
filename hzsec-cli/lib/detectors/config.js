@@ -1,4 +1,5 @@
 function detectConfigIssue(filePath, line) {
+  if (/^\s*(#|\/\/|\/\*|\*(?!\/)|<!--)/.test(line)) return null;
   const lower = line.toLowerCase();
   const file = filePath.toLowerCase();
 

@@ -1,6 +1,6 @@
 {
   "name": "hzsec-cli",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Local-first security scanner. Finds secrets, misconfigs, and unsafe code patterns. Runs in CI. Free, MIT-licensed, no telemetry.",
   "license": "MIT",
   "homepage": "https://hzsec.io",
