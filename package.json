@@ -11,7 +11,9 @@
     "dist:mac": "electron-builder --mac",
     "dist:win": "electron-builder --win",
     "dist:linux": "electron-builder --linux",
-    "release": "electron-builder --publish always"
+    "release": "electron-builder --publish always",
+    "test": "node --test tests/detectors/web.test.js tests/detectors/code.test.js",
+    "test:parity": "node --test --test-name-pattern=parity tests/detectors/web.test.js tests/detectors/code.test.js"
   },
   "dependencies": {
     "electron-updater": "^6.3.9",
