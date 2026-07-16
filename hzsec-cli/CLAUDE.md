@@ -36,11 +36,26 @@ detectors in `lib/scanner/scan-file.js` mirroring an existing one.
 Fixtures live in `test/fixtures/`. Adding a detector requires adding both a
 triggering fixture and a clean non-triggering fixture.
 
-## Release process (requires maintainer)
-1. Bump `version` in `package.json`.
-2. Update `CHANGELOG.md`.
-3. `git tag vX.Y.Z && git push --tags` — GitHub Actions runs `npm publish`.
-4. Verify: `npm view hzsec-cli version` matches expected.
+## Repository layout
+This package lives inside the monorepo at `https://github.com/HamzaAls-AI/HZSEC`
+under the `hzsec-cli/` subdirectory. There is no separate `hzsec-cli` GitHub
+repo. The npm `repository` field in `package.json` points to the monorepo with
+`"directory": "hzsec-cli"`.
+
+## Release process (requires maintainer — manual npm publish)
+There is **no automated npm publish pipeline**. The `release.yml` workflow
+builds the desktop app; `cli.yml` only runs tests. Publishing is manual:
+
+```bash
+cd hzsec-cli          # must run from the subdirectory, not monorepo root
+npm test              # confirm 11/11 pass
+npm publish           # requires `npm login` as hamza-asl first
+```
+
+After publishing:
+1. Verify: `npm view hzsec-cli version` matches expected.
+2. `git tag vX.Y.Z && git push --tags` — tags the source commit for reference
+   (does NOT trigger publish).
 
 ## Stop and ask before
 - Publishing to npm

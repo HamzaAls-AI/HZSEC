@@ -6,10 +6,11 @@
   "homepage": "https://hzsec.io",
   "repository": {
     "type": "git",
-    "url": "https://github.com/HamzaAls-AI/hzsec-cli.git"
+    "url": "https://github.com/HamzaAls-AI/HZSEC.git",
+    "directory": "hzsec-cli"
   },
   "bugs": {
-    "url": "https://github.com/HamzaAls-AI/hzsec-cli/issues"
+    "url": "https://github.com/HamzaAls-AI/HZSEC/issues"
   },
   "author": "HZSec",
   "keywords": [

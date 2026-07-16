@@ -1,10 +1,14 @@
+# INTENTIONALLY FAKE — test fixture for hzsec-cli scanner demonstration.
+# These values exist to trigger config and secret findings. Not real credentials.
+
 server:
-  host: 0.0.0.0
+  host: 0.0.0.0          # hzsec-demo: triggers wide network binding (HIGH)
   port: 3000
-  debug: true
+  debug: true             # hzsec-demo: triggers debug mode enabled (MEDIUM)
 
 cors:
-  allow_origins: "*"
+  allow_origins: *        # hzsec-demo: triggers wildcard CORS (HIGH)
 
 database:
-  url: postgres://admin:hunter2@prod-db.internal:5432/app
+  # hzsec-demo: fake connection string — triggers database credentials finding (CRITICAL)
+  url: postgres://fixture_user:HZSEC_FIXTURE_PW@prod-db.example.invalid:5432/demoapp

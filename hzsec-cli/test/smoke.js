@@ -119,5 +119,44 @@ it('real source file outside excluded dirs is still scanned', () => {
   assert.ok(report.filesScanned >= 1, 'expected filesScanned >= 1');
 });
 
+// ── AWS secret access key detector ────────────────────────────────────────
+
+const awsDir = fs.mkdtempSync(path.join(os.tmpdir(), 'hzsec-aws-'));
+
+it('AWS secret access key (const assignment) is detected', () => {
+  fs.writeFileSync(path.join(awsDir, 'env.js'),
+    'const AWS_SECRET_ACCESS_KEY = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY";\n');
+  const out = run(['scan', awsDir, '--format', 'json', '--quiet']);
+  const report = JSON.parse(out);
+  assert.ok(
+    report.findings.some(f => f.title === 'AWS secret access key exposed'),
+    'expected AWS secret access key finding, got: ' + JSON.stringify(report.findings.map(f => f.title))
+  );
+});
+
+it('AWS_SECRET_ACCESS_KEY env file format is detected', () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'hzsec-aws2-'));
+  fs.writeFileSync(path.join(dir, '.env'),
+    'AWS_SECRET_ACCESS_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY\n');
+  const out = run(['scan', dir, '--format', 'json', '--quiet']);
+  const report = JSON.parse(out);
+  assert.ok(
+    report.findings.some(f => f.title === 'AWS secret access key exposed'),
+    'expected AWS secret access key finding in .env format'
+  );
+});
+
+it('generic 40-char base64 string without AWS context is not flagged', () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'hzsec-aws3-'));
+  fs.writeFileSync(path.join(dir, 'app.js'),
+    // 40-char base64url string in a non-AWS variable — must not fire
+    'const RANDOM_TOKEN = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY";\n');
+  const out = run(['scan', dir, '--format', 'json', '--quiet']);
+  const report = JSON.parse(out);
+  const awsFindings = report.findings.filter(f => f.title === 'AWS secret access key exposed');
+  assert.strictEqual(awsFindings.length, 0,
+    'non-AWS variable should not be flagged as AWS secret key: ' + JSON.stringify(awsFindings));
+});
+
 console.log(`\n${pass} passed, ${fail} failed.`);
 process.exit(fail === 0 ? 0 : 1);

@@ -1,12 +1,15 @@
 # Release Checklist — hzsec-cli
 
-Use this for every version bump before pushing the git tag.
+Use this for every version bump before publishing.
+
+**Publishing is MANUAL** — there is no GitHub Actions npm publish step.
+Run `npm publish` from inside `hzsec-cli/` after logging in as `hamza-asl`.
 
 ## Pre-release
 
 - [ ] `package.json` version bumped
 - [ ] `CHANGELOG.md` entry written (date, version, what changed)
-- [ ] `npm test` passes (`node test/smoke.js` — 8/8 green)
+- [ ] `npm test` passes (`node test/smoke.js` — 11/11 green)
 - [ ] Tested locally: `node bin/hzsec.js --version` returns new version
 - [ ] Tested locally: scan a directory with a known secret, confirm finding appears
 - [ ] Tested locally: scan a clean directory, confirm "No findings."
@@ -19,10 +22,15 @@ Use this for every version bump before pushing the git tag.
 ## Publish
 
 ```bash
-# In hzsec-cli/ directory
+# Must run from inside hzsec-cli/ subdirectory, not monorepo root
+cd path/to/HZSEC/hzsec-cli
+npm login           # as hamza-asl if not already logged in
+npm publish
+
+# After confirming publish succeeded, tag the source commit:
+cd ..               # back to monorepo root
 git tag vX.Y.Z
-git push --tags
-# GitHub Actions publishes to npm automatically
+git push --tags     # for reference only — does NOT trigger any CI publish
 ```
 
 ## Post-release verification (within 15 minutes)

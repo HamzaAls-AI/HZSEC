@@ -6,8 +6,8 @@ detectors and improving existing ones is the highest-value contribution.
 ## Quick start
 
 ```bash
-git clone https://github.com/HamzaAls-AI/hzsec-cli
-cd hzsec-cli
+git clone https://github.com/HamzaAls-AI/HZSEC.git
+cd HZSEC/hzsec-cli
 npm install
 npm run start -- scan ./test/fixtures
 ```
@@ -55,13 +55,15 @@ and a clean file that proves it doesn't false-positive.
 
 ## Releases
 
-Maintainers only:
+Maintainers only. Publishing is manual — there is no CI npm publish step.
 
 ```bash
-# bump version, update CHANGELOG, then:
+# 1. Bump version in package.json, update CHANGELOG.md
+# 2. From inside hzsec-cli/ subdirectory:
+npm publish
+# 3. After confirming the publish, tag the commit from the monorepo root:
 git tag v1.2.3
 git push --tags
-# GitHub Actions runs `npm publish`
 ```
 
 ## Code of Conduct
