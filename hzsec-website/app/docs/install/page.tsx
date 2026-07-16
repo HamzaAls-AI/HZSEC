@@ -48,25 +48,23 @@ spctl --assess --verbose /Applications/HZSec.app
       {/* Windows */}
       <section className="mb-12">
         <h2 className="text-xl font-bold text-text mb-1">Windows</h2>
-        <p className="text-sm text-muted mb-4">Requires Windows 10 version 1903 or later, or Windows 11. Both x64 and ARM64 are supported.</p>
-
-        <h3 className="text-base font-semibold text-text mt-6 mb-3">Install</h3>
-        <ol className="space-y-2 text-sm text-muted leading-relaxed list-decimal list-inside ml-1">
-          <li>Download <code className="font-mono text-accent">HZSec-Setup.exe</code> from <Link href="/download" className="text-accent hover:underline">hzsec.io/download</Link>.</li>
-          <li>Right-click the installer and choose <strong className="text-text">Run as administrator</strong>, or accept the UAC prompt when it appears.</li>
-          <li>Follow the setup wizard. HZSec installs to <code className="font-mono text-accent">%ProgramFiles%\HZSec</code> by default.</li>
-          <li>Open a new terminal — <code className="font-mono text-accent">hzsec</code> is added to your system PATH by the installer.</li>
-        </ol>
-
-        <h3 className="text-base font-semibold text-text mt-6 mb-3">Verify the Authenticode signature</h3>
-        <pre className="overflow-x-auto rounded-lg border border-border bg-[#0d1117] px-5 py-4 font-mono text-sm text-[#c9d1d9] leading-relaxed">
-          <code>{`# In PowerShell
-Get-AuthenticodeSignature .\\HZSec-Setup.exe | Select-Object Status, SignerCertificate
-
-# Expected:
-# Status : Valid
-# SignerCertificate : [HZSec, Inc.]`}</code>
-        </pre>
+        <div className="rounded-lg border border-dashed border-border bg-panel p-5 text-sm text-muted leading-relaxed">
+          <p className="font-medium text-text mb-1">Desktop app — coming soon</p>
+          <p className="mb-3">
+            The Windows desktop installer is in progress.{' '}
+            <a href="mailto:hello@hzsec.io?subject=Windows waitlist" className="text-accent hover:underline">
+              Join the waitlist
+            </a>{' '}
+            and we&apos;ll email you when it drops.
+          </p>
+          <p className="font-medium text-text mb-1">CLI — available now</p>
+          <p>
+            The CLI works on Windows today via npm. Node 18+ required.
+          </p>
+          <pre className="overflow-x-auto rounded-lg border border-border bg-[#0d1117] px-5 py-3 font-mono text-sm text-[#c9d1d9] leading-relaxed mt-3">
+            <code>{`npm install -g hzsec-cli\nhzsec scan .`}</code>
+          </pre>
+        </div>
       </section>
 
       {/* Linux */}
@@ -86,7 +84,7 @@ Get-AuthenticodeSignature .\\HZSec-Setup.exe | Select-Object Status, SignerCerti
         <h2 className="text-xl font-bold text-text mb-4">Check your version</h2>
         <pre className="overflow-x-auto rounded-lg border border-border bg-[#0d1117] px-5 py-4 font-mono text-sm text-[#c9d1d9]">
           <code>{`hzsec --version
-# HZSec v1.1.0 (darwin/arm64)`}</code>
+# 1.1.0`}</code>
         </pre>
       </section>
 

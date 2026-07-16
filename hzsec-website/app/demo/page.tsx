@@ -38,7 +38,7 @@ export default function DemoPage() {
               <span className="opacity-[0.35]">·</span>
               <span>No cloud upload</span>
               <span className="opacity-[0.35]">·</span>
-              <span>Mac &amp; Windows</span>
+              <span>macOS · Windows soon</span>
             </div>
             <div className="flex items-center gap-4 flex-wrap">
               <Link
@@ -96,7 +96,7 @@ export default function DemoPage() {
               <span className="font-mono text-[11px] text-[#94a3b8] ml-1">~/myproject — hzsec scan .</span>
             </div>
             <div className="p-4 font-mono text-[11px] space-y-1.5 overflow-x-auto">
-              <div className="text-[#94a3b8]">$ hzsec scan ./src --deep</div>
+              <div className="text-[#94a3b8]">$ hzsec scan ./src --mode full</div>
               <div className="text-[#38bdf8]">✓  Scanning 847 files across 6 detection modes...</div>
               <div className="text-[#94a3b8]">&nbsp;</div>
               <div className="text-[#e2e8f0] font-bold">FINDINGS</div>
@@ -427,7 +427,7 @@ export default function DemoPage() {
             </Link>
           </div>
           <p className="font-mono text-xs text-muted mt-6">
-            Free tier free forever · Mac + Windows · 100% local processing
+            Free tier free forever · macOS · Windows soon · 100% local processing
           </p>
         </div>
       </section>

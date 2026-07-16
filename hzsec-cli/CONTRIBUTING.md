@@ -6,7 +6,7 @@ detectors and improving existing ones is the highest-value contribution.
 ## Quick start
 
 ```bash
-git clone https://github.com/REPLACE/hzsec-cli
+git clone https://github.com/HamzaAls-AI/hzsec-cli
 cd hzsec-cli
 npm install
 npm run start -- scan ./test/fixtures

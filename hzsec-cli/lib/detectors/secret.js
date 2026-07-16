@@ -26,6 +26,15 @@ function detectSecretIssue(filePath, line) {
       fixType: 'redact-secret'
     },
     {
+      // AWS secret access key — 40-char base64url string in an AWS-context variable
+      test: /(?:aws[_-]?secret[_-]?(?:access[_-]?)?key|secret[_-]?access[_-]?key)\s*[:=]\s*["']?[A-Za-z0-9/+]{40}["']?/i,
+      title: 'AWS secret access key exposed',
+      severity: 'CRITICAL',
+      why: 'The secret access key paired with an access key ID grants full programmatic AWS API access.',
+      fix: 'Revoke the key pair in IAM, rotate any dependent credentials, and load secrets from environment variables or a secrets manager.',
+      fixType: 'redact-secret'
+    },
+    {
       test: /BEGIN [A-Z ]*PRIVATE KEY/,
       title: 'Private key material exposed',
       severity: 'CRITICAL',
