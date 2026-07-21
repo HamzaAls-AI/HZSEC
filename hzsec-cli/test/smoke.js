@@ -158,5 +158,50 @@ it('generic 40-char base64 string without AWS context is not flagged', () => {
     'non-AWS variable should not be flagged as AWS secret key: ' + JSON.stringify(awsFindings));
 });
 
+// ── Wildcard CORS detector ─────────────────────────────────────────────────
+
+it('wildcard CORS with double-quoted value is detected (allow_origins: "*")', () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'hzsec-cors1-'));
+  fs.writeFileSync(path.join(dir, 'app.yaml'), 'cors:\n  allow_origins: "*"\n');
+  const out = run(['scan', dir, '--format', 'json', '--quiet']);
+  const report = JSON.parse(out);
+  assert.ok(
+    report.findings.some(f => f.title === 'Wildcard CORS policy'),
+    'expected wildcard CORS finding for double-quoted "*"'
+  );
+});
+
+it("wildcard CORS with single-quoted value is detected (allow_origins: '*')", () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'hzsec-cors2-'));
+  fs.writeFileSync(path.join(dir, 'app.yaml'), "cors:\n  allow_origins: '*'\n");
+  const out = run(['scan', dir, '--format', 'json', '--quiet']);
+  const report = JSON.parse(out);
+  assert.ok(
+    report.findings.some(f => f.title === 'Wildcard CORS policy'),
+    "expected wildcard CORS finding for single-quoted '*'"
+  );
+});
+
+it('wildcard CORS with bare unquoted value is detected (allow_origins: *)', () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'hzsec-cors3-'));
+  fs.writeFileSync(path.join(dir, 'app.yaml'), 'cors:\n  allow_origins: *\n');
+  const out = run(['scan', dir, '--format', 'json', '--quiet']);
+  const report = JSON.parse(out);
+  assert.ok(
+    report.findings.some(f => f.title === 'Wildcard CORS policy'),
+    'expected wildcard CORS finding for bare unquoted *'
+  );
+});
+
+it('specific permitted origin is not flagged as wildcard CORS', () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'hzsec-cors4-'));
+  fs.writeFileSync(path.join(dir, 'app.yaml'), 'cors:\n  allow_origins: "https://app.example.com"\n');
+  const out = run(['scan', dir, '--format', 'json', '--quiet']);
+  const report = JSON.parse(out);
+  const corsFindings = report.findings.filter(f => f.title === 'Wildcard CORS policy');
+  assert.strictEqual(corsFindings.length, 0,
+    'specific origin should not be flagged as wildcard CORS: ' + JSON.stringify(corsFindings));
+});
+
 console.log(`\n${pass} passed, ${fail} failed.`);
 process.exit(fail === 0 ? 0 : 1);

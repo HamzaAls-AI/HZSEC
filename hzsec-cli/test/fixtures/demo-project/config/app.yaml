@@ -7,7 +7,7 @@ server:
   debug: true             # hzsec-demo: triggers debug mode enabled (MEDIUM)
 
 cors:
-  allow_origins: *        # hzsec-demo: triggers wildcard CORS (HIGH)
+  allow_origins: "*"      # hzsec-demo: triggers wildcard CORS (HIGH)
 
 database:
   # hzsec-demo: fake connection string — triggers database credentials finding (CRITICAL)

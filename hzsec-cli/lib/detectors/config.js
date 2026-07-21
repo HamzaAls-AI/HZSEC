@@ -16,8 +16,8 @@ function detectConfigIssue(filePath, line) {
 
   // Wildcard CORS
   if (
-    /allow[_-]?origins?\s*[:=]\s*\*/.test(lower) ||
-    /access-control-allow-origin\s*[:=]\s*\*/.test(lower) ||
+    /allow[_-]?origins?\s*[:=]\s*["']?\*["']?/.test(lower) ||
+    /access-control-allow-origin\s*[:=]\s*["']?\*["']?/.test(lower) ||
     /cors.*\*/.test(lower)
   ) {
     return {
