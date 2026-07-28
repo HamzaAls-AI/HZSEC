@@ -35,6 +35,22 @@ const { app, BrowserWindow, ipcMain, dialog, Notification, shell } = require('el
 const path = require('path');
 const fs = require('fs');
 
+// ─── Dev hot-reload ───────────────────────────────────────────────────────────
+// Watches renderer + main source files and reloads/restarts automatically.
+// electron-reload is a devDependency; the try-catch makes this a no-op when
+// running a packaged build or when devDeps are not installed.
+if (!app.isPackaged) {
+  try {
+    require('electron-reload')(__dirname, {
+      electron: path.join(__dirname, 'node_modules', '.bin', 'electron'),
+      hardReset: true,
+      ignored: /node_modules|[/\\]dist|backup-before|hzsec-website|hzsec-backend|hzsec-cli|HZSec - Growth|\.git/
+    });
+  } catch (_) {
+    console.warn('[dev] electron-reload not installed — run npm install to enable hot reload');
+  }
+}
+
 const { runSecurityScan } = require('./src/scanner/scan-engine');
 const { createSmartMonitor, stopLiveMonitor } = require('./src/monitor/smart-monitor');
 const { buildSafeReplacement, createBackup } = require('./src/fixes/safe-fixes');

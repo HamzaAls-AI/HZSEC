@@ -1,11 +1,15 @@
 {
   "name": "hzsec",
   "version": "1.1.0",
-  "description": "HZSec \u2014 Local security platform with AI assistant, live monitor, and security intelligence.",
+  "description": "HZSec — Local security platform with AI assistant, live monitor, and security intelligence.",
   "main": "main.js",
   "type": "commonjs",
   "scripts": {
     "start": "electron .",
+    "dev:backend": "npm --prefix hzsec-backend run dev",
+    "dev:website": "npm --prefix hzsec-website run dev",
+    "dev:desktop": "HZSEC_WEBSITE_URL=http://localhost:3000 electron .",
+    "dev:all": "concurrently --kill-others --prefix \"[{name}]\" --prefix-colors \"cyan,magenta,yellow\" --names \"backend,website,desktop\" \"npm run dev:backend\" \"npm run dev:website\" \"npm run dev:desktop\"",
     "pack": "electron-builder --dir",
     "dist": "electron-builder",
     "dist:mac": "electron-builder --mac",
@@ -16,12 +20,14 @@
     "test:parity": "node --test --test-name-pattern=parity tests/detectors/web.test.js tests/detectors/code.test.js"
   },
   "dependencies": {
-    "electron-updater": "^6.3.9",
-    "@sentry/electron": "^5.5.0"
+    "@sentry/electron": "^5.5.0",
+    "electron-updater": "^6.3.9"
   },
   "devDependencies": {
+    "concurrently": "^9.2.4",
     "electron": "^35.0.0",
-    "electron-builder": "^25.1.8"
+    "electron-builder": "^25.1.8",
+    "electron-reload": "^1.5.0"
   },
   "author": "Hamza Al-Samraaie <hello@hzsec.io>",
   "repository": {
@@ -50,8 +56,16 @@
     },
     "dmg": {
       "contents": [
-        { "x": 110, "y": 150 },
-        { "x": 240, "y": 150, "type": "link", "path": "/Applications" }
+        {
+          "x": 110,
+          "y": 150
+        },
+        {
+          "x": 240,
+          "y": 150,
+          "type": "link",
+          "path": "/Applications"
+        }
       ],
       "window": {
         "width": 500,
