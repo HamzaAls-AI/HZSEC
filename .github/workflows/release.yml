@@ -17,8 +17,6 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: ubuntu-latest
-            npm_script: dist:linux
           - os: windows-latest
             npm_script: dist:win
           - os: macos-latest
@@ -43,12 +41,9 @@ jobs:
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
-          CSC_LINK: ${{ secrets.CSC_LINK }}
-          CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
-          WIN_CSC_LINK: ${{ secrets.WIN_CSC_LINK }}
-          WIN_CSC_KEY_PASSWORD: ${{ secrets.WIN_CSC_KEY_PASSWORD }}
-          # Prevents electron-builder from searching the runner keychain for a
-          # signing identity when CSC_LINK is not provided. Has no effect when
-          # CSC_LINK is set — signing works normally in that case.
+          # CSC_LINK / CSC_KEY_PASSWORD omitted intentionally — passing an empty
+          # string when the secret is unset causes electron-builder to treat it
+          # as a file path and crash. Add these back once signing certs are ready.
+          # WIN_CSC_LINK / WIN_CSC_KEY_PASSWORD likewise omitted until cert is ready.
           CSC_IDENTITY_AUTO_DISCOVERY: false
         run: npm run ${{ matrix.npm_script }} -- --publish always
