@@ -71,7 +71,7 @@ export function MarketingFooter() {
               <li><Link href="/product/defend" className={colLink}>AI Assistant</Link></li>
               <li><Link href="/product/defend" className={colLink}>Live Monitor</Link></li>
               <li><Link href="/pricing" className={colLink}>Pricing</Link></li>
-              <li><Link href="/download" className={colLink}>Download</Link></li>
+              <li><Link href="/pricing#download" className={colLink}>Download</Link></li>
             </ul>
           </div>
 

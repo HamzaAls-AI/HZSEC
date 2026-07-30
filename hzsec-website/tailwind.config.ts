@@ -23,7 +23,7 @@ export default {
         ok:        'rgb(var(--color-ok) / <alpha-value>)'
       },
       fontFamily: {
-        sans: ['ui-sans-serif', 'system-ui', '-apple-system', 'Inter', 'sans-serif'],
+        sans: ['var(--font-sans)', 'ui-sans-serif', 'system-ui', '-apple-system', 'sans-serif'],
         mono: ['ui-monospace', 'SF Mono', 'Menlo', 'monospace']
       }
     }

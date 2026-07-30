@@ -131,7 +131,7 @@ export default function DefendPage() {
           <span className="opacity-[0.35]">·</span>
           <span>Built for developers</span>
           <span className="opacity-[0.35]">·</span>
-          <span>Mac &amp; Windows</span>
+          <span>macOS · Windows soon</span>
         </div>
       </div>
 
@@ -515,7 +515,7 @@ export default function DefendPage() {
             </Link>
           </div>
           <p className="font-mono text-xs text-muted mt-6">
-            Free tier free forever · Mac + Windows · 100% local processing
+            Free tier free forever · macOS · Windows soon · 100% local processing
           </p>
         </div>
       </section>

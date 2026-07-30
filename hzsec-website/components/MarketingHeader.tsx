@@ -2,10 +2,11 @@
 
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
+import { Search, ShieldCheck, ClipboardCheck } from 'lucide-react';
 import { SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
 import { ThemeSwitcher } from '@/components/ThemeSwitcher';
 
-type DropdownKey = 'product' | 'solutions' | 'resources';
+type DropdownKey = 'product' | 'resources';
 
 const dropdownBase =
   'absolute top-full mt-2 bg-panel border border-border rounded-xl shadow-xl p-4 z-50 transition-all duration-150';
@@ -46,15 +47,9 @@ function NavSignedOutUI() {
     <>
       <Link
         href="/pricing"
-        className="text-sm text-muted border border-border px-3 py-1.5 rounded-md hover:border-accent hover:text-accent transition-colors max-[899px]:hidden"
+        className="text-sm bg-accent text-white px-3 py-1.5 rounded-full hover:bg-accent/90 transition-colors max-[899px]:hidden"
       >
-        View pricing
-      </Link>
-      <Link
-        href="/download"
-        className="text-sm bg-accent text-white px-3 py-1.5 rounded-md hover:bg-accent/90 transition-colors max-[899px]:hidden"
-      >
-        Get early access
+        Download free
       </Link>
     </>
   );
@@ -110,10 +105,10 @@ export function MarketingHeader() {
         </div>
         <div className="flex-1 text-center">
           <Link
-            href="/download"
+            href="/pricing"
             className="text-xs text-muted hover:text-accent transition-colors"
           >
-            Early access: get Pro free for 3 months →
+            Free to download — no account needed →
           </Link>
         </div>
         <div className="flex items-center gap-5">
@@ -197,62 +192,32 @@ export function MarketingHeader() {
             <div
               id="dropdown-product"
               role="menu"
-              className={`${dropdownBase} left-0 min-w-[580px] ${isOpen('product') ? dropdownOpen : dropdownClosed}`}
+              className={`${dropdownBase} left-0 min-w-[300px] ${isOpen('product') ? dropdownOpen : dropdownClosed}`}
               onMouseEnter={cancelClose}
               onMouseLeave={scheduleClose}
             >
-              <div className="flex gap-7">
-                <div className="flex-1">
-                  <div className={colTitle}>Scan</div>
-                  <Link href="/product/scan#scanner" role="menuitem" className={dropdownLink}>Security Scanner</Link>
-                  <Link href="/product/scan#auto-fixes" role="menuitem" className={dropdownLink}>Auto-fixes</Link>
-                  <Link href="/product/scan#score-history" role="menuitem" className={dropdownLink}>Score history</Link>
-                  <Link href="/product/scan#audit-log" role="menuitem" className={dropdownLink}>Audit log</Link>
-                </div>
-                <div className="flex-1">
-                  <div className={colTitle}>Defend</div>
-                  <Link href="/product/defend#ai-assistant" role="menuitem" className={dropdownLink}>AI Assistant</Link>
-                  <Link href="/product/defend#live-monitor" role="menuitem" className={dropdownLink}>Live Monitor</Link>
-                  <Link href="/product/defend#breach-intelligence" role="menuitem" className={dropdownLink}>Breach Intelligence</Link>
-                  <Link href="/product/defend#cve-database" role="menuitem" className={dropdownLink}>CVE database</Link>
-                </div>
-                <div className="flex-1">
-                  <div className={colTitle}>Govern</div>
-                  <Link href="/product/govern#compliance-mapping" role="menuitem" className={dropdownLink}>Compliance mapping</Link>
-                  <Link href="/product/govern#framework-mapping" role="menuitem" className={dropdownLink}>OWASP / CIS / SOC 2</Link>
-                </div>
+              <div className="flex flex-col gap-1">
+                {[
+                  { href: '/product/scan',    Icon: Search,        label: 'Scan',    desc: 'Find secrets, misconfigs, and unsafe code patterns.' },
+                  { href: '/product/defend',  Icon: ShieldCheck,   label: 'Defend',  desc: 'AI assistant and live monitor with breach intelligence.' },
+                  { href: '/product/govern',  Icon: ClipboardCheck,label: 'Govern',  desc: 'Map findings to OWASP, CIS, and SOC 2 frameworks.' },
+                ].map(({ href, Icon, label, desc }) => (
+                  <Link
+                    key={label}
+                    href={href}
+                    role="menuitem"
+                    className="flex items-start gap-3 px-3 py-2.5 rounded-lg hover:bg-accent/5 transition-colors group"
+                  >
+                    <div className="mt-0.5 w-7 h-7 rounded-md bg-accent/10 border border-accent/20 flex items-center justify-center text-accent flex-shrink-0 group-hover:bg-accent/15 transition-colors">
+                      <Icon size={14} strokeWidth={2} />
+                    </div>
+                    <div>
+                      <div className="text-sm font-medium text-text">{label}</div>
+                      <div className="text-xs text-muted mt-0.5 leading-snug">{desc}</div>
+                    </div>
+                  </Link>
+                ))}
               </div>
-            </div>
-          </li>
-
-          {/* Solutions — single column */}
-          <li
-            className="relative"
-            data-nav-item=""
-            onMouseEnter={() => openMenu('solutions')}
-            onMouseLeave={scheduleClose}
-          >
-            <button
-              className={`${triggerBase} ${isOpen('solutions') ? triggerActive : triggerIdle}`}
-              aria-expanded={isOpen('solutions')}
-              aria-haspopup="true"
-              aria-controls="dropdown-solutions"
-            >
-              Solutions
-              <Chevron open={isOpen('solutions')} />
-            </button>
-            <div
-              id="dropdown-solutions"
-              role="menu"
-              className={`${dropdownBase} left-1/2 -translate-x-1/2 min-w-[220px] ${isOpen('solutions') ? dropdownOpen : dropdownClosed}`}
-              onMouseEnter={cancelClose}
-              onMouseLeave={scheduleClose}
-            >
-              <Link href="/product/scan" role="menuitem" className={dropdownLink}>For Solo Developers</Link>
-              <Link href="/product/defend" role="menuitem" className={dropdownLink}>For Small Teams</Link>
-              <Link href="/product/scan" role="menuitem" className={dropdownLink}>For Open Source Maintainers</Link>
-              <Link href="/product/scan#auto-fixes" role="menuitem" className={dropdownLink}>Pre-commit Security</Link>
-              <Link href="/product/govern" role="menuitem" className={dropdownLink}>Compliance for Startups</Link>
             </div>
           </li>
 
@@ -289,9 +254,6 @@ export function MarketingHeader() {
           {/* Direct links */}
           <li>
             <Link href="/pricing" className={`${triggerBase} ${triggerIdle}`}>Pricing</Link>
-          </li>
-          <li>
-            <Link href="/download" className={`${triggerBase} ${triggerIdle}`}>Download</Link>
           </li>
         </ul>
 
@@ -372,13 +334,6 @@ export function MarketingHeader() {
             Product
           </Link>
           <Link
-            href="/product/scan"
-            className="px-4 py-2.5 text-sm font-medium text-text rounded-md hover:text-accent hover:bg-accent/5 transition-colors"
-            onClick={() => setMobileOpen(false)}
-          >
-            Solutions
-          </Link>
-          <Link
             href="/guide"
             className="px-4 py-2.5 text-sm font-medium text-text rounded-md hover:text-accent hover:bg-accent/5 transition-colors"
             onClick={() => setMobileOpen(false)}
@@ -392,13 +347,6 @@ export function MarketingHeader() {
           >
             Pricing
           </Link>
-          <Link
-            href="/download"
-            className="px-4 py-2.5 text-sm font-medium text-text rounded-md hover:text-accent hover:bg-accent/5 transition-colors"
-            onClick={() => setMobileOpen(false)}
-          >
-            Download
-          </Link>
           <a
             href="mailto:hello@hzsec.io"
             className="px-4 py-2.5 text-sm font-medium text-text rounded-md hover:text-accent hover:bg-accent/5 transition-colors"
@@ -411,7 +359,7 @@ export function MarketingHeader() {
             <SignedOut>
               <Link
                 href="/login"
-                className="flex justify-center items-center text-sm text-muted border border-border px-4 py-2.5 rounded-md hover:border-border hover:text-text transition-colors"
+                className="flex justify-center items-center text-sm text-muted border border-border px-4 py-2.5 rounded-full hover:border-border hover:text-text transition-colors"
                 onClick={() => setMobileOpen(false)}
               >
                 Sign in
@@ -420,7 +368,7 @@ export function MarketingHeader() {
           ) : (
             <Link
               href="/login"
-              className="flex justify-center items-center text-sm text-muted border border-border px-4 py-2.5 rounded-md hover:border-border hover:text-text transition-colors"
+              className="flex justify-center items-center text-sm text-muted border border-border px-4 py-2.5 rounded-full hover:border-border hover:text-text transition-colors"
               onClick={() => setMobileOpen(false)}
             >
               Sign in
@@ -428,17 +376,10 @@ export function MarketingHeader() {
           )}
           <Link
             href="/pricing"
-            className="flex justify-center items-center text-sm text-text border border-border px-4 py-2.5 rounded-md hover:border-accent hover:text-accent transition-colors"
+            className="flex justify-center items-center text-sm bg-accent text-white px-4 py-2.5 rounded-full hover:bg-accent/90 transition-colors"
             onClick={() => setMobileOpen(false)}
           >
-            View pricing
-          </Link>
-          <Link
-            href="/download"
-            className="flex justify-center items-center text-sm bg-accent text-white px-4 py-2.5 rounded-md hover:bg-accent/90 transition-colors"
-            onClick={() => setMobileOpen(false)}
-          >
-            Get early access
+            Download free
           </Link>
         </div>
       </div>

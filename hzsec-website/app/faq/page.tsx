@@ -20,7 +20,7 @@ const sections = [
       },
       {
         q: 'What platforms does HZSec run on?',
-        a: 'HZSec is available for macOS (Apple Silicon, signed and notarized) and Windows 10/11 (standard installer, authentically signed). A Linux build is on the roadmap.',
+        a: 'The macOS desktop app (Apple Silicon, signed and notarized) is available now. A Windows desktop build is in progress — join the waitlist at hzsec.io/download. The CLI (npm install -g hzsec-cli) runs on macOS, Linux, and Windows today.',
       },
       {
         q: 'Is HZSec open source?',

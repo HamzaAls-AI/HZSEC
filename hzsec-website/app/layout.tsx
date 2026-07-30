@@ -1,7 +1,15 @@
 import './globals.css';
 import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
 import { ClerkProvider } from '@clerk/nextjs';
 import Script from 'next/script';
+
+const inter = Inter({
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '600'],
+  variable: '--font-sans',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   title:       'HZSec — Local-first security scanning for developers',
@@ -22,7 +30,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   const clerkKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
   const app = (
-    <html lang="en" className="scroll-smooth">
+    <html lang="en" className={`scroll-smooth ${inter.variable}`}>
       <head>
         <Script id="hzsec-theme-init" strategy="beforeInteractive">{`(function(){try{var t=localStorage.getItem('hzsec-theme');var v=(t==='light')?'light':'dark';document.documentElement.setAttribute('data-theme',v);}catch(e){document.documentElement.setAttribute('data-theme','dark');}})();`}</Script>
       </head>
