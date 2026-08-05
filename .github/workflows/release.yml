@@ -19,8 +19,12 @@ jobs:
         include:
           - os: windows-latest
             npm_script: dist:win
+            asset_glob: "dist/*.exe"
+            stable_name: HZSec-Setup.exe
           - os: macos-latest
             npm_script: dist:mac
+            asset_glob: "dist/*.dmg"
+            stable_name: HZSec-arm64.dmg
 
     steps:
       - name: Checkout
@@ -35,15 +39,24 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build and publish
+      - name: Build (no publish)
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: false
+        run: npm run ${{ matrix.npm_script }} -- --publish never
+
+      - name: Upload to release with stable name
+        shell: bash
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          APPLE_ID: ${{ secrets.APPLE_ID }}
-          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
-          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
-          # CSC_LINK / CSC_KEY_PASSWORD omitted intentionally — passing an empty
-          # string when the secret is unset causes electron-builder to treat it
-          # as a file path and crash. Add these back once signing certs are ready.
-          # WIN_CSC_LINK / WIN_CSC_KEY_PASSWORD likewise omitted until cert is ready.
-          CSC_IDENTITY_AUTO_DISCOVERY: false
-        run: npm run ${{ matrix.npm_script }} -- --publish always
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          TAG="v${VERSION}"
+
+          # Create draft release if it doesn't exist yet
+          gh release view "$TAG" --json tagName 2>/dev/null \
+            || gh release create "$TAG" --draft --title "$TAG" --notes ""
+
+          # Find the artifact and upload with stable name
+          ARTIFACT=$(ls ${{ matrix.asset_glob }} | head -1)
+          cp "$ARTIFACT" "dist/${{ matrix.stable_name }}"
+          gh release upload "$TAG" "dist/${{ matrix.stable_name }}" --clobber
