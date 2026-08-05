@@ -170,7 +170,7 @@ export default function Landing() {
           </div>
 
           {/* Right: App mockup wrapped in demo modal trigger */}
-          <DemoModal>
+          <DemoModal videoUrl="/demo.mp4">
           <div className="rounded-xl overflow-hidden border border-[rgba(56,189,248,0.25)] bg-[#0f172a] shadow-[0_30px_60px_rgba(15,23,42,0.35)]">
             <div className="bg-[#111d35] border-b border-[rgba(56,189,248,0.12)] px-3.5 py-2.5 flex items-center gap-2.5">
               <div className="flex gap-1.5">

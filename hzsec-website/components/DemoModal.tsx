@@ -63,7 +63,15 @@ export function DemoModal({ videoUrl, children }: DemoModalProps) {
 
             {/* Video or placeholder */}
             <div className="aspect-video bg-[#0b0c10] w-full">
-              {videoUrl ? (
+              {videoUrl && videoUrl.endsWith('.mp4') ? (
+                <video
+                  src={videoUrl}
+                  className="w-full h-full"
+                  controls
+                  autoPlay
+                  playsInline
+                />
+              ) : videoUrl ? (
                 <iframe
                   src={videoUrl}
                   className="w-full h-full"
