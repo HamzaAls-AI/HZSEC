@@ -17,7 +17,6 @@ module.exports = {
     buildResources: 'build',
   },
   dmg: {
-    artifactName: 'HZSec-mac-arm64.dmg',
     contents: [
       { x: 110, y: 150 },
       { x: 240, y: 150, type: 'link', path: '/Applications' },
@@ -25,6 +24,7 @@ module.exports = {
     window: { width: 500, height: 350 },
   },
   mac: {
+    artifactName: 'HZSec-${arch}.${ext}',
     category: 'public.app-category.developer-tools',
     target: ['dmg', 'zip'],
     hardenedRuntime: true,
@@ -37,13 +37,13 @@ module.exports = {
       : false,
   },
   nsis: {
-    artifactName: 'HZSec-Setup.exe',
     oneClick: false,
     allowToChangeInstallationDirectory: true,
     createDesktopShortcut: true,
     createStartMenuShortcut: true,
   },
   win: {
+    artifactName: 'HZSec-Setup.${ext}',
     target: ['nsis'],
     publisherName: 'HZSec',
     verifyUpdateCodeSignature: false,
