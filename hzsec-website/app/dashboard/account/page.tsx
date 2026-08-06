@@ -1,17 +1,65 @@
 'use client';
 
 import { useUser, useClerk } from '@clerk/nextjs';
-import { useTheme } from 'next-themes';
-import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState, useCallback } from 'react';
 import { Sun, Moon, Monitor, LogOut, BookOpen, Mail, MessageSquare } from 'lucide-react';
 import Link from 'next/link';
+
+// The app uses a manual data-theme attribute system (set by layout.tsx Script tag
+// and ThemeSwitcher). next-themes ThemeProvider is not mounted, so useTheme()
+// won't work here. We manage theme state directly via localStorage + data-theme.
+type ThemePref = 'light' | 'dark' | 'system';
+const STORAGE_KEY = 'hzsec-theme';
+
+function getStoredPref(): ThemePref {
+  try {
+    const v = localStorage.getItem(STORAGE_KEY);
+    if (v === 'light' || v === 'dark') return v;
+  } catch {}
+  return 'system';
+}
+
+function applyTheme(pref: ThemePref) {
+  const resolved =
+    pref === 'system'
+      ? window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+      : pref;
+  document.documentElement.setAttribute('data-theme', resolved);
+  try {
+    if (pref === 'system') localStorage.removeItem(STORAGE_KEY);
+    else localStorage.setItem(STORAGE_KEY, pref);
+  } catch {}
+}
 
 export default function AccountPage() {
   const { user } = useUser();
   const { signOut, openUserProfile } = useClerk();
-  const { theme, setTheme } = useTheme();
+  const router = useRouter();
+
+  const [themePref, setThemePref] = useState<ThemePref>('system');
   const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
+
+  useEffect(() => {
+    setMounted(true);
+    setThemePref(getStoredPref());
+  }, []);
+
+  const handleTheme = useCallback((pref: ThemePref) => {
+    setThemePref(pref);
+    applyTheme(pref);
+  }, []);
+
+  const handleSignOut = useCallback(async () => {
+    await signOut();
+    router.push('/');
+  }, [signOut, router]);
+
+  const handleManageAccount = useCallback(() => {
+    if (typeof openUserProfile === 'function') {
+      openUserProfile();
+    }
+  }, [openUserProfile]);
 
   return (
     <div className="space-y-6 max-w-2xl">
@@ -41,7 +89,7 @@ export default function AccountPage() {
             </div>
           </div>
           <button
-            onClick={() => openUserProfile()}
+            onClick={handleManageAccount}
             className="shrink-0 rounded-md border border-border px-3 py-1.5 text-sm text-muted hover:border-accent/60 hover:text-text transition-colors"
           >
             Manage account
@@ -56,15 +104,15 @@ export default function AccountPage() {
         </p>
         <div className="flex gap-3">
           {([
-            { value: 'light',  label: 'Light',  Icon: Sun     },
-            { value: 'dark',   label: 'Dark',   Icon: Moon    },
-            { value: 'system', label: 'System', Icon: Monitor },
-          ] as const).map(({ value, label, Icon }) => {
-            const active = mounted && theme === value;
+            { value: 'light'  as ThemePref, label: 'Light',  Icon: Sun     },
+            { value: 'dark'   as ThemePref, label: 'Dark',   Icon: Moon    },
+            { value: 'system' as ThemePref, label: 'System', Icon: Monitor },
+          ]).map(({ value, label, Icon }) => {
+            const active = mounted && themePref === value;
             return (
               <button
                 key={value}
-                onClick={() => setTheme(value)}
+                onClick={() => handleTheme(value)}
                 className={`flex flex-1 flex-col items-center gap-2 rounded-xl border px-4 py-4 text-sm font-medium transition-colors ${
                   active
                     ? 'border-accent bg-accent/10 text-accent'
@@ -86,7 +134,7 @@ export default function AccountPage() {
             Icon={MessageSquare}
             label="Send feedback"
             description="Tell us what's working and what isn't."
-            href={`mailto:hello@hzsec.io?subject=${encodeURIComponent('HZSec Feedback')}`}
+            href="mailto:hello@hzsec.io?subject=HZSec%20Feedback"
           />
           <HelpRow
             Icon={BookOpen}
@@ -99,7 +147,7 @@ export default function AccountPage() {
             Icon={Mail}
             label="Contact support"
             description="Get help with billing, license keys, or bugs."
-            href={`mailto:hello@hzsec.io?subject=${encodeURIComponent('HZSec Support')}`}
+            href="mailto:hello@hzsec.io?subject=HZSec%20Support"
           />
         </div>
       </Section>
@@ -114,7 +162,7 @@ export default function AccountPage() {
             </div>
           </div>
           <button
-            onClick={() => signOut({ redirectUrl: '/' })}
+            onClick={handleSignOut}
             className="flex items-center gap-2 rounded-md border border-danger/40 px-3 py-1.5 text-sm text-danger hover:bg-danger/10 hover:border-danger transition-colors"
           >
             <LogOut size={14} />
@@ -144,7 +192,7 @@ function HelpRow({
   href: string;
   internal?: boolean;
 }) {
-  const cls = 'flex items-center gap-4 py-3.5 group';
+  const cls = 'flex items-center gap-4 py-3.5 group cursor-pointer';
   const inner = (
     <>
       <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-border bg-panel2 text-muted group-hover:border-accent/40 group-hover:text-accent transition-colors">
