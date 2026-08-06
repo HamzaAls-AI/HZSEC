@@ -14,7 +14,7 @@ const tiers = [
     blurb: 'Solo developer. Bring your own Anthropic key.',
     priceMonthly: 0,
     priceAnnual: 0,
-    cta: 'Download free',
+    cta: 'Get started free',
     href: '#download',
     features: [
       'All scanners + live monitor',

@@ -2,7 +2,7 @@ import Link from 'next/link';
 
 export const metadata = {
   title: 'Installation — HZSec Docs',
-  description: 'Install HZSec on macOS and Windows. Verify signatures and check your installed version.',
+  description: 'Install HZSec via npm (recommended) or download the desktop app for macOS and Windows.',
 };
 
 export default function InstallPage() {
@@ -16,107 +16,88 @@ export default function InstallPage() {
         Installation
       </h1>
       <p className="text-base text-muted leading-relaxed max-w-[560px] mb-10">
-        HZSec ships as a signed desktop application for macOS and Windows. The
-        <code className="font-mono text-accent mx-1">hzsec</code> CLI is bundled
-        with the app and added to your PATH during installation.
+        The fastest way to get started is the CLI — one command, works on every platform.
+        The desktop app is available as a beta if you prefer a GUI.
       </p>
 
-      {/* macOS */}
+      {/* CLI — primary */}
       <section className="mb-12">
-        <h2 className="text-xl font-bold text-text mb-1">macOS</h2>
-        <p className="text-sm text-muted mb-4">Requires macOS 12.0 (Monterey) or later. Apple Silicon native — no Rosetta required.</p>
+        <div className="flex items-center gap-3 mb-3">
+          <h2 className="text-xl font-bold text-text">CLI via npm</h2>
+          <span className="font-mono text-[10px] uppercase tracking-widest text-accent bg-accent/10 border border-accent/20 px-2 py-0.5 rounded-full">
+            Recommended
+          </span>
+        </div>
+        <p className="text-sm text-muted mb-4">
+          Node 18 or later required. Works on macOS, Linux, and Windows.
+        </p>
 
         <h3 className="text-base font-semibold text-text mt-6 mb-3">Install</h3>
-        <ol className="space-y-2 text-sm text-muted leading-relaxed list-decimal list-inside ml-1">
-          <li>Download <code className="font-mono text-accent">HZSec.dmg</code> from <Link href="/download" className="text-accent hover:underline">hzsec.io/download</Link>.</li>
-          <li>Open the <code className="font-mono text-accent">.dmg</code> and drag <strong className="text-text">HZSec.app</strong> to <code className="font-mono text-accent">/Applications</code>.</li>
-          <li>Double-click <strong className="text-text">HZSec</strong> to launch. macOS Gatekeeper validates the Apple notarization automatically on first open.</li>
-          <li>HZSec adds <code className="font-mono text-accent">hzsec</code> to your PATH on first launch — open a new terminal tab to use it.</li>
-        </ol>
-
-        <h3 className="text-base font-semibold text-text mt-6 mb-3">Verify the signature</h3>
         <pre className="overflow-x-auto rounded-lg border border-border bg-[#0d1117] px-5 py-4 font-mono text-sm text-[#c9d1d9] leading-relaxed">
-          <code>{`# Check notarization and Developer ID signature
-spctl --assess --verbose /Applications/HZSec.app
+          <code>{`npm install -g hzsec-cli`}</code>
+        </pre>
 
-# Expected:
-# /Applications/HZSec.app: accepted
-# source=Notarized Developer ID`}</code>
+        <h3 className="text-base font-semibold text-text mt-6 mb-3">Run your first scan</h3>
+        <pre className="overflow-x-auto rounded-lg border border-border bg-[#0d1117] px-5 py-4 font-mono text-sm text-[#c9d1d9] leading-relaxed">
+          <code>{`hzsec scan .`}</code>
+        </pre>
+
+        <h3 className="text-base font-semibold text-text mt-6 mb-3">Check your version</h3>
+        <pre className="overflow-x-auto rounded-lg border border-border bg-[#0d1117] px-5 py-4 font-mono text-sm text-[#c9d1d9] leading-relaxed">
+          <code>{`hzsec --version
+# 1.1.0`}</code>
+        </pre>
+
+        <h3 className="text-base font-semibold text-text mt-6 mb-3">Update</h3>
+        <pre className="overflow-x-auto rounded-lg border border-border bg-[#0d1117] px-5 py-4 font-mono text-sm text-[#c9d1d9] leading-relaxed">
+          <code>{`npm install -g hzsec-cli@latest`}</code>
         </pre>
       </section>
 
-      {/* Windows */}
+      {/* Desktop app — beta */}
       <section className="mb-12">
-        <h2 className="text-xl font-bold text-text mb-1">Windows</h2>
-        <div className="rounded-lg border border-dashed border-border bg-panel p-5 text-sm text-muted leading-relaxed">
-          <p className="font-medium text-text mb-1">Desktop app — coming soon</p>
-          <p className="mb-3">
-            The Windows desktop installer is in progress.{' '}
-            <a href="mailto:hello@hzsec.io?subject=Windows waitlist" className="text-accent hover:underline">
-              Join the waitlist
-            </a>{' '}
-            and we&apos;ll email you when it drops.
-          </p>
-          <p className="font-medium text-text mb-1">CLI — available now</p>
-          <p>
-            The CLI works on Windows today via npm. Node 18+ required.
-          </p>
-          <pre className="overflow-x-auto rounded-lg border border-border bg-[#0d1117] px-5 py-3 font-mono text-sm text-[#c9d1d9] leading-relaxed mt-3">
-            <code>{`npm install -g hzsec-cli\nhzsec scan .`}</code>
-          </pre>
+        <div className="flex items-center gap-3 mb-3">
+          <h2 className="text-xl font-bold text-text">Desktop app</h2>
+          <span className="font-mono text-[10px] uppercase tracking-widest text-warn bg-warn/10 border border-warn/20 px-2 py-0.5 rounded-full">
+            Beta
+          </span>
         </div>
+        <p className="text-sm text-muted mb-4">
+          Full GUI with AI assistant, live monitor, compliance mapping, and scan history.
+          Available for macOS and Windows.
+        </p>
+
+        <div className="rounded-lg border border-warn/20 bg-warn/5 px-5 py-4 text-sm text-muted mb-6">
+          <strong className="text-text">Unsigned build —</strong> the desktop app is not yet
+          code-signed or notarized. macOS will show a Gatekeeper security warning on first
+          launch. To open it: right-click <strong className="text-text">HZSec.app</strong> in
+          your Applications folder and choose <strong className="text-text">Open</strong>.
+          Windows may show a SmartScreen prompt — click <strong className="text-text">More info → Run anyway</strong>.
+        </div>
+
+        <h3 className="text-base font-semibold text-text mb-3">macOS</h3>
+        <ol className="space-y-2 text-sm text-muted leading-relaxed list-decimal list-inside ml-1 mb-6">
+          <li>Download <code className="font-mono text-accent">HZSec-arm64.dmg</code> from <Link href="/pricing#download" className="text-accent hover:underline">hzsec.io/pricing</Link>.</li>
+          <li>Open the <code className="font-mono text-accent">.dmg</code> and drag <strong className="text-text">HZSec.app</strong> to <code className="font-mono text-accent">/Applications</code>.</li>
+          <li>Right-click <strong className="text-text">HZSec</strong> in Applications and choose <strong className="text-text">Open</strong> to bypass Gatekeeper.</li>
+        </ol>
+
+        <h3 className="text-base font-semibold text-text mb-3">Windows</h3>
+        <ol className="space-y-2 text-sm text-muted leading-relaxed list-decimal list-inside ml-1">
+          <li>Download <code className="font-mono text-accent">HZSec-Setup.exe</code> from <Link href="/pricing#download" className="text-accent hover:underline">hzsec.io/pricing</Link>.</li>
+          <li>Run the installer. If SmartScreen appears, click <strong className="text-text">More info → Run anyway</strong>.</li>
+          <li>Launch HZSec from the Start menu.</li>
+        </ol>
       </section>
 
       {/* Linux */}
       <section className="mb-12">
-        <h2 className="text-xl font-bold text-text mb-1">Linux</h2>
-        <div className="rounded-lg border border-border bg-panel p-5 text-sm text-muted leading-relaxed">
-          <p>
-            A Linux build is in development. To be notified when it ships, email{' '}
-            <a href="mailto:hello@hzsec.io" className="text-accent hover:underline">hello@hzsec.io</a>{' '}
-            with <strong className="text-text">Linux build</strong> in the subject line.
-          </p>
-        </div>
-      </section>
-
-      {/* Check version */}
-      <section className="mb-12">
-        <h2 className="text-xl font-bold text-text mb-4">Check your version</h2>
-        <pre className="overflow-x-auto rounded-lg border border-border bg-[#0d1117] px-5 py-4 font-mono text-sm text-[#c9d1d9]">
-          <code>{`hzsec --version
-# 1.1.0`}</code>
+        <h2 className="text-xl font-bold text-text mb-3">Linux</h2>
+        <p className="text-sm text-muted mb-4">No desktop build yet — use the CLI.</p>
+        <pre className="overflow-x-auto rounded-lg border border-border bg-[#0d1117] px-5 py-4 font-mono text-sm text-[#c9d1d9] leading-relaxed">
+          <code>{`npm install -g hzsec-cli
+hzsec scan .`}</code>
         </pre>
-      </section>
-
-      {/* Updating */}
-      <section className="mb-12">
-        <h2 className="text-xl font-bold text-text mb-4">Updating HZSec</h2>
-        <p className="text-sm text-muted leading-relaxed">
-          HZSec checks for updates on launch and shows a banner when one is available.
-          To update, download the latest installer from{' '}
-          <Link href="/download" className="text-accent hover:underline">hzsec.io/download</Link>{' '}
-          and run it — the installer replaces the existing installation in place.
-        </p>
-        <p className="text-sm text-muted leading-relaxed mt-3">
-          CVE rule data is refreshed from CISA KEV and NVD in the background and does not
-          require a full app update.
-        </p>
-      </section>
-
-      {/* Uninstalling */}
-      <section className="mb-12">
-        <h2 className="text-xl font-bold text-text mb-4">Uninstalling</h2>
-        <div className="space-y-4 text-sm text-muted leading-relaxed">
-          <div>
-            <strong className="text-text">macOS:</strong> Drag HZSec.app to the Trash. HZSec stores all local data (scan history, settings, encrypted API key) in <code className="font-mono text-accent">~/.shieldops</code>. To remove it completely:
-            <pre className="overflow-x-auto rounded-lg border border-border bg-[#0d1117] px-5 py-3 font-mono text-sm text-[#c9d1d9] mt-2">
-              <code>{`rm -rf ~/.shieldops`}</code>
-            </pre>
-          </div>
-          <div>
-            <strong className="text-text">Windows:</strong> Go to <strong className="text-text">Settings → Apps → HZSec → Uninstall</strong>. Local data is stored in <code className="font-mono text-accent">%USERPROFILE%\.shieldops</code> and is not removed automatically — delete that folder if you want a clean removal.
-          </div>
-        </div>
       </section>
 
       {/* Bottom nav */}

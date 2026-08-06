@@ -131,16 +131,22 @@ export default function Landing() {
               watch your back — without a single line of code leaving your machine.
             </p>
 
+            {/* CLI install — primary entry point */}
+            <div className="flex items-center gap-3 bg-black/30 border border-white/10 rounded-xl px-5 py-3 mb-6 max-w-sm font-mono text-sm">
+              <span className="text-white/30 select-none">$</span>
+              <code className="text-white/90 tracking-tight">npm install -g hzsec-cli</code>
+            </div>
+
             {/* CTAs — pill-shaped */}
             <div className="flex items-center gap-4 flex-wrap mb-8">
               <Link
-                href="/pricing"
+                href="/pricing#download"
                 className="btn-glow inline-flex items-center gap-2 bg-accent text-white px-8 py-3.5 rounded-full font-medium text-base hover:bg-accent/90 transition-all hover:-translate-y-px"
               >
-                Download free →
+                Get started free →
               </Link>
               <Link
-                href="/docs"
+                href="/docs/quickstart"
                 className="inline-flex items-center gap-2 border border-white/25 text-white px-8 py-3.5 rounded-full font-medium text-base hover:border-white/50 hover:bg-white/5 transition-all"
               >
                 See how it works
@@ -165,7 +171,7 @@ export default function Landing() {
             </div>
 
             <p className="font-mono text-xs text-white/40">
-              Free forever · macOS · Windows · 100% local processing
+              Free forever · macOS · Windows · Linux · 100% local processing
             </p>
           </div>
 
@@ -373,15 +379,15 @@ export default function Landing() {
             </span>
           </h2>
           <p className="text-lg text-muted leading-relaxed mt-5 mx-auto">
-            Free to download, free to scan, free forever on the solo plan.
+            Free to install, free to scan, free forever on the solo plan.
             No credit card, no code leaving your machine, no catch.
           </p>
           <div className="flex justify-center gap-4 flex-wrap mt-8">
             <Link
-              href="/pricing"
+              href="/pricing#download"
               className="btn-glow inline-flex items-center bg-accent text-white px-8 py-3.5 rounded-full font-medium text-base hover:bg-accent/90 hover:-translate-y-px transition-all"
             >
-              Download free →
+              Get started free →
             </Link>
             <Link
               href="/pricing"
