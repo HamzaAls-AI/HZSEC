@@ -2,33 +2,23 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { UserButton } from '@clerk/nextjs';
+import { useUser } from '@clerk/nextjs';
 import {
-  LayoutGrid, KeyRound, CreditCard, Activity,
-  ShieldCheck, Bell, Code2, AlertTriangle
+  LayoutGrid, KeyRound, CreditCard, Activity, User,
 } from 'lucide-react';
 
-// Linear/Notion-style left sidebar. Top: nav. Bottom: account control.
-// Settings sub-menu lives inside this component instead of a separate one
-// because the spec calls for everything to be reachable from one rail.
-
 const NAV: ReadonlyArray<{ href: string; label: string; Icon: typeof LayoutGrid }> = [
-  { href: '/dashboard',          label: 'Overview',  Icon: LayoutGrid    },
-  { href: '/dashboard/license',  label: 'License',   Icon: KeyRound      },
-  { href: '/dashboard/billing',  label: 'Billing',   Icon: CreditCard    },
-  { href: '/dashboard/usage',    label: 'Usage',     Icon: Activity      }
-];
-
-const SETTINGS: ReadonlyArray<{ href: string; label: string; Icon: typeof LayoutGrid; disabled?: boolean }> = [
-  { href: '/dashboard/api-access',    label: 'API access',    Icon: Code2,         disabled: true },
-  { href: '/dashboard/notifications', label: 'Notifications', Icon: Bell,          disabled: true },
-  { href: '/dashboard/security',      label: 'Security',      Icon: ShieldCheck,   disabled: true },
-  { href: '/dashboard/danger',        label: 'Danger zone',   Icon: AlertTriangle, disabled: true }
+  { href: '/dashboard',         label: 'Overview', Icon: LayoutGrid },
+  { href: '/dashboard/license', label: 'License',  Icon: KeyRound   },
+  { href: '/dashboard/billing', label: 'Billing',  Icon: CreditCard },
+  { href: '/dashboard/usage',   label: 'Usage',    Icon: Activity   },
 ];
 
 export function DashboardSidebar() {
   const pathname = usePathname();
-  const clerkKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
+  const { user } = useUser();
+
+  const accountActive = pathname === '/dashboard/account';
 
   return (
     <aside className="flex w-60 shrink-0 flex-col border-r border-border bg-panel">
@@ -36,27 +26,37 @@ export function DashboardSidebar() {
         HZSec<span className="text-accent">.io</span>
       </Link>
 
-      <nav className="flex-1 space-y-6 overflow-y-auto px-3 pb-4">
-        <div>
-          <SectionLabel>Workspace</SectionLabel>
-          {NAV.map(({ href, label, Icon }) => (
-            <NavItem key={href} href={href} active={pathname === href} Icon={Icon} label={label} />
-          ))}
-        </div>
-
-        <div>
-          <SectionLabel>Settings</SectionLabel>
-          {SETTINGS.map(({ href, label, Icon, disabled }) => (
-            <NavItem key={href} href={href} active={pathname === href} Icon={Icon} label={label} disabled={disabled} />
-          ))}
-        </div>
+      <nav className="flex-1 space-y-1 overflow-y-auto px-3 pb-4 pt-1">
+        <SectionLabel>Workspace</SectionLabel>
+        {NAV.map(({ href, label, Icon }) => (
+          <NavItem key={href} href={href} active={pathname === href} Icon={Icon} label={label} />
+        ))}
       </nav>
 
+      {/* Account row — navigates to /dashboard/account */}
       <div className="border-t border-border p-3">
-        <div className="flex items-center gap-2 rounded-md px-2 py-1.5 hover:bg-panel2">
-          {clerkKey ? <UserButton afterSignOutUrl="/" /> : null}
-          <span className="text-sm text-muted">Account</span>
-        </div>
+        <Link
+          href="/dashboard/account"
+          className={`flex items-center gap-2.5 rounded-md px-2 py-1.5 transition-colors ${
+            accountActive
+              ? 'bg-panel2 text-text'
+              : 'text-muted hover:bg-panel2 hover:text-text'
+          }`}
+        >
+          {user?.imageUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={user.imageUrl}
+              alt={user.fullName ?? 'Avatar'}
+              className="h-5 w-5 rounded-full object-cover"
+            />
+          ) : (
+            <User size={15} />
+          )}
+          <span className="text-sm truncate flex-1">
+            {user?.firstName ?? 'Account'}
+          </span>
+        </Link>
       </div>
     </aside>
   );
@@ -71,32 +71,19 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 }
 
 function NavItem({
-  href, label, Icon, active, disabled
+  href, label, Icon, active,
 }: {
-  href: string; label: string; Icon: typeof LayoutGrid;
-  active?: boolean; disabled?: boolean;
+  href: string; label: string; Icon: typeof LayoutGrid; active?: boolean;
 }) {
-  const cls = `flex items-center gap-2.5 rounded-md px-2 py-1.5 text-sm transition-colors ${
-    active
-      ? 'bg-panel2 text-text'
-      : disabled
-        ? 'cursor-not-allowed text-muted/50'
-        : 'text-muted hover:bg-panel2 hover:text-text'
-  }`;
-  if (disabled) {
-    return (
-      <span className={cls}>
-        <Icon size={15} />
-        {label}
-        <span className="ml-auto text-[10px] uppercase tracking-wider text-muted/70">soon</span>
-      </span>
-    );
-  }
   return (
-    <Link href={href} className={cls}>
+    <Link
+      href={href}
+      className={`flex items-center gap-2.5 rounded-md px-2 py-1.5 text-sm transition-colors ${
+        active ? 'bg-panel2 text-text' : 'text-muted hover:bg-panel2 hover:text-text'
+      }`}
+    >
       <Icon size={15} />
       {label}
     </Link>
   );
 }
-
