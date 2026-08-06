@@ -2,8 +2,8 @@
 
 import { useUser, useClerk } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState, useCallback } from 'react';
-import { Sun, Moon, Monitor, LogOut, BookOpen, Mail, MessageSquare } from 'lucide-react';
+import { useEffect, useState, useCallback, useRef } from 'react';
+import { Sun, Moon, Monitor, LogOut, BookOpen, Send } from 'lucide-react';
 import Link from 'next/link';
 
 // The app uses a manual data-theme attribute system (set by layout.tsx Script tag
@@ -39,6 +39,9 @@ export default function AccountPage() {
 
   const [themePref, setThemePref] = useState<ThemePref>('system');
   const [mounted, setMounted] = useState(false);
+  const [feedback, setFeedback] = useState('');
+  const [feedbackSent, setFeedbackSent] = useState(false);
+  const feedbackRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -60,6 +63,16 @@ export default function AccountPage() {
       openUserProfile();
     }
   }, [openUserProfile]);
+
+  const handleFeedback = useCallback(() => {
+    const text = feedback.trim();
+    if (!text) { feedbackRef.current?.focus(); return; }
+    const url = `mailto:hello@hzsec.io?subject=${encodeURIComponent('HZSec Feedback')}&body=${encodeURIComponent(text)}`;
+    window.open(url, '_blank');
+    setFeedback('');
+    setFeedbackSent(true);
+    setTimeout(() => setFeedbackSent(false), 3000);
+  }, [feedback]);
 
   return (
     <div className="space-y-6 max-w-2xl">
@@ -129,26 +142,48 @@ export default function AccountPage() {
 
       {/* ── Help & Feedback ── */}
       <Section title="Help & Feedback">
-        <div className="divide-y divide-border">
-          <HelpRow
-            Icon={MessageSquare}
-            label="Send feedback"
-            description="Tell us what's working and what isn't."
-            href="mailto:hello@hzsec.io?subject=HZSec%20Feedback"
-          />
-          <HelpRow
-            Icon={BookOpen}
-            label="Documentation"
-            description="Guides, CLI reference, and quickstart."
-            href="/docs"
-            internal
-          />
-          <HelpRow
-            Icon={Mail}
-            label="Contact support"
-            description="Get help with billing, license keys, or bugs."
-            href="mailto:hello@hzsec.io?subject=HZSec%20Support"
-          />
+        <div className="space-y-5">
+          {/* Feedback form */}
+          <div>
+            <div className="text-sm font-medium text-text mb-1">Send feedback</div>
+            <div className="text-xs text-muted mb-2">Tell us what's working and what isn't.</div>
+            <textarea
+              ref={feedbackRef}
+              value={feedback}
+              onChange={e => setFeedback(e.target.value)}
+              rows={3}
+              placeholder="What's on your mind?"
+              className="w-full rounded-lg border border-border bg-panel2 px-3 py-2 text-sm text-text placeholder:text-muted/50 focus:border-accent/60 focus:outline-none resize-none"
+            />
+            <button
+              onClick={handleFeedback}
+              className="mt-2 flex items-center gap-2 rounded-md bg-accent px-3 py-1.5 text-sm text-white hover:bg-accent/90 transition-colors"
+            >
+              <Send size={13} />
+              {feedbackSent ? 'Opening your email client…' : 'Send feedback'}
+            </button>
+          </div>
+
+          <div className="border-t border-border pt-5 space-y-3">
+            {/* Docs */}
+            <Link
+              href="/docs"
+              className="flex items-center gap-3 text-sm text-muted hover:text-text transition-colors group"
+            >
+              <BookOpen size={14} className="shrink-0 group-hover:text-accent transition-colors" />
+              Documentation
+              <span className="ml-auto text-xs text-muted/40 group-hover:text-accent transition-colors">→</span>
+            </Link>
+            {/* Support — opens pre-filled email */}
+            <button
+              onClick={() => window.open('mailto:hello@hzsec.io?subject=HZSec%20Support', '_blank')}
+              className="flex w-full items-center gap-3 text-sm text-muted hover:text-text transition-colors group"
+            >
+              <Send size={14} className="shrink-0 group-hover:text-accent transition-colors" />
+              Contact support
+              <span className="ml-auto text-xs text-muted/40 group-hover:text-accent transition-colors">hello@hzsec.io</span>
+            </button>
+          </div>
         </div>
       </Section>
 
@@ -180,34 +215,5 @@ function Section({ title, children }: { title: string; children: React.ReactNode
       <h2 className="text-xs font-medium uppercase tracking-wider text-muted mb-5">{title}</h2>
       {children}
     </div>
-  );
-}
-
-function HelpRow({
-  Icon, label, description, href, internal,
-}: {
-  Icon: typeof Mail;
-  label: string;
-  description: string;
-  href: string;
-  internal?: boolean;
-}) {
-  const cls = 'flex items-center gap-4 py-3.5 group cursor-pointer';
-  const inner = (
-    <>
-      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-border bg-panel2 text-muted group-hover:border-accent/40 group-hover:text-accent transition-colors">
-        <Icon size={15} />
-      </div>
-      <div className="flex-1 min-w-0">
-        <div className="text-sm font-medium text-text">{label}</div>
-        <div className="text-xs text-muted">{description}</div>
-      </div>
-      <span className="text-muted/40 group-hover:text-accent transition-colors text-xs">→</span>
-    </>
-  );
-  return internal ? (
-    <Link href={href} className={cls}>{inner}</Link>
-  ) : (
-    <a href={href} className={cls}>{inner}</a>
   );
 }
