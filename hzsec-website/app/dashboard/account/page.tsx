@@ -68,7 +68,7 @@ export default function AccountPage() {
     const text = feedback.trim();
     if (!text) { feedbackRef.current?.focus(); return; }
     const url = `mailto:hello@hzsec.io?subject=${encodeURIComponent('HZSec Feedback')}&body=${encodeURIComponent(text)}`;
-    window.open(url, '_blank');
+    window.location.href = url;
     setFeedback('');
     setFeedbackSent(true);
     setTimeout(() => setFeedbackSent(false), 3000);
@@ -176,7 +176,7 @@ export default function AccountPage() {
             </Link>
             {/* Support — opens pre-filled email */}
             <button
-              onClick={() => window.open('mailto:hello@hzsec.io?subject=HZSec%20Support', '_blank')}
+              onClick={() => { window.location.href = 'mailto:hello@hzsec.io?subject=HZSec%20Support'; }}
               className="flex w-full items-center gap-3 text-sm text-muted hover:text-text transition-colors group"
             >
               <Send size={14} className="shrink-0 group-hover:text-accent transition-colors" />
