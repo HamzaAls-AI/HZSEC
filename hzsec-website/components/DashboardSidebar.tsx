@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useUser } from '@clerk/nextjs';
 import {
-  LayoutGrid, KeyRound, CreditCard, Activity, Settings,
+  LayoutGrid, KeyRound, CreditCard, Activity, Settings, MessageSquare,
 } from 'lucide-react';
 
 const NAV: ReadonlyArray<{ href: string; label: string; Icon: typeof LayoutGrid }> = [
@@ -39,6 +39,12 @@ export function DashboardSidebar() {
             active={pathname === '/dashboard/account'}
             Icon={Settings}
             label="Account"
+          />
+          <NavItem
+            href="/dashboard/feedback"
+            active={pathname === '/dashboard/feedback'}
+            Icon={MessageSquare}
+            label="Feedback"
           />
         </div>
       </nav>

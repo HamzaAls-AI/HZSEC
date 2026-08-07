@@ -2,7 +2,7 @@
 
 import { useUser, useClerk } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState, useCallback, useRef } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { Sun, Moon, Monitor, LogOut, BookOpen, Send } from 'lucide-react';
 import Link from 'next/link';
 
@@ -39,9 +39,6 @@ export default function AccountPage() {
 
   const [themePref, setThemePref] = useState<ThemePref>('system');
   const [mounted, setMounted] = useState(false);
-  const [feedback, setFeedback] = useState('');
-  const [feedbackSent, setFeedbackSent] = useState(false);
-  const feedbackRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -63,16 +60,6 @@ export default function AccountPage() {
       openUserProfile();
     }
   }, [openUserProfile]);
-
-  const handleFeedback = useCallback(() => {
-    const text = feedback.trim();
-    if (!text) { feedbackRef.current?.focus(); return; }
-    const url = `mailto:hello@hzsec.io?subject=${encodeURIComponent('HZSec Feedback')}&body=${encodeURIComponent(text)}`;
-    window.location.href = url;
-    setFeedback('');
-    setFeedbackSent(true);
-    setTimeout(() => setFeedbackSent(false), 3000);
-  }, [feedback]);
 
   return (
     <div className="space-y-6 max-w-2xl">
@@ -140,50 +127,25 @@ export default function AccountPage() {
         </div>
       </Section>
 
-      {/* ── Help & Feedback ── */}
-      <Section title="Help & Feedback">
-        <div className="space-y-5">
-          {/* Feedback form */}
-          <div>
-            <div className="text-sm font-medium text-text mb-1">Send feedback</div>
-            <div className="text-xs text-muted mb-2">Tell us what's working and what isn't.</div>
-            <textarea
-              ref={feedbackRef}
-              value={feedback}
-              onChange={e => setFeedback(e.target.value)}
-              rows={3}
-              placeholder="What's on your mind?"
-              className="w-full rounded-lg border border-border bg-panel2 px-3 py-2 text-sm text-text placeholder:text-muted/50 focus:border-accent/60 focus:outline-none resize-none"
-            />
-            <button
-              onClick={handleFeedback}
-              className="mt-2 flex items-center gap-2 rounded-md bg-accent px-3 py-1.5 text-sm text-white hover:bg-accent/90 transition-colors"
-            >
-              <Send size={13} />
-              {feedbackSent ? 'Opening your email client…' : 'Send feedback'}
-            </button>
-          </div>
-
-          <div className="border-t border-border pt-5 space-y-3">
-            {/* Docs */}
-            <Link
-              href="/docs"
-              className="flex items-center gap-3 text-sm text-muted hover:text-text transition-colors group"
-            >
-              <BookOpen size={14} className="shrink-0 group-hover:text-accent transition-colors" />
-              Documentation
-              <span className="ml-auto text-xs text-muted/40 group-hover:text-accent transition-colors">→</span>
-            </Link>
-            {/* Support — opens pre-filled email */}
-            <button
-              onClick={() => { window.location.href = 'mailto:hello@hzsec.io?subject=HZSec%20Support'; }}
-              className="flex w-full items-center gap-3 text-sm text-muted hover:text-text transition-colors group"
-            >
-              <Send size={14} className="shrink-0 group-hover:text-accent transition-colors" />
-              Contact support
-              <span className="ml-auto text-xs text-muted/40 group-hover:text-accent transition-colors">hello@hzsec.io</span>
-            </button>
-          </div>
+      {/* ── Help ── */}
+      <Section title="Help">
+        <div className="space-y-3">
+          <Link
+            href="/docs"
+            className="flex items-center gap-3 text-sm text-muted hover:text-text transition-colors group"
+          >
+            <BookOpen size={14} className="shrink-0 group-hover:text-accent transition-colors" />
+            Documentation
+            <span className="ml-auto text-xs text-muted/40 group-hover:text-accent transition-colors">→</span>
+          </Link>
+          <button
+            onClick={() => { window.location.href = 'mailto:hello@hzsec.io?subject=HZSec%20Support'; }}
+            className="flex w-full items-center gap-3 text-sm text-muted hover:text-text transition-colors group"
+          >
+            <Send size={14} className="shrink-0 group-hover:text-accent transition-colors" />
+            Contact support
+            <span className="ml-auto text-xs text-muted/40 group-hover:text-accent transition-colors">hello@hzsec.io</span>
+          </button>
         </div>
       </Section>
 
