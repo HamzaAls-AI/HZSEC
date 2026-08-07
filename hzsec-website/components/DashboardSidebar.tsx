@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useUser } from '@clerk/nextjs';
 import {
-  LayoutGrid, KeyRound, CreditCard, Activity, Settings, MessageSquare,
+  LayoutGrid, KeyRound, CreditCard, Activity, Settings, MessageSquare, Key,
 } from 'lucide-react';
 
 const NAV: ReadonlyArray<{ href: string; label: string; Icon: typeof LayoutGrid }> = [
@@ -39,6 +39,12 @@ export function DashboardSidebar() {
             active={pathname === '/dashboard/account'}
             Icon={Settings}
             label="Account"
+          />
+          <NavItem
+            href="/dashboard/api-keys"
+            active={pathname === '/dashboard/api-keys'}
+            Icon={Key}
+            label="API Keys"
           />
           <NavItem
             href="/dashboard/feedback"

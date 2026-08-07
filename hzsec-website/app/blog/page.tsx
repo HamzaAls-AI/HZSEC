@@ -3,21 +3,21 @@ import { MarketingHeader } from '@/components/MarketingHeader';
 import { MarketingFooter } from '@/components/MarketingFooter';
 import { Rss, ArrowRight } from 'lucide-react';
 
-// /blog — empty-state landing until MDX content lands in /content/blog/.
-// The page is intentionally informative rather than just "coming soon" —
-// readers should be able to tell what to expect when posts ship.
-
 export const metadata = {
   title: 'Blog · HZSec',
-  description: 'Field notes on local-first security, vulnerability detection, and developer security workflows.'
+  description: 'Field notes on local-first security, vulnerability detection, and developer security workflows.',
 };
 
-const PLANNED_TOPICS = [
-  'How HZSec scans without uploading your code',
-  'Why secret detection breaks in monorepos — and how to fix it',
-  'Building auditable rules: every detector readable by a human',
-  'Live-session scanning: catching the issues your linter misses',
-  'CI integration patterns for local-first scanners'
+const POSTS = [
+  {
+    slug: 'secrets-developers-commit',
+    title: '5 secrets developers accidentally commit to Git',
+    description:
+      'API keys, database credentials, private certificates — the credentials that keep appearing in Git history, why it keeps happening, and how to catch them before they land.',
+    date: 'July 14, 2026',
+    category: 'Security',
+    readTime: '6 min read',
+  },
 ];
 
 export default function BlogIndexPage() {
@@ -27,55 +27,47 @@ export default function BlogIndexPage() {
 
       <section className="border-b border-border">
         <div className="mx-auto max-w-4xl px-6 py-16 sm:py-20">
-          <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted">
+          <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted font-mono">
             <Rss size={14} /> Blog
           </div>
           <h1 className="mt-2 text-4xl font-semibold tracking-tight sm:text-5xl">
             Field notes on local-first security.
           </h1>
           <p className="mt-4 max-w-2xl text-lg leading-relaxed text-muted">
-            Practical writing on vulnerability detection, secret scanning, and
-            developer security workflows — by the team building HZSec.
+            Practical writing on vulnerability detection, secret scanning, and developer
+            security workflows — by the team building HZSec.
           </p>
         </div>
       </section>
 
-      <section className="border-b border-border bg-panel">
+      <section className="bg-panel border-b border-border">
         <div className="mx-auto max-w-4xl px-6 py-16">
-          <div className="rounded-lg border border-dashed border-border bg-bg p-8 text-center">
-            <div className="text-sm font-medium text-text">No posts yet.</div>
-            <p className="mt-2 text-sm text-muted">
-              The first posts are being drafted. Subscribe to follow along, or skim what&apos;s planned below.
-            </p>
-            <div className="mt-5 flex flex-wrap justify-center gap-3">
+          <div className="space-y-6">
+            {POSTS.map((post) => (
               <Link
-                href="/download"
-                className="inline-flex items-center gap-2 rounded-md bg-accent px-4 py-2 text-sm font-medium text-white hover:bg-accent/90 transition-colors"
+                key={post.slug}
+                href={`/blog/${post.slug}`}
+                className="group block rounded-xl border border-border bg-bg p-7 hover:border-accent/40 transition-colors"
               >
-                Try HZSec instead <ArrowRight size={14} />
+                <div className="flex items-center gap-3 mb-3">
+                  <span className="rounded-full bg-accent/10 text-accent border border-accent/20 px-2.5 py-0.5 text-[11px] font-medium">
+                    {post.category}
+                  </span>
+                  <span className="text-xs text-muted">{post.date}</span>
+                  <span className="text-muted/30">·</span>
+                  <span className="text-xs text-muted">{post.readTime}</span>
+                </div>
+                <h2 className="text-lg font-semibold text-text group-hover:text-accent transition-colors mb-2">
+                  {post.title}
+                </h2>
+                <p className="text-sm text-muted leading-relaxed mb-4">
+                  {post.description}
+                </p>
+                <span className="inline-flex items-center gap-1.5 text-sm text-accent">
+                  Read post <ArrowRight size={13} />
+                </span>
               </Link>
-              <Link
-                href="/docs"
-                className="inline-flex items-center gap-2 rounded-md border border-border bg-bg px-4 py-2 text-sm text-text hover:border-accent/60 transition-colors"
-              >
-                Read the docs
-              </Link>
-            </div>
-          </div>
-
-          <div className="mt-10">
-            <div className="text-xs uppercase tracking-wider text-muted">In the queue</div>
-            <ul className="mt-4 space-y-2">
-              {PLANNED_TOPICS.map((t) => (
-                <li
-                  key={t}
-                  className="flex items-start gap-3 rounded-md border border-border bg-bg p-4 text-sm text-text"
-                >
-                  <span className="mt-1 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-accent" />
-                  {t}
-                </li>
-              ))}
-            </ul>
+            ))}
           </div>
         </div>
       </section>

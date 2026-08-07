@@ -81,8 +81,8 @@ export function MarketingFooter() {
             <ul className="space-y-2.5">
               <li><Link href="/docs" className={colLink}>Documentation</Link></li>
               <li><Link href="/blog" className={colLink}>Blog</Link></li>
+              <li><Link href="/changelog" className={colLink}>Changelog</Link></li>
               <li><Link href="/security" className={colLink}>Security</Link></li>
-              <li><Link href="/docs" className={colLink}>How it works</Link></li>
             </ul>
           </div>
 
