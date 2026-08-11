@@ -1,7 +1,9 @@
 import { DashboardSidebar } from '@/components/DashboardSidebar';
 
 // Auth gate is handled by middleware.ts (clerkMiddleware → auth.protect()).
-// This layout just renders the chrome.
+// force-dynamic prevents build-time prerendering of all dashboard routes —
+// they require Clerk context which is only available at request time.
+export const dynamic = 'force-dynamic';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
