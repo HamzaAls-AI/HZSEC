@@ -37,9 +37,10 @@ const config = {
     secretKey:     required('STRIPE_SECRET_KEY',     'sk_test_PLACEHOLDER'),
     webhookSecret: required('STRIPE_WEBHOOK_SECRET', 'whsec_PLACEHOLDER'),
     // Price IDs are created in Stripe dashboard. Read README → Stripe setup.
-    priceProMonthly:  process.env.STRIPE_PRICE_PRO_MONTHLY  || 'price_PLACEHOLDER_pro_monthly',
-    priceProAnnual:   process.env.STRIPE_PRICE_PRO_ANNUAL   || 'price_PLACEHOLDER_pro_annual',
-    priceTeamMonthly: process.env.STRIPE_PRICE_TEAM_MONTHLY || 'price_PLACEHOLDER_team_monthly'
+    priceProMonthly:   process.env.STRIPE_PRICE_PRO_MONTHLY   || 'price_PLACEHOLDER_pro_monthly',
+    priceProAnnual:    process.env.STRIPE_PRICE_PRO_ANNUAL    || 'price_PLACEHOLDER_pro_annual',
+    priceTeamMonthly:  process.env.STRIPE_PRICE_TEAM_MONTHLY  || 'price_PLACEHOLDER_team_monthly',
+    priceTeamAnnual:   process.env.STRIPE_PRICE_TEAM_ANNUAL   || 'price_PLACEHOLDER_team_annual'
   },
 
   // Anthropic — single server-side key. Users never see it.

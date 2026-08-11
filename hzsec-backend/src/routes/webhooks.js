@@ -245,6 +245,7 @@ function inferTier(sub) {
   const priceId = item?.price?.id;
   if (!priceId) return 'pro';
   if (priceId === config.stripe.priceTeamMonthly) return 'team';
+  if (priceId === config.stripe.priceTeamAnnual)  return 'team';
   return 'pro';
 }
 

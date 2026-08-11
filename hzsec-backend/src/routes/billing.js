@@ -128,9 +128,10 @@ router.post('/portal-session', requireClerk, async (req, res) => {
 // ─── helpers ─────────────────────────────────────────────────────────────────
 
 function pickPriceId(tier, interval) {
-  if (tier === 'pro' && interval === 'monthly') return config.stripe.priceProMonthly;
-  if (tier === 'pro' && interval === 'annual')  return config.stripe.priceProAnnual;
+  if (tier === 'pro'  && interval === 'monthly') return config.stripe.priceProMonthly;
+  if (tier === 'pro'  && interval === 'annual')  return config.stripe.priceProAnnual;
   if (tier === 'team' && interval === 'monthly') return config.stripe.priceTeamMonthly;
+  if (tier === 'team' && interval === 'annual')  return config.stripe.priceTeamAnnual;
   return null;
 }
 
