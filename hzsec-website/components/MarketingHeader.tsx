@@ -173,6 +173,11 @@ export function MarketingHeader() {
         {/* Desktop nav items — hidden below 900px */}
         <ul className="flex items-center gap-0.5 list-none max-[899px]:hidden" role="list">
 
+          {/* About — direct link */}
+          <li>
+            <Link href="/about" className={`${triggerBase} ${triggerIdle}`}>About</Link>
+          </li>
+
           {/* Product — 3-column mega menu */}
           <li
             className="relative"

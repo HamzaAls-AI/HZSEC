@@ -90,6 +90,7 @@ export function MarketingFooter() {
           <div>
             <div className={colTitle}>Company</div>
             <ul className="space-y-2.5">
+              <li><Link href="/about" className={colLink}>About</Link></li>
               <li><a href="mailto:hello@hzsec.io" className={colLink}>Contact</a></li>
               <li><Link href="/legal/privacy" className={colLink}>Privacy</Link></li>
               <li><Link href="/legal/terms" className={colLink}>Terms</Link></li>
