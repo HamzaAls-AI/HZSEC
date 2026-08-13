@@ -116,7 +116,7 @@ router.post('/portal-session', requireClerk, async (req, res) => {
   try {
     const session = await getStripe().billingPortal.sessions.create({
       customer: customerId,
-      return_url: `${config.webOrigin}/dashboard`
+      return_url: `${config.webOrigin}/dashboard/billing`
     });
     res.json({ url: session.url });
   } catch (err) {
