@@ -6,8 +6,8 @@
 import { auth } from '@clerk/nextjs/server';
 
 const BACKEND_URL =
-  process.env.NEXT_PUBLIC_BACKEND_URL ||
   process.env.BACKEND_URL ||
+  process.env.NEXT_PUBLIC_BACKEND_URL ||
   'http://localhost:8080';
 
 // ─── Wire types — match backend route shapes ──────────────────────────────
