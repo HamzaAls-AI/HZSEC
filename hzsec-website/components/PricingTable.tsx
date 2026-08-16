@@ -73,7 +73,7 @@ export function PricingTable() {
     }
     setPending(tier);
     try {
-      const res = await fetch('/api/checkout', {
+      const res = await fetch(`/api/checkout?tier=${tier}&interval=${interval}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ tier, interval }),
