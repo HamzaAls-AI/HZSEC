@@ -65,9 +65,7 @@ router.post('/checkout-session', requireClerk, async (req, res) => {
     const session = await getStripe().checkout.sessions.create({
       mode: 'subscription',
       line_items: [{ price: priceId, quantity: 1 }],
-      ...(customerId
-        ? { customer: customerId }
-        : { customer_creation: 'always' }),
+      ...(customerId ? { customer: customerId } : {}),
       subscription_data: {
         trial_period_days: 7,
         metadata: { clerkId, tier }
