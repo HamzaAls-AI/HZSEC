@@ -71,8 +71,9 @@ router.post('/checkout-session', requireClerk, async (req, res) => {
     // Stash clerkId on the session itself too, so the webhook can find the
     // user even if subscription_data.metadata is missing in some edge case.
     metadata: { clerkId, tier },
-    // The website renders a "checkout success" toast and refreshes /api/me.
-    success_url: `${config.webOrigin}/dashboard?checkout=success&session_id={CHECKOUT_SESSION_ID}`,
+    // Stripe redirects here after the card is collected. /welcome fetches
+    // the license from the backend and shows the onboarding steps.
+    success_url: `${config.webOrigin}/welcome`,
     cancel_url:  `${config.webOrigin}/pricing?checkout=cancelled`,
     // 7-day trial means we need a card on file but no immediate charge.
     payment_method_collection: 'always',

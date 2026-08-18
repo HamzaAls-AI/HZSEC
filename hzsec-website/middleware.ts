@@ -4,7 +4,8 @@ import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 // the auth pages themselves are public. /api routes inside this Next app
 // (e.g. proxies to the backend) inherit the same gate via this matcher.
 const isProtected = createRouteMatcher([
-  '/dashboard(.*)'
+  '/dashboard(.*)',
+  '/welcome(.*)',
 ]);
 
 export default clerkMiddleware(async (auth, req) => {
