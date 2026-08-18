@@ -6,8 +6,10 @@ import { Send, CheckCircle2 } from 'lucide-react';
 const MAX_CHARS = 500;
 
 export default function FeedbackPage() {
-  const [text, setText] = useState('');
-  const [sent, setSent] = useState(false);
+  const [text,    setText]    = useState('');
+  const [sent,    setSent]    = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error,   setError]   = useState<string | null>(null);
 
   const charCount = text.length;
   const nearLimit = charCount >= 450;
@@ -17,16 +19,28 @@ export default function FeedbackPage() {
     setText(e.target.value.slice(0, MAX_CHARS));
   }, []);
 
-  const handleSubmit = useCallback(() => {
+  const handleSubmit = useCallback(async () => {
     const trimmed = text.trim();
     if (!trimmed) return;
-    const url =
-      `mailto:hello@hzsec.io` +
-      `?subject=${encodeURIComponent('HZSec Feedback')}` +
-      `&body=${encodeURIComponent(trimmed)}`;
-    window.location.href = url;
-    setText('');
-    setSent(true);
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch('/api/feedback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: trimmed }),
+      });
+      if (!res.ok) {
+        const d = await res.json().catch(() => ({}));
+        throw new Error(d.error || 'send_failed');
+      }
+      setText('');
+      setSent(true);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Something went wrong. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   }, [text]);
 
   if (sent) {
@@ -105,12 +119,15 @@ export default function FeedbackPage() {
 
         <button
           onClick={handleSubmit}
-          disabled={!text.trim()}
+          disabled={!text.trim() || loading}
           className="flex items-center gap-2 rounded-lg bg-accent px-5 py-2.5 text-sm font-medium text-white hover:bg-accent/90 transition-colors disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
         >
           <Send size={14} />
-          Send feedback
+          {loading ? 'Sending…' : 'Send feedback'}
         </button>
+        {error && (
+          <p className="mt-3 text-xs text-danger">{error}</p>
+        )}
       </div>
 
       {/* Support note */}
