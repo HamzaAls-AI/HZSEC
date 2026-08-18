@@ -89,6 +89,8 @@ async function fetchWithToken<T>(path: string, init: RequestInit = {}): Promise<
 
 // ─── Endpoint helpers ─────────────────────────────────────────────────────
 
+export interface CancelPayload { ok: boolean; cancelAt: string | null; }
+
 export const backend = {
   me:                () => fetchWithToken<MePayload>('/api/me'),
   startCheckout:     (tier: 'pro' | 'team', interval: 'monthly' | 'annual') =>
@@ -96,7 +98,8 @@ export const backend = {
       method: 'POST',
       body: JSON.stringify({ tier, interval })
     }),
-  startPortal:       () => fetchWithToken<PortalPayload>('/api/billing/portal-session', { method: 'POST' })
+  startPortal:       () => fetchWithToken<PortalPayload>('/api/billing/portal-session', { method: 'POST' }),
+  cancelSubscription: () => fetchWithToken<CancelPayload>('/api/billing/cancel-subscription', { method: 'POST' })
 };
 
 export { BackendError, BACKEND_URL };

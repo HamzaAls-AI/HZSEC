@@ -16,6 +16,7 @@ const { getStripe } = require('../lib/stripe');
 const prisma = require('../lib/db');
 const cache = require('../lib/license-cache');
 const { generate: generateKey } = require('../lib/license-key');
+const email = require('../lib/email');
 
 const router = express.Router();
 
@@ -61,7 +62,11 @@ router.post('/stripe', async (req, res) => {
     switch (event.type) {
       case 'customer.subscription.created':
       case 'customer.subscription.updated':
-        await handleSubscriptionUpsert(event.data.object);
+        await handleSubscriptionUpsert(event.data.object, event.type);
+        break;
+
+      case 'customer.subscription.trial_will_end':
+        await handleTrialWillEnd(event.data.object);
         break;
 
       case 'customer.subscription.deleted':
@@ -101,7 +106,7 @@ router.post('/stripe', async (req, res) => {
 
 // ─── handlers ────────────────────────────────────────────────────────────────
 
-async function handleSubscriptionUpsert(sub) {
+async function handleSubscriptionUpsert(sub, eventType) {
   const clerkId = sub.metadata?.clerkId;
   if (!clerkId) {
     console.warn('[webhooks] subscription has no clerkId metadata:', sub.id);
@@ -142,6 +147,17 @@ async function handleSubscriptionUpsert(sub) {
         currentPeriodEnd: sub.current_period_end ? new Date(sub.current_period_end * 1000) : null
       }
     });
+
+    // Welcome email on new subscription — send after DB row exists so the
+    // license key is available. Best-effort; never blocks the webhook ack.
+    if (user.email && eventType === 'customer.subscription.created') {
+      email.trialStarted({
+        to: user.email,
+        licenseKey: lic.licenseKey,
+        trialEndsAt: lic.trialEndsAt?.toISOString() ?? new Date(Date.now() + 7 * 86400_000).toISOString(),
+        tier
+      }).catch(() => {});
+    }
   } else {
     lic = await prisma.license.update({
       where: { id: lic.id },
@@ -162,9 +178,21 @@ async function handleSubscriptionUpsert(sub) {
   });
 }
 
+async function handleTrialWillEnd(sub) {
+  const clerkId = sub.metadata?.clerkId;
+  if (!clerkId) return;
+  const user = await prisma.user.findUnique({ where: { clerkId } });
+  if (!user?.email) return;
+  const tier = inferTier(sub);
+  const trialEndsAt = sub.trial_end ? new Date(sub.trial_end * 1000).toISOString() : null;
+  if (!trialEndsAt) return;
+  email.trialEnding({ to: user.email, trialEndsAt, tier }).catch(() => {});
+}
+
 async function handleSubscriptionDeleted(sub) {
   const lic = await prisma.license.findUnique({
-    where: { stripeSubscriptionId: sub.id }
+    where:   { stripeSubscriptionId: sub.id },
+    include: { user: true }
   });
   if (!lic) return;
 
@@ -173,8 +201,13 @@ async function handleSubscriptionDeleted(sub) {
     data:  { status: 'canceled' }
   });
   cache.invalidate(lic.licenseKey);
-
   await audit(lic.userId, 'stripe.subscription.deleted', { subId: sub.id });
+
+  if (lic.user?.email) {
+    const periodEnd = sub.current_period_end
+      ? new Date(sub.current_period_end * 1000).toISOString() : null;
+    email.subscriptionCancelled({ to: lic.user.email, currentPeriodEnd: periodEnd }).catch(() => {});
+  }
 }
 
 async function handleInvoicePaid(invoice) {
@@ -202,7 +235,8 @@ async function handleInvoicePaid(invoice) {
 async function handleInvoicePaymentFailed(invoice) {
   if (!invoice.subscription) return;
   const lic = await prisma.license.findUnique({
-    where: { stripeSubscriptionId: invoice.subscription }
+    where:   { stripeSubscriptionId: invoice.subscription },
+    include: { user: true }
   });
   if (!lic) return;
 
@@ -211,10 +245,11 @@ async function handleInvoicePaymentFailed(invoice) {
     data:  { status: 'past_due' }
   });
   cache.invalidate(lic.licenseKey);
+  await audit(lic.userId, 'stripe.invoice.payment_failed', { invoiceId: invoice.id });
 
-  await audit(lic.userId, 'stripe.invoice.payment_failed', {
-    invoiceId: invoice.id
-  });
+  if (lic.user?.email) {
+    email.paymentFailed({ to: lic.user.email }).catch(() => {});
+  }
 }
 
 // ─── helpers ─────────────────────────────────────────────────────────────────

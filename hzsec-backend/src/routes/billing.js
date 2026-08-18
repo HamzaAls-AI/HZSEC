@@ -141,6 +141,47 @@ router.post('/portal-session', requireClerk, async (req, res) => {
   }
 });
 
+// ─── Cancel subscription ─────────────────────────────────────────────────────
+// Schedules cancellation at the end of the current billing period so the user
+// keeps access until they've paid for. The webhook fires
+// customer.subscription.deleted when it actually lapses and sets status=canceled.
+
+router.post('/cancel-subscription', requireClerk, async (req, res) => {
+  const clerkId = req.auth.userId;
+
+  let lic = null;
+  try {
+    lic = await prisma.license.findFirst({
+      where: {
+        user: { clerkId },
+        stripeSubscriptionId: { not: null }
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+  } catch (err) {
+    if (config.env === 'production') throw err;
+    return res.status(404).json({ error: 'no_subscription' });
+  }
+
+  if (!lic?.stripeSubscriptionId) {
+    return res.status(404).json({ error: 'no_subscription' });
+  }
+
+  try {
+    const sub = await getStripe().subscriptions.update(
+      lic.stripeSubscriptionId,
+      { cancel_at_period_end: true }
+    );
+    const cancelAt = sub.cancel_at
+      ? new Date(sub.cancel_at * 1000).toISOString()
+      : lic.currentPeriodEnd?.toISOString() ?? null;
+    return res.json({ ok: true, cancelAt });
+  } catch (err) {
+    console.error('[billing] cancel error:', err.message);
+    return res.status(502).json({ error: 'stripe_error', message: err.message });
+  }
+});
+
 // ─── helpers ─────────────────────────────────────────────────────────────────
 
 function pickPriceId(tier, interval) {

@@ -134,13 +134,20 @@ function ActiveLicense({
           n={2}
           icon={<KeyRound size={16} />}
           title="Enter your license key"
-          desc="Open HZSec → Settings → License and paste this key. The app verifies it against your account."
+          desc="Open HZSec → Settings → License and paste this key. Or click the button below to auto-fill it."
         >
-          <div className="mt-4">
+          <div className="mt-4 space-y-3">
             <LicenseKeyView licenseKey={licenseKey} />
+            <a
+              href={`hzsec://license/${licenseKey}`}
+              className="inline-flex items-center gap-2 rounded-full border border-accent/40 px-4 py-2 text-xs font-medium text-accent hover:bg-accent/10 transition-colors"
+            >
+              <span aria-hidden="true">⚡</span>
+              Open in HZSec — auto-fills your key
+            </a>
           </div>
           <p className="mt-2 text-xs text-muted">
-            You can always find this key in your{' '}
+            Key always available in your{' '}
             <Link href="/dashboard/license" className="text-accent hover:underline underline-offset-4">
               license dashboard
             </Link>

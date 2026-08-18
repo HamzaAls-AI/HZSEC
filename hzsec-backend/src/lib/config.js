@@ -50,6 +50,13 @@ const config = {
     apiVersion: process.env.ANTHROPIC_API_VERSION || '2023-06-01'
   },
 
+  // Resend — transactional email. Set RESEND_API_KEY in Railway.
+  // If unset in dev, email sends are skipped with a console warning.
+  resend: {
+    apiKey: process.env.RESEND_API_KEY || '',
+    from:   process.env.EMAIL_FROM || 'HZSec <noreply@hzsec.io>'
+  },
+
   // Per-tier monthly assistant-message caps. Pulled here so the cap logic is
   // not scattered across files.
   caps: {

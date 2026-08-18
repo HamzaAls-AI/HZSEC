@@ -64,12 +64,47 @@ export default async function DashboardHome() {
   }
 
   const lic = me.license;
+  const daysLeft = trialDaysLeft(lic.trialEndsAt);
+
   return (
     <div className="max-w-2xl space-y-8">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold tracking-tight">Overview</h1>
         <StatusBadge status={lic.status} />
       </div>
+
+      {/* Trial countdown banners */}
+      {lic.status === 'trialing' && daysLeft !== null && daysLeft <= 3 && (
+        <div className="rounded-xl border border-danger/30 bg-danger/8 px-5 py-4 flex items-center justify-between gap-4">
+          <div>
+            <p className="text-sm font-medium text-danger">
+              Trial ends in {daysLeft === 0 ? 'less than a day' : `${daysLeft} day${daysLeft === 1 ? '' : 's'}`}
+            </p>
+            <p className="text-xs text-muted mt-0.5">Your card on file will be charged when the trial ends.</p>
+          </div>
+          <Link href="/dashboard/billing" className="shrink-0 rounded-full border border-danger/40 px-3 py-1.5 text-xs font-medium text-danger hover:bg-danger/10 transition-colors">
+            Manage →
+          </Link>
+        </div>
+      )}
+      {lic.status === 'trialing' && daysLeft !== null && daysLeft > 3 && daysLeft <= 7 && (
+        <div className="rounded-xl border border-warn/30 bg-warn/8 px-5 py-4 flex items-center justify-between gap-4">
+          <p className="text-sm text-warn">
+            {daysLeft} days left in your trial — trial ends {fmtDate(lic.trialEndsAt)}.
+          </p>
+          <Link href="/dashboard/billing" className="shrink-0 text-xs text-warn hover:underline underline-offset-4 transition-colors">
+            Manage →
+          </Link>
+        </div>
+      )}
+      {lic.status === 'past_due' && (
+        <div className="rounded-xl border border-warn/30 bg-warn/8 px-5 py-4 flex items-center justify-between gap-4">
+          <p className="text-sm text-warn font-medium">Payment past due — update your payment method to keep Pro.</p>
+          <Link href="/dashboard/billing" className="shrink-0 rounded-full border border-warn/40 px-3 py-1.5 text-xs font-medium text-warn hover:bg-warn/10 transition-colors">
+            Fix now →
+          </Link>
+        </div>
+      )}
 
       {/* Stat cards */}
       <div className="grid gap-4 sm:grid-cols-2">
@@ -158,7 +193,14 @@ async function safeMe() {
 }
 
 function titleCase(s: string) { return s.charAt(0).toUpperCase() + s.slice(1); }
-function fmtDate(d: string | null) { return d ? new Date(d).toLocaleDateString() : '—'; }
+function fmtDate(d: string | null) {
+  return d ? new Date(d).toLocaleDateString('en-US', { month: 'long', day: 'numeric' }) : '—';
+}
+function trialDaysLeft(trialEndsAt: string | null) {
+  if (!trialEndsAt) return null;
+  const ms = new Date(trialEndsAt).getTime() - Date.now();
+  return ms > 0 ? Math.ceil(ms / 86_400_000) : 0;
+}
 function pctWidth(used: number, cap: number) {
   return cap === 0 ? '0%' : `${Math.min(100, (used / cap) * 100)}%`;
 }
