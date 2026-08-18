@@ -61,25 +61,42 @@ router.post('/checkout-session', requireClerk, async (req, res) => {
     console.warn('[billing] DB lookup skipped:', err.message);
   }
 
+  const baseParams = {
+    mode: 'subscription',
+    line_items: [{ price: priceId, quantity: 1 }],
+    subscription_data: {
+      trial_period_days: 7,
+      metadata: { clerkId, tier }
+    },
+    // Stash clerkId on the session itself too, so the webhook can find the
+    // user even if subscription_data.metadata is missing in some edge case.
+    metadata: { clerkId, tier },
+    // The website renders a "checkout success" toast and refreshes /api/me.
+    success_url: `${config.webOrigin}/dashboard?checkout=success&session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url:  `${config.webOrigin}/pricing?checkout=cancelled`,
+    // 7-day trial means we need a card on file but no immediate charge.
+    payment_method_collection: 'always',
+    allow_promotion_codes: true
+  };
+
   try {
-    const session = await getStripe().checkout.sessions.create({
-      mode: 'subscription',
-      line_items: [{ price: priceId, quantity: 1 }],
-      ...(customerId ? { customer: customerId } : {}),
-      subscription_data: {
-        trial_period_days: 7,
-        metadata: { clerkId, tier }
-      },
-      // Stash clerkId on the session itself too, so the webhook can find the
-      // user even if subscription_data.metadata is missing in some edge case.
-      metadata: { clerkId, tier },
-      // The website renders a "checkout success" toast and refreshes /api/me.
-      success_url: `${config.webOrigin}/dashboard?checkout=success&session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url:  `${config.webOrigin}/pricing?checkout=cancelled`,
-      // 7-day trial means we need a card on file but no immediate charge.
-      payment_method_collection: 'always',
-      allow_promotion_codes: true
-    });
+    let session;
+    if (customerId) {
+      try {
+        session = await getStripe().checkout.sessions.create({ ...baseParams, customer: customerId });
+      } catch (stripeErr) {
+        // Test-mode customer ID stored in DB — live Stripe cannot find it.
+        // Drop it and let Stripe create a fresh live customer instead.
+        if (stripeErr.code === 'resource_missing' && stripeErr.param === 'customer') {
+          console.warn('[checkout] stale customer %s — retrying without it', customerId);
+          session = await getStripe().checkout.sessions.create(baseParams);
+        } else {
+          throw stripeErr;
+        }
+      }
+    } else {
+      session = await getStripe().checkout.sessions.create(baseParams);
+    }
     res.json({ url: session.url, id: session.id });
   } catch (err) {
     console.error('[checkout] stripe error:', err.message);
