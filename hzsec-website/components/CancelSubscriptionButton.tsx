@@ -34,7 +34,7 @@ export function CancelSubscriptionButton({ periodEnd }: { periodEnd: string | nu
   if (state === 'done') {
     return (
       <div className="rounded-lg border border-ok/30 bg-ok/8 px-4 py-3 text-sm text-ok">
-        Cancellation scheduled. You'll keep access until <strong>{cancelAt}</strong>.
+        Cancellation scheduled. You&apos;ll keep access until <strong>{cancelAt}</strong>.
       </div>
     );
   }
@@ -57,7 +57,7 @@ export function CancelSubscriptionButton({ periodEnd }: { periodEnd: string | nu
       <div className="rounded-xl border border-danger/20 bg-danger/5 p-5 space-y-3">
         <p className="text-sm text-text font-medium">Cancel your subscription?</p>
         <p className="text-sm text-muted">
-          You'll keep full Pro access until <strong className="text-text">{endLabel}</strong>. After that your account reverts to Free.
+          You&apos;ll keep full Pro access until <strong className="text-text">{endLabel}</strong>. After that your account reverts to Free.
         </p>
         <div className="flex gap-3 pt-1">
           <button
