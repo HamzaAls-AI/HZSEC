@@ -15,7 +15,10 @@ export function OpenPortalButton() {
       if (!res.ok || !data.url) throw new Error(data.error || 'portal_failed');
       window.location.href = data.url;
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'unknown_error');
+      const msg = e instanceof Error ? e.message : 'unknown_error';
+      setError(msg === 'stale_customer'
+        ? 'Billing portal unavailable — contact support@hzsec.io'
+        : msg);
       setPending(false);
     }
   }

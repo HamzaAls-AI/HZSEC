@@ -113,7 +113,8 @@ router.post('/portal-session', requireClerk, async (req, res) => {
   let customerId = null;
   try {
     const lic = await prisma.license.findFirst({
-      where: { user: { clerkId } },
+      where: { user: { clerkId }, stripeCustomerId: { not: null } },
+      orderBy: { createdAt: 'desc' },
       select: { stripeCustomerId: true }
     });
     customerId = lic?.stripeCustomerId || null;
@@ -136,6 +137,12 @@ router.post('/portal-session', requireClerk, async (req, res) => {
     });
     res.json({ url: session.url });
   } catch (err) {
+    // Stale test-mode customer ID — tell the client the portal is unavailable
+    // rather than exposing a raw Stripe error.
+    if (err.code === 'resource_missing' && err.param === 'customer') {
+      console.warn('[portal] stale customer %s — no live portal available', customerId);
+      return res.status(409).json({ error: 'stale_customer' });
+    }
     console.error('[portal] stripe error:', err.message);
     res.status(502).json({ error: 'stripe_error', message: err.message });
   }
